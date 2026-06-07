@@ -45,36 +45,57 @@ function parseJsonContent(content: string) {
   return JSON.parse(jsonText);
 }
 
-function textFallback(content: string): CinemaPayload {
-  const lines = content
-    .split(/\r?\n/)
-    .map((line) =>
-      line
-        .replace(/^[-*#\d.、\s]+/, "")
-        .replace(/^["“]|["”]$/g, "")
-        .trim(),
-    )
-    .filter(Boolean)
-    .slice(0, 3);
+function textFallback(trigger: string): CinemaPayload {
+  const isIgnored = /没回|忽视|不理|冷淡|不回|ignored|reply/i.test(trigger);
+  const isConflict = /冲突|吵|反击|批评|指责|证明|conflict|fight|criticized|prove/i.test(
+    trigger,
+  );
 
-  const fallbackLines =
-    lines.length >= 3
-      ? lines
-      : [
-          "触发刚刚出现，身体还在紧绷。",
-          "一个念头升起：我需要立刻做点什么。",
-          "现在坐到观众席，看见角色，不进入剧情。",
-        ];
+  const preset = isIgnored
+    ? {
+        title: "沉默之后",
+        innerNoise: ["是不是我不重要", "为什么没回应", "我需要答案"],
+        scenes: [
+          "消息没有回应，心里开始收紧。",
+          "念头升起：是不是我不够重要？",
+          "现在坐到观众席，看见这份不安。",
+        ],
+        roleView: "我被忽视了，需要马上确认答案。",
+        audienceView: "一个人正被沉默牵动，想抓住回应。",
+      }
+    : isConflict
+      ? {
+          title: "冲突之后",
+          innerNoise: ["我必须反击", "他们误解我", "我不能输"],
+          scenes: [
+            "冲突刚刚发生，身体还在反应。",
+            "念头升起：我必须立刻反击。",
+            "现在先坐到观众席，看见角色。",
+          ],
+          roleView: "我被推进剧情，想立刻反应。",
+          audienceView: "一个人正在防御，想保护自己的位置。",
+        }
+      : {
+          title: "触发之后",
+          innerNoise: ["我需要马上处理", "哪里不对劲", "我坐不住"],
+          scenes: [
+            "触发刚刚发生，身体还在反应。",
+            "念头升起：我需要马上处理。",
+            "现在先坐到观众席，看见角色。",
+          ],
+          roleView: "我被触动了，想马上做点什么。",
+          audienceView: "一个人正被念头拉走，暂时忘了观看。",
+        };
 
   return {
-    title: "触发之后",
-    innerNoise: ["我需要马上回应", "我不能输", "我要证明自己"],
-    scenes: fallbackLines.map((line, index) => ({
+    title: preset.title,
+    innerNoise: preset.innerNoise,
+    scenes: preset.scenes.map((line, index) => ({
       label: `镜头 0${index + 1}`,
       line: line.slice(0, 42),
     })),
-    roleView: "我被拉进剧情，想立刻反应。",
-    audienceView: "一个人正在被念头牵动。",
+    roleView: preset.roleView,
+    audienceView: preset.audienceView,
     witnessView: `这个反应正在发生。先看见它，再回到当下。`,
   };
 }
@@ -167,7 +188,7 @@ export async function POST(request: Request) {
     try {
       parsed = parseJsonContent(content);
     } catch {
-      parsed = textFallback(content);
+      parsed = textFallback(trigger);
       usedFallback = true;
     }
 

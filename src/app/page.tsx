@@ -21,13 +21,13 @@ const noiseWords = [
   "我要解释清楚",
 ];
 
-const fallbackTrigger = "我被批评了，现在很想立刻为自己辩解。";
+const fallbackTrigger = "我刚在会上和同事起了冲突，我想立刻反击证明自己没错。";
 const pitchDemoTrigger = "我刚在会上和同事起了冲突，我想立刻反击证明自己没错。";
 
 function createCinema(trigger: string) {
   const cleanTrigger = trigger.trim() || fallbackTrigger;
   const isIgnored = /忽视|没回|不回|ignored|reply/i.test(cleanTrigger);
-  const isConflict = /冲突|吵|争|conflict|fight/i.test(cleanTrigger);
+  const isConflict = /冲突|吵|争|反击|批评|指责|conflict|fight|criticized/i.test(cleanTrigger);
   const isProve = /证明|prove|价值|value/i.test(cleanTrigger);
 
   const title = isIgnored
@@ -311,11 +311,14 @@ function Header({ step }: { step: Step }) {
 
   return (
     <header className="flex items-center justify-between pt-2">
-      <div>
+      <div className="flex items-center gap-3">
+        <span className="brand-mark" aria-hidden="true" />
+        <div>
         <p className="text-xs uppercase tracking-[0.28em] text-stone-500">
           StillMind
         </p>
         <p className="mt-1 text-sm text-stone-300">内在电影</p>
+        </div>
       </div>
       <div className="flex gap-1.5" aria-label="Progress">
         {steps.map((item, itemIndex) => (
@@ -346,22 +349,32 @@ function HomePanel({
 }) {
   return (
     <div className="panel-enter w-full">
-      <p className="mb-4 text-sm tracking-[0.28em] text-stone-400">内在电影</p>
-      <h1 className="text-5xl font-semibold leading-[0.98] text-stone-50">
+      <div className="cinema-portal mb-7 rounded-[2rem] border border-white/10 bg-black/30 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+        <div className="cinema-screen rounded-[1.4rem] border border-white/10 px-5 py-8 text-center">
+          <p className="text-xs tracking-[0.28em] text-stone-400">正在观影，而不是经历</p>
+          <p className="mt-3 text-sm leading-6 text-stone-300">
+            坐到观众席，看见屏幕里的自己。
+          </p>
+        </div>
+        <div className="seat-row mt-4" aria-hidden="true" />
+      </div>
+
+      <p className="mb-3 text-sm tracking-[0.28em] text-stone-400">内在电影</p>
+      <h1 className="text-4xl font-semibold leading-none text-stone-50">
         StillMind: Inner Cinema
       </h1>
-      <h2 className="mt-4 text-2xl font-medium leading-tight text-stone-200">
+      <h2 className="mt-4 text-2xl font-medium leading-tight text-stone-100">
         把脑子里的剧情，变成一场可以退出的电影。
       </h2>
-      <p className="mt-4 text-base leading-7 text-stone-300">
-        输入一个情绪触发，StillMind 会把它转成三幕内在电影。
+      <p className="mt-3 text-sm leading-6 text-stone-400">
+        写一句触发。进入三幕内在电影。
       </p>
 
-      <div className="mt-8 rounded-[2rem] border border-white/10 bg-black/35 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+      <div className="mt-6 rounded-[2rem] border border-violet-200/15 bg-[#091225]/70 p-4 shadow-2xl shadow-violet-950/20 backdrop-blur-xl">
         <button
           type="button"
           onClick={onPitchDemo}
-          className="mb-3 flex h-12 w-full items-center justify-center rounded-full border border-amber-200/20 bg-amber-100/10 text-sm font-medium text-amber-100 transition hover:bg-amber-100/15"
+          className="mb-3 flex h-12 w-full items-center justify-center rounded-full border border-violet-200/25 bg-violet-200/10 text-sm font-medium text-violet-100 transition hover:bg-violet-200/15"
         >
           一键演示
         </button>
@@ -388,7 +401,7 @@ function HomePanel({
         <button
           type="button"
           onClick={onEnter}
-          className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-stone-100 text-base font-medium text-[#111113] transition hover:bg-white"
+          className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 text-base font-medium text-white shadow-lg shadow-violet-950/30 transition hover:brightness-110"
         >
           进入内在电影
         </button>
@@ -432,7 +445,6 @@ function CinemaPanel({
     return () => window.clearTimeout(timer);
   }, [cinema.title]);
 
-  const currentScene = safeScenes[Math.min(sceneIndex, safeScenes.length - 1)];
   const isLastScene = sceneIndex >= safeScenes.length - 1;
   const advanceScene = () => {
     if (isLastScene) {
@@ -475,45 +487,57 @@ function CinemaPanel({
         </div>
       ) : (
         <>
-          <div className="mt-6 rounded-[2rem] border border-white/10 bg-[#111113]/85 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+          <div className="mt-6 rounded-[2rem] border border-violet-200/12 bg-[#081120]/82 p-4 shadow-2xl shadow-violet-950/20 backdrop-blur">
             <article
-              key={`${currentScene.label}-${sceneIndex}`}
-              className="min-h-52 rounded-[1.35rem] border border-stone-100/10 bg-black/25 p-6"
+              key={`${safeScenes[sceneIndex].label}-${sceneIndex}`}
+              className="projection-screen min-h-[22rem] rounded-[1.7rem] border border-violet-200/18 p-5"
               style={{ animation: "sceneEnter 0.45s ease both" }}
             >
               <div className="flex items-center justify-between">
-                <p className="text-xs uppercase tracking-[0.24em] text-stone-500">
-                  {currentScene.label}
+                <p className="text-xs uppercase tracking-[0.24em] text-violet-100/65">
+                  {safeScenes[sceneIndex].label}
                 </p>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-stone-400">
                   {sceneIndex + 1} / {safeScenes.length}
                 </p>
               </div>
-              <p className="mt-10 text-3xl font-semibold leading-tight text-stone-50">
-                {currentScene.line}
-              </p>
-            </article>
-
-            <div className="mt-5 rounded-[1.25rem] border border-stone-200/15 bg-stone-950/30 p-4">
-              <p className="text-xs uppercase tracking-[0.22em] text-amber-100/55">
-                内在噪音字幕
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {cinema.innerNoise.map((line) => (
-                  <span
-                    key={line}
-                    className="rounded-full border border-stone-100/10 bg-stone-100/8 px-3 py-1.5 text-sm text-stone-100/80"
-                  >
-                    {line}
-                  </span>
+              <div className="flex min-h-56 items-center justify-center text-center">
+                <p className="max-w-xs text-3xl font-semibold leading-tight text-stone-50">
+                  {safeScenes[sceneIndex].line}
+                </p>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                {safeScenes.map((scene, index) => (
+                  <button
+                    key={scene.label}
+                    type="button"
+                    onClick={() => setSceneIndex(index)}
+                    className={`h-2.5 rounded-full transition-all ${
+                      index === sceneIndex
+                        ? "w-9 bg-violet-200 shadow-[0_0_18px_rgba(196,181,253,0.45)]"
+                        : "w-2.5 bg-white/18 hover:bg-white/35"
+                    }`}
+                    aria-label={`切换到${scene.label}`}
+                  />
                 ))}
               </div>
+            </article>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {cinema.innerNoise.map((line) => (
+                <span
+                  key={line}
+                  className="rounded-full border border-violet-100/10 bg-violet-100/8 px-3 py-1.5 text-sm text-stone-100/65 shadow-[0_0_18px_rgba(139,92,246,0.08)]"
+                >
+                  {line}
+                </span>
+              ))}
             </div>
           </div>
           <button
             type="button"
             onClick={advanceScene}
-            className="mt-6 flex h-14 w-full items-center justify-center rounded-full border border-white/15 bg-white/[0.09] text-base font-medium text-stone-50 transition hover:bg-white/[0.14]"
+            className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 text-base font-medium text-white shadow-lg shadow-violet-950/30 transition hover:brightness-110"
           >
             {isLastScene ? "切换视角" : "下一幕"}
           </button>
@@ -597,7 +621,7 @@ function PerspectivePanel({
       <button
         type="button"
         onClick={onNext}
-        className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-stone-100 text-base font-medium text-[#111113] transition hover:bg-white"
+        className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 text-base font-medium text-white shadow-lg shadow-violet-950/30 transition hover:brightness-110"
       >
         开始观察者模式
       </button>
@@ -666,9 +690,12 @@ function ObserverPanel({
           </p>
           <p className="mt-2 text-sm text-stone-500">秒</p>
           {!isComplete && (
-            <p className="mt-3 text-sm tracking-[0.3em] text-stone-400">
-              {breathingPhase}
+            <p className="breathe-text mt-3 text-base font-medium tracking-[0.25em] text-violet-100">
+              {breathingPhase === "吸气" ? "吸 气" : "呼 气"}
             </p>
+          )}
+          {!isComplete && (
+            <p className="mt-2 text-xs text-stone-500">跟着光圈，不用用力。</p>
           )}
         </div>
 
@@ -685,7 +712,7 @@ function ObserverPanel({
 
       <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/10">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-amber-300/80 via-stone-100 to-amber-100 transition-all duration-700"
+          className="h-full rounded-full bg-gradient-to-r from-violet-400 via-fuchsia-200 to-amber-300 transition-all duration-700"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -724,7 +751,7 @@ function ObserverPanel({
         <button
           type="button"
           onClick={onReturn}
-          className="mt-7 flex h-14 w-full items-center justify-center rounded-full bg-stone-100 text-base font-medium text-[#111113] transition hover:bg-white"
+          className="mt-7 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 text-base font-medium text-white shadow-lg shadow-violet-950/30 transition hover:brightness-110"
         >
           回归
         </button>
@@ -772,9 +799,9 @@ function ReturnPanel({
         回归
       </p>
       <h2 className="mt-4 text-4xl font-semibold leading-tight text-stone-50">
-        情绪没有被抹掉。你只是回到了观众席。
+        带着清晰，回到你的生活。
       </h2>
-      <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/[0.07] p-6 backdrop-blur-xl">
+      <div className="mt-8 rounded-[2rem] border border-amber-100/15 bg-amber-50/[0.08] p-6 shadow-2xl shadow-amber-950/20 backdrop-blur-xl">
         <p className="text-lg leading-8 text-stone-200">
           情绪没有被抹掉。你只是从角色里退出来，重新坐回了观众席。
         </p>
