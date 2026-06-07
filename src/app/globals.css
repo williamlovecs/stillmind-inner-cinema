@@ -27,9 +27,11 @@ textarea {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 18%, rgba(245, 238, 217, 0.18), transparent 28%),
-    radial-gradient(circle at 20% 75%, rgba(112, 120, 114, 0.16), transparent 28%),
-    linear-gradient(180deg, #111113 0%, #090a0c 52%, #030304 100%);
+    linear-gradient(180deg, rgba(7, 7, 8, 0.28), rgba(7, 7, 8, 0.78) 52%, rgba(3, 3, 4, 0.94)),
+    radial-gradient(circle at 50% 18%, rgba(245, 238, 217, 0.2), transparent 30%),
+    url("/stillmind-cinema-bg-v3.png");
+  background-position: center;
+  background-size: cover;
 }
 
 .cinema-bg::after {
@@ -37,11 +39,18 @@ textarea {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 68px 68px;
-  mask-image: radial-gradient(circle at center, black 0%, transparent 68%);
-  opacity: 0.28;
+    radial-gradient(circle at 50% 42%, rgba(245, 190, 103, 0.08), transparent 42%),
+    radial-gradient(circle at 50% 95%, rgba(120, 78, 35, 0.16), transparent 34%);
+  opacity: 0.8;
+}
+
+.cinema-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(3, 3, 4, 0.78), transparent 28%, transparent 70%, rgba(3, 3, 4, 0.72)),
+    radial-gradient(circle at 50% 52%, transparent 0%, rgba(3, 3, 4, 0.5) 66%, rgba(3, 3, 4, 0.92) 100%);
 }
 
 .noise-grain {
@@ -63,9 +72,31 @@ textarea {
     radial-gradient(circle, rgba(255, 255, 245, 0.96) 0%, rgba(240, 231, 206, 0.42) 33%, transparent 66%),
     radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 72%);
   box-shadow:
-    0 0 42px rgba(245, 238, 217, 0.34),
-    0 0 100px rgba(245, 238, 217, 0.18);
+    0 0 42px rgba(245, 238, 217, 0.36),
+    0 0 92px rgba(251, 191, 36, 0.2),
+    0 0 130px rgba(245, 158, 11, 0.12);
   animation: breathe 6s ease-in-out infinite;
+}
+
+.film-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.film-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 20%, transparent 80%, rgba(255, 255, 255, 0.04)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 22px);
+  opacity: 0.22;
+}
+
+.film-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .floating-word {
@@ -84,24 +115,24 @@ textarea {
 }
 
 .floating-word-1 {
-  left: 4%;
+  left: 7%;
   top: 22%;
 }
 
 .floating-word-2 {
-  right: 0;
+  right: 7%;
   top: 16%;
   animation-delay: -1.5s;
 }
 
 .floating-word-3 {
-  left: 0;
+  left: 6%;
   bottom: 25%;
   animation-delay: -2.4s;
 }
 
 .floating-word-4 {
-  right: 3%;
+  right: 7%;
   bottom: 21%;
   animation-delay: -3.2s;
 }
@@ -116,6 +147,55 @@ textarea {
   left: 31%;
   bottom: 3%;
   animation-delay: -5s;
+}
+
+@media (max-width: 380px) {
+  .floating-word {
+    max-width: 7.2rem;
+    padding: 0.38rem 0.58rem;
+    font-size: 0.7rem;
+    line-height: 1.05rem;
+  }
+
+  .floating-word-5,
+  .floating-word-6 {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breathing-circle,
+  .floating-word {
+    animation-duration: 12s;
+  }
+}
+
+.panel-enter {
+  animation: panelEnter 0.45s ease forwards;
+}
+
+@keyframes panelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sceneEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes breathe {
