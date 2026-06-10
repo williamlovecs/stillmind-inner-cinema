@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
+import { DisclaimerModal } from "@/components/DisclaimerModal";
 
 type Step = "home" | "cinema" | "perspective" | "observer" | "return";
 type Cinema = CinemaPayload;
@@ -152,7 +153,9 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#090a0c] text-stone-100">
+    <>
+      <DisclaimerModal />
+      <main className="relative min-h-screen overflow-hidden bg-[#090a0c] text-stone-100">
       <div className="cinema-bg" />
       <div className="noise-grain" />
 
@@ -229,6 +232,7 @@ export default function Home() {
         </div>
       </section>
     </main>
+    </>
   );
 }
 
