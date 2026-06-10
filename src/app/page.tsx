@@ -3,6 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
+import { HistoryList } from "@/components/HistoryList";
+import {
+  appendHistory,
+  loadHistory,
+  type HistoryEntry,
+} from "@/lib/history";
 
 type Step = "home" | "cinema" | "perspective" | "observer" | "return";
 type Cinema = CinemaPayload;
@@ -25,6 +31,11 @@ const noiseWords = [
 
 const demoTrigger = "我刚在会上和同事起了冲突，我想立刻反击证明自己没错。";
 const pitchDemoTrigger = "我刚在会上和同事起了冲突，我想立刻反击证明自己没错。";
+const actionOptions = [
+  "喝水 + 走路 3 分钟",
+  "回到当前任务 25 分钟",
+  "先不回复，今天稍后再决定",
+];
 
 export default function Home() {
   const [step, setStep] = useState<Step>("home");
@@ -39,6 +50,14 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationSource, setGenerationSource] =
     useState<GenerationSource>("preset");
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(0);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 一次性从 localStorage 加载历史
+    setHistory(loadHistory());
+  }, []);
 
   // 客户端 preset：AI 没回来时 UI 永远有内容，避免闪屏
   const presetCinema = useMemo(() => getPreset(trigger), [trigger]);
@@ -148,6 +167,19 @@ export default function Home() {
     setStep("observer");
   };
 
+  const completeSession = () => {
+    const updated = appendHistory({
+      trigger: trigger.trim() || "(未填写触发事件)",
+      cinemaTitle: cinema.title,
+      breathCount,
+      thoughtCount,
+      selectedAction: actionOptions[selectedAction] ?? "",
+      source: generationSource,
+    });
+    setHistory(updated);
+    setStep("return");
+  };
+
   const startPitchDemo = () => {
     enterCinema(pitchDemoTrigger);
   };
@@ -218,7 +250,7 @@ export default function Home() {
                 setIsComplete(true);
                 setTimerEndsAt(null);
               }}
-              onReturn={() => setStep("return")}
+              onReturn={completeSession}
             />
           )}
 
@@ -226,12 +258,23 @@ export default function Home() {
             <ReturnPanel
               breathCount={breathCount}
               thoughtCount={thoughtCount}
+              selectedAction={selectedAction}
+              onActionChange={setSelectedAction}
+              historyCount={history.length}
+              onShowHistory={() => setShowHistory(true)}
               onStartAgain={startAgain}
             />
           )}
         </div>
       </section>
     </main>
+    {showHistory && (
+      <HistoryList
+        entries={history}
+        onClose={() => setShowHistory(false)}
+        onCleared={() => setHistory([])}
+      />
+    )}
     </>
   );
 }
@@ -711,18 +754,21 @@ function ObserverPanel({
 function ReturnPanel({
   breathCount,
   thoughtCount,
+  selectedAction,
+  onActionChange,
+  historyCount,
+  onShowHistory,
   onStartAgain,
 }: {
   breathCount: number;
   thoughtCount: number;
+  selectedAction: number;
+  onActionChange: (index: number) => void;
+  historyCount: number;
+  onShowHistory: () => void;
   onStartAgain: () => void;
 }) {
-  const [selectedAction, setSelectedAction] = useState(0);
-  const actions = [
-    "喝水 + 走路 3 分钟",
-    "回到当前任务 25 分钟",
-    "先不回复，今天稍后再决定",
-  ];
+  const actions = actionOptions;
 
   return (
     <div className="panel-enter w-full">
@@ -759,7 +805,7 @@ function ReturnPanel({
               <button
                 key={action}
                 type="button"
-                onClick={() => setSelectedAction(index)}
+                onClick={() => onActionChange(index)}
                 className={`rounded-full border px-4 py-3 text-left text-sm font-medium transition ${
                   selectedAction === index
                     ? "border-[#111113] bg-[#111113] text-stone-100"
@@ -786,6 +832,16 @@ function ReturnPanel({
       >
         再来一次
       </button>
+
+      {historyCount > 0 && (
+        <button
+          type="button"
+          onClick={onShowHistory}
+          className="mt-3 flex h-12 w-full items-center justify-center rounded-full border border-white/10 bg-transparent text-sm text-stone-400 transition hover:border-white/20 hover:text-stone-200"
+        >
+          查看内在电影院历史 · 共 {historyCount} 场
+        </button>
+      )}
     </div>
   );
 }
