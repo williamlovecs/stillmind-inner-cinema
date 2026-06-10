@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
+import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 
-type CinemaPayload = {
-  title: string;
-  innerNoise: string[];
-  scenes: { label: string; line: string }[];
-  roleView: string;
-  audienceView: string;
-  witnessView: string;
-};
+type GenerationSource = "preset" | "stepfun";
 
 const endpoint = "https://api.stepfun.com/v1/chat/completions";
 const model = process.env.STEPFUN_MODEL || "step-3.7-flash";
@@ -45,68 +39,39 @@ function parseJsonContent(content: string) {
   return JSON.parse(jsonText);
 }
 
-function textFallback(trigger: string): CinemaPayload {
-  const isIgnored = /没回|忽视|不理|冷淡|不回|ignored|reply/i.test(trigger);
-  const isConflict = /冲突|吵|反击|批评|指责|证明|conflict|fight|criticized|prove/i.test(
-    trigger,
-  );
+// 简单 in-memory rate limit：每 IP 每分钟 10 次
+// pre-launch 阶段够用，真流量再换 KV / Upstash
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX = 10;
+const rateBuckets = new Map<string, number[]>();
 
-  const preset = isIgnored
-    ? {
-        title: "沉默之后",
-        innerNoise: ["是不是我不重要", "为什么没回应", "我需要答案"],
-        scenes: [
-          "消息没有回应，心里开始收紧。",
-          "念头升起：是不是我不够重要？",
-          "现在坐到观众席，看见这份不安。",
-        ],
-        roleView: "我被忽视了，需要马上确认答案。",
-        audienceView: "一个人正被沉默牵动，想抓住回应。",
-      }
-    : isConflict
-      ? {
-          title: "冲突之后",
-          innerNoise: ["我必须反击", "他们误解我", "我不能输"],
-          scenes: [
-            "冲突刚刚发生，身体还在反应。",
-            "念头升起：我必须立刻反击。",
-            "现在先坐到观众席，看见角色。",
-          ],
-          roleView: "我被推进剧情，想立刻反应。",
-          audienceView: "一个人正在防御，想保护自己的位置。",
-        }
-      : {
-          title: "触发之后",
-          innerNoise: ["我需要马上处理", "哪里不对劲", "我坐不住"],
-          scenes: [
-            "触发刚刚发生，身体还在反应。",
-            "念头升起：我需要马上处理。",
-            "现在先坐到观众席，看见角色。",
-          ],
-          roleView: "我被触动了，想马上做点什么。",
-          audienceView: "一个人正被念头拉走，暂时忘了观看。",
-        };
+function checkRate(ip: string): boolean {
+  const now = Date.now();
+  const bucket = rateBuckets.get(ip) ?? [];
+  const fresh = bucket.filter((ts) => now - ts < RATE_WINDOW_MS);
+  if (fresh.length >= RATE_MAX) {
+    rateBuckets.set(ip, fresh);
+    return false;
+  }
+  fresh.push(now);
+  rateBuckets.set(ip, fresh);
+  return true;
+}
 
-  return {
-    title: preset.title,
-    innerNoise: preset.innerNoise,
-    scenes: preset.scenes.map((line, index) => ({
-      label: `镜头 0${index + 1}`,
-      line: line.slice(0, 42),
-    })),
-    roleView: preset.roleView,
-    audienceView: preset.audienceView,
-    witnessView: `这个反应正在发生。先看见它，再回到当下。`,
-  };
+function clientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  return request.headers.get("x-real-ip") ?? "unknown";
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.STEPFUN_API_KEY;
-
-  if (!apiKey) {
+  const ip = clientIp(request);
+  if (!checkRate(ip)) {
     return NextResponse.json(
-      { error: "STEPFUN_API_KEY is not configured." },
-      { status: 503 },
+      { error: "Too many requests. Try again in a minute." },
+      { status: 429 },
     );
   }
 
@@ -118,6 +83,14 @@ export async function POST(request: Request) {
 
   if (!trigger) {
     return NextResponse.json({ error: "Missing trigger." }, { status: 400 });
+  }
+
+  const apiKey = process.env.STEPFUN_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({
+      cinema: getPreset(trigger),
+      source: "preset" satisfies GenerationSource,
+    });
   }
 
   const controller = new AbortController();
@@ -166,53 +139,58 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       const text = await response.text().catch(() => "");
-      return NextResponse.json(
-        { error: `StepFun request failed: ${response.status}`, detail: text },
-        { status: 502 },
-      );
+      return NextResponse.json({
+        cinema: getPreset(trigger),
+        source: "preset" satisfies GenerationSource,
+        detail: `StepFun request failed: ${response.status} ${text}`.slice(0, 200),
+      });
     }
 
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content;
 
     if (typeof content !== "string") {
-      return NextResponse.json(
-        { error: "StepFun response did not include content." },
-        { status: 502 },
-      );
+      return NextResponse.json({
+        cinema: getPreset(trigger),
+        source: "preset" satisfies GenerationSource,
+        detail: "StepFun response did not include content.",
+      });
     }
 
     let parsed: unknown;
-    let usedFallback = false;
 
     try {
       parsed = parseJsonContent(content);
     } catch {
-      parsed = textFallback(trigger);
-      usedFallback = true;
+      return NextResponse.json({
+        cinema: getPreset(trigger),
+        source: "preset" satisfies GenerationSource,
+        detail: "StepFun response was not valid JSON.",
+      });
     }
 
     if (!isCinemaPayload(parsed)) {
-      return NextResponse.json(
-        { error: "StepFun response did not match cinema schema." },
-        { status: 502 },
-      );
+      return NextResponse.json({
+        cinema: getPreset(trigger),
+        source: "preset" satisfies GenerationSource,
+        detail: "StepFun response did not match cinema schema.",
+      });
     }
 
     return NextResponse.json({
       cinema: parsed,
-      source: usedFallback ? "fallback" : "stepfun",
+      source: "stepfun" satisfies GenerationSource,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? `StepFun generation failed: ${error.message}`
-            : "StepFun generation failed.",
-      },
-      { status: 502 },
-    );
+    const message =
+      error instanceof Error
+        ? `StepFun generation failed: ${error.message}`
+        : "StepFun generation failed.";
+    return NextResponse.json({
+      cinema: getPreset(trigger),
+      source: "preset" satisfies GenerationSource,
+      detail: message.slice(0, 200),
+    });
   } finally {
     clearTimeout(timeout);
   }

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 
 type Step = "home" | "cinema" | "perspective" | "observer" | "return";
-type Cinema = ReturnType<typeof createCinema>;
-type GenerationSource = "mock" | "stepfun" | "fallback";
+type Cinema = CinemaPayload;
+type GenerationSource = "preset" | "stepfun";
 
 const examples = [
   "我被批评了",
@@ -21,83 +22,8 @@ const noiseWords = [
   "我要解释清楚",
 ];
 
-const fallbackTrigger = "我刚在会上和同事起了冲突，我想立刻反击证明自己没错。";
+const demoTrigger = "我刚在会上和同事起了冲突，我想立刻反击证明自己没错。";
 const pitchDemoTrigger = "我刚在会上和同事起了冲突，我想立刻反击证明自己没错。";
-
-function createCinema(trigger: string) {
-  const cleanTrigger = trigger.trim() || fallbackTrigger;
-  const isIgnored = /忽视|没回|不回|ignored|reply/i.test(cleanTrigger);
-  const isConflict = /冲突|吵|争|反击|批评|指责|conflict|fight|criticized/i.test(cleanTrigger);
-  const isProve = /证明|prove|价值|value/i.test(cleanTrigger);
-
-  const title = isIgnored
-    ? "一条没有回应的消息"
-    : isConflict
-      ? "冲突之后的回声"
-      : isProve
-        ? "想被看见的瞬间"
-        : "被触发的片刻";
-
-  const innerNoise = isIgnored
-    ? ["为什么没有回应？", "是不是我不够好？", "我需要一个答案"]
-    : isConflict
-      ? ["我需要为自己辩解", "他们误解了我", "我必须立刻反击"]
-      : isProve
-        ? ["我需要证明自己", "他们必须看见我的价值", "我不能显得弱"]
-        : ["哪里不对劲", "我需要马上解决", "我坐不住"];
-
-  const scenes = isIgnored
-    ? [
-        { label: "镜头 01", line: "沉默出现了，身体开始寻找答案。" },
-        { label: "镜头 02", line: "一个念头升起：是不是我不够好？" },
-        { label: "镜头 03", line: "现在坐到观众席，看见角色，不进入剧情。" },
-      ]
-    : isConflict
-      ? [
-          { label: "镜头 01", line: "冲突刚刚发生，身体还在紧绷。" },
-          { label: "镜头 02", line: "一个念头升起：我必须立刻反击。" },
-          { label: "镜头 03", line: "现在坐到观众席，看见角色，不进入剧情。" },
-        ]
-      : isProve
-        ? [
-            { label: "镜头 01", line: "价值感被触动，注意力开始向外寻找确认。" },
-            { label: "镜头 02", line: "一个念头升起：我必须证明自己。" },
-            { label: "镜头 03", line: "现在坐到观众席，看见角色，不进入剧情。" },
-          ]
-        : [
-            { label: "镜头 01", line: "触发刚刚出现，身体还没有完全安定。" },
-            { label: "镜头 02", line: "一个念头升起：我需要马上解决它。" },
-            { label: "镜头 03", line: "现在坐到观众席，看见角色，不进入剧情。" },
-          ];
-
-  const roleView = isIgnored
-    ? "我被忽视了。我需要得到回应，才知道自己有没有价值。"
-    : isConflict
-      ? "我被攻击了。我必须把话说清楚，否则我就输了。"
-      : isProve
-        ? "我必须证明自己，不然别人就不会看见我的价值。"
-        : "我被触动了。我想立刻做点什么，让这种不安停下来。";
-
-  const audienceView = isIgnored
-    ? "一个人正把沉默解读成否定，并想用回应确认自己的价值。"
-    : isConflict
-      ? "一个人感到被误解，身体进入防御，头脑正在准备反击。"
-      : isProve
-        ? "一个人正在努力保护自己的价值感，想让外界给出确认。"
-        : "一个人正被一段内在剧情拉走，暂时忘了自己也可以观看它。";
-
-  const witnessView =
-    "这个反应正在发生。念头经过你，不需要立刻被解释，也不需要被认同。";
-
-  return {
-    title,
-    innerNoise,
-    scenes,
-    roleView,
-    audienceView,
-    witnessView,
-  };
-}
 
 export default function Home() {
   const [step, setStep] = useState<Step>("home");
@@ -111,10 +37,11 @@ export default function Home() {
   const [liveCinema, setLiveCinema] = useState<Cinema | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationSource, setGenerationSource] =
-    useState<GenerationSource>("mock");
+    useState<GenerationSource>("preset");
 
-  const mockCinema = useMemo(() => createCinema(trigger), [trigger]);
-  const cinema = liveCinema ?? mockCinema;
+  // 客户端 preset：AI 没回来时 UI 永远有内容，避免闪屏
+  const presetCinema = useMemo(() => getPreset(trigger), [trigger]);
+  const cinema = liveCinema ?? presetCinema;
   const progress = Math.min(
     100,
     Math.max(0, ((totalSeconds - secondsLeft) / totalSeconds) * 100),
@@ -140,12 +67,12 @@ export default function Home() {
 
   const generateCinema = async (input: string) => {
     const controller = new AbortController();
-    let didFallback = false;
+    let gaveUpOnLive = false;
     const timeout = window.setTimeout(() => controller.abort(), 9500);
-    const fallbackTimer = window.setTimeout(() => {
-      didFallback = true;
+    const presetTimer = window.setTimeout(() => {
+      gaveUpOnLive = true;
       setLiveCinema(null);
-      setGenerationSource("fallback");
+      setGenerationSource("preset");
       setIsGenerating(false);
     }, 2000);
 
@@ -170,27 +97,27 @@ export default function Home() {
         throw new Error("Missing cinema payload.");
       }
 
-      if (didFallback) {
+      if (gaveUpOnLive) {
         return;
       }
 
       setLiveCinema(data.cinema);
-      setGenerationSource(data.source === "stepfun" ? "stepfun" : "fallback");
+      setGenerationSource(data.source === "stepfun" ? "stepfun" : "preset");
     } catch {
       setLiveCinema(null);
-      setGenerationSource("fallback");
+      setGenerationSource("preset");
     } finally {
       window.clearTimeout(timeout);
-      window.clearTimeout(fallbackTimer);
+      window.clearTimeout(presetTimer);
       setIsGenerating(false);
     }
   };
 
   const enterCinema = (override?: string) => {
-    const input = (override ?? trigger).trim() || fallbackTrigger;
+    const input = (override ?? trigger).trim() || demoTrigger;
     setTrigger(input);
     setLiveCinema(null);
-    setGenerationSource("mock");
+    setGenerationSource("preset");
     setIsGenerating(true);
     setStep("cinema");
     void generateCinema(input);
@@ -206,7 +133,7 @@ export default function Home() {
     setThoughtCount(0);
     setLiveCinema(null);
     setIsGenerating(false);
-    setGenerationSource("mock");
+    setGenerationSource("preset");
     setStep("home");
   };
 
@@ -239,12 +166,12 @@ export default function Home() {
               onTriggerChange={(value) => {
                 setTrigger(value);
                 setLiveCinema(null);
-                setGenerationSource("mock");
+                setGenerationSource("preset");
               }}
               onExampleClick={(value) => {
                 setTrigger(value);
                 setLiveCinema(null);
-                setGenerationSource("mock");
+                setGenerationSource("preset");
               }}
               onEnter={() => enterCinema()}
               onPitchDemo={startPitchDemo}
@@ -436,8 +363,8 @@ function CinemaPanel({
   const sourceLabel =
     source === "stepfun"
       ? "StepFun 实时生成"
-      : source === "fallback"
-        ? "稳定样例兜底"
+      : source === "preset"
+        ? "preset 模式"
         : "正在准备";
 
   useEffect(() => {
