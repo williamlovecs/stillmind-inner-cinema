@@ -57,8 +57,8 @@ export default function PrivacyPage() {
           <Section title="3. 我们不做什么">
             <ul className="ml-4 list-disc space-y-2">
               <li>不卖你的数据</li>
-              <li>不用你的输入训练 AI 模型</li>
-              <li>不与任何第三方分享你的输入</li>
+              <li>StillMind 不用你的输入训练自己的模型</li>
+              <li>除完成单次生成所需的第三方 AI 服务外，不向其他第三方提供你的输入</li>
               <li>不用 cookies 跨站跟踪你</li>
               <li>不投放广告</li>
             </ul>

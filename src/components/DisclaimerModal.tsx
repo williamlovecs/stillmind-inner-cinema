@@ -65,17 +65,17 @@ export function DisclaimerModal() {
                 如果你正在经历危机
               </p>
               <p className="mt-1 text-sm leading-6 text-stone-300">
-                抑郁、焦虑、有自伤或伤人倾向，请直接联系专业支持：
+                如果你有自伤、伤人或其他紧急危险，请不要继续使用本工具：
               </p>
               <ul className="mt-2 space-y-1 text-sm text-amber-100/85">
-                <li>· 全国心理援助热线：400-161-9995</li>
-                <li>· 北京心理危机研究与干预中心：010-82951332</li>
-                <li>· 紧急情况请拨 120 或当地急救</li>
+                <li>· 立即联系当地急救、警方或专业危机支持</li>
+                <li>· 同时联系一位可信任、能陪在你身边的人</li>
               </ul>
             </div>
 
             <p>
-              你输入的 trigger 文字，仅在你点击「进入内在电影」时发送给我们配置的 AI（如果有配置）用于生成分镜；不会用于训练，也不会与第三方分享。
+              如果配置了第三方 AI，你输入的 trigger 文字会被发送给该服务完成单次分镜生成；
+              StillMind 自身不持久化这段输入。第三方处理方式以其服务条款和隐私政策为准。
             </p>
 
             <p className="text-xs text-stone-500">
