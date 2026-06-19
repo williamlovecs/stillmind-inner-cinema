@@ -7,6 +7,8 @@ import { HistoryList } from "@/components/HistoryList";
 import {
   appendHistory,
   loadHistory,
+  updateHistoryEntry,
+  type DistanceAfter,
   type HistoryEntry,
 } from "@/lib/history";
 
@@ -52,7 +54,10 @@ export default function Home() {
     useState<GenerationSource>("preset");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showHistory, setShowHistory] = useState(false);
-  const [selectedAction, setSelectedAction] = useState(0);
+  const [selectedAction, setSelectedAction] = useState<number | null>(null);
+  const [distanceAfter, setDistanceAfter] = useState<DistanceAfter | null>(null);
+  const [sessionHistoryId, setSessionHistoryId] = useState<string | null>(null);
+  const [feedbackCopied, setFeedbackCopied] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- 一次性从 localStorage 加载历史
@@ -154,6 +159,10 @@ export default function Home() {
     setLiveCinema(null);
     setIsGenerating(false);
     setGenerationSource("preset");
+    setSelectedAction(null);
+    setDistanceAfter(null);
+    setSessionHistoryId(null);
+    setFeedbackCopied(false);
     setStep("home");
   };
 
@@ -173,11 +182,58 @@ export default function Home() {
       cinemaTitle: cinema.title,
       breathCount,
       thoughtCount,
-      selectedAction: actionOptions[selectedAction] ?? "",
+      selectedAction:
+        selectedAction === null ? "" : (actionOptions[selectedAction] ?? ""),
+      distanceAfter: distanceAfter ?? undefined,
       source: generationSource,
     });
     setHistory(updated);
+    setSessionHistoryId(updated[0]?.id ?? null);
     setStep("return");
+  };
+
+  const changeSelectedAction = (index: number) => {
+    setSelectedAction(index);
+    setFeedbackCopied(false);
+    if (sessionHistoryId) {
+      setHistory(
+        updateHistoryEntry(sessionHistoryId, {
+          selectedAction: actionOptions[index] ?? "",
+        }),
+      );
+    }
+  };
+
+  const changeDistanceAfter = (value: DistanceAfter) => {
+    setDistanceAfter(value);
+    setFeedbackCopied(false);
+    if (sessionHistoryId) {
+      setHistory(updateHistoryEntry(sessionHistoryId, { distanceAfter: value }));
+    }
+  };
+
+  const copySessionFeedback = async () => {
+    if (!distanceAfter) {
+      return;
+    }
+    const distanceLabel =
+      distanceAfter === "yes" ? "有" : distanceAfter === "some" ? "一点" : "没有";
+    const actionLabel =
+      selectedAction === null ? "尚未选择" : (actionOptions[selectedAction] ?? "尚未选择");
+    const summary = [
+      "StillMind v1 体验反馈",
+      `和刚才的情绪之间多了一点距离：${distanceLabel}`,
+      `呼吸锚定：${breathCount} 次；看见念头：${thoughtCount} 次`,
+      `下一步行动：${actionLabel}`,
+      "一句话补充：",
+    ].join("\n");
+
+    try {
+      await navigator.clipboard.writeText(summary);
+      setFeedbackCopied(true);
+    } catch {
+      setFeedbackCopied(false);
+    }
   };
 
   const startPitchDemo = () => {
@@ -259,7 +315,11 @@ export default function Home() {
               breathCount={breathCount}
               thoughtCount={thoughtCount}
               selectedAction={selectedAction}
-              onActionChange={setSelectedAction}
+              distanceAfter={distanceAfter}
+              feedbackCopied={feedbackCopied}
+              onActionChange={changeSelectedAction}
+              onDistanceChange={changeDistanceAfter}
+              onCopyFeedback={copySessionFeedback}
               historyCount={history.length}
               onShowHistory={() => setShowHistory(true)}
               onStartAgain={startAgain}
@@ -755,15 +815,23 @@ function ReturnPanel({
   breathCount,
   thoughtCount,
   selectedAction,
+  distanceAfter,
+  feedbackCopied,
   onActionChange,
+  onDistanceChange,
+  onCopyFeedback,
   historyCount,
   onShowHistory,
   onStartAgain,
 }: {
   breathCount: number;
   thoughtCount: number;
-  selectedAction: number;
+  selectedAction: number | null;
+  distanceAfter: DistanceAfter | null;
+  feedbackCopied: boolean;
   onActionChange: (index: number) => void;
+  onDistanceChange: (value: DistanceAfter) => void;
+  onCopyFeedback: () => void;
   historyCount: number;
   onShowHistory: () => void;
   onStartAgain: () => void;
@@ -796,6 +864,31 @@ function ReturnPanel({
             </p>
           </div>
         </div>
+        <div className="mt-6 rounded-[1.4rem] border border-violet-200/15 bg-violet-100/[0.06] p-5">
+          <p className="text-sm font-medium text-stone-100">
+            现在，你和刚才的情绪之间有多一点距离吗？
+          </p>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {([
+              ["yes", "有"],
+              ["some", "一点"],
+              ["no", "没有"],
+            ] as const).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => onDistanceChange(value)}
+                className={`rounded-full border px-3 py-2.5 text-sm transition ${
+                  distanceAfter === value
+                    ? "border-violet-200/60 bg-violet-200/15 text-violet-50"
+                    : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-white/20"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="mt-6 rounded-[1.4rem] border border-stone-200/15 bg-stone-100 p-5 text-[#111113]">
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-stone-500">
             下一步回到现实
@@ -816,14 +909,26 @@ function ReturnPanel({
               </button>
             ))}
           </div>
-          <p className="mt-4 text-sm leading-6 text-stone-600">
-            你刚刚从角色视角退回了观众位。
-          </p>
+          {selectedAction !== null && (
+            <p className="mt-4 text-sm leading-6 text-stone-600">
+              你刚刚从角色视角退回了观众位。
+            </p>
+          )}
         </div>
         <p className="mt-6 text-base leading-7 text-stone-300">
           StillMind 不告诉你“你是谁”。它只帮助你看见：此刻有什么正在经过你。
         </p>
       </div>
+
+      {distanceAfter && (
+        <button
+          type="button"
+          onClick={onCopyFeedback}
+          className="mt-4 flex h-12 w-full items-center justify-center rounded-full border border-violet-200/20 bg-violet-100/[0.07] text-sm font-medium text-violet-100 transition hover:bg-violet-100/[0.12]"
+        >
+          {feedbackCopied ? "反馈已复制" : "复制本次反馈"}
+        </button>
+      )}
 
       <button
         type="button"

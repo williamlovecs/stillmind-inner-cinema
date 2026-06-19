@@ -95,6 +95,16 @@ export function HistoryList({
                         → {entry.selectedAction}
                       </span>
                     )}
+                    {entry.distanceAfter && (
+                      <span className="rounded-full border border-violet-200/15 bg-violet-100/5 px-2 py-0.5 text-violet-100/75">
+                        距离感：
+                        {entry.distanceAfter === "yes"
+                          ? "有"
+                          : entry.distanceAfter === "some"
+                            ? "一点"
+                            : "没有"}
+                      </span>
+                    )}
                   </div>
                 </li>
               ))}

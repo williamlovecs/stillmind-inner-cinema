@@ -27,7 +27,7 @@
 
 ## V2 — 产品 / 设计同行
 
-> 做 StillMind 12 周了，v1 想找 5-10 个真人跑一遍，看一个真问题：
+> StillMind v1 想找 5-10 个真人跑一遍，只看一个真问题：
 > "Observer Mode 倒计时的时候，你有没有真安静 5 秒？"
 > <https://stillmind-inner-cinema.vercel.app>
 > 4 分钟流程，跑完跟我说一句感受就行，不填表。

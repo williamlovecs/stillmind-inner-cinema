@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StillMind: Inner Cinema
 
-## Getting Started
+StillMind 是一个非临床的情绪觉察工具。它把一次情绪触发转成三幕第三人称“内在电影”，再通过视角切换、60 秒观察者模式和一个现实行动，帮助用户在回应之前退回一步。
 
-First, run the development server:
+## 核心流程
+
+`输入触发 → 三幕内在电影 → 角色/观众/见证视角 → Observer Mode → 回归行动`
+
+## 产品边界
+
+- 不诊断，不治疗，不定义用户。
+- 不宣称替代心理咨询、医疗或紧急支持。
+- 用户历史默认只保存在浏览器 `localStorage`。
+- StepFun 是可选增强；没有 API key 时使用稳定 preset，完整流程仍可运行。
+
+## 本地运行
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+打开 <http://localhost:3000>。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 环境变量
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+复制 `.env.example` 为 `.env.local`：
 
-## Learn More
+```env
+STEPFUN_API_KEY=
+STEPFUN_MODEL=step-3.7-flash
+```
 
-To learn more about Next.js, take a look at the following resources:
+`STEPFUN_API_KEY` 可以留空。生产种子测试建议先用 preset 模式，减少网络与生成波动。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 验证
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx tsc --noEmit
+npm run lint
+npm run build
+```
 
-## Deploy on Vercel
+## 部署与 GTM
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 部署说明：[VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md)
+- 种子用户邀约：[INVITATIONS.md](./INVITATIONS.md)
+- GTM v1 决策与指标：[GTM_V1.md](./GTM_V1.md)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 数据与法律页面
+
+- `/privacy`
+- `/terms`
+
+正式规模化前，需要把 GitHub 反馈入口替换成长期支持邮箱，并重新审核隐私政策与第三方 AI 数据条款。

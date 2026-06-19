@@ -37,7 +37,7 @@ export default function PrivacyPage() {
                 我们不持久化你的输入。
               </li>
               <li>
-                <strong className="text-stone-100">本地统计</strong>：呼气次数、念头经过次数、选中动作、生成方式（preset / stepfun）。
+                <strong className="text-stone-100">本地统计</strong>：呼气次数、念头经过次数、选中动作、距离感反馈、生成方式（preset / stepfun）。
                 这些只存放在你浏览器的 localStorage，<strong>不上传</strong>。
               </li>
               <li>
@@ -76,7 +76,8 @@ export default function PrivacyPage() {
             <p>
               如果服务端配置了 <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm">STEPFUN_API_KEY</code>，
               你输入的 trigger 会被发送到 StepFun 的 API 用于生成分镜。
-              这是一次性请求，不在他们那边持久化用于训练（详见 StepFun 自己的隐私政策）。
+              StillMind 不在自己的服务中持久化这段输入；第三方如何处理请求，
+              以 StepFun 当时有效的服务条款和隐私政策为准。
             </p>
             <p>
               即使没配 key，StillMind 也能完整使用——它会使用本地预设的内在电影模板。
@@ -91,14 +92,14 @@ export default function PrivacyPage() {
 
           <Section title="7. 联系方式">
             <p>
-              邮件：<a
+              产品问题或隐私请求：<a
                 className="text-amber-100/90 underline underline-offset-2"
-                href="mailto:hello@stillmind.app"
+                href="https://github.com/williamlovecs/stillmind-inner-cinema/issues"
+                target="_blank"
+                rel="noreferrer"
               >
-                hello@stillmind.app
+                GitHub 反馈入口
               </a>
-              <br />
-              （这是占位邮箱，上线前请替换为你的真实联系邮箱。）
             </p>
           </Section>
         </div>

@@ -82,14 +82,14 @@ export default function TermsPage() {
 
           <Section title="7. 联系方式">
             <p>
-              邮件：<a
+              产品问题或条款请求：<a
                 className="text-amber-100/90 underline underline-offset-2"
-                href="mailto:hello@stillmind.app"
+                href="https://github.com/williamlovecs/stillmind-inner-cinema/issues"
+                target="_blank"
+                rel="noreferrer"
               >
-                hello@stillmind.app
+                GitHub 反馈入口
               </a>
-              <br />
-              （占位邮箱，上线前请替换。）
             </p>
           </Section>
         </div>

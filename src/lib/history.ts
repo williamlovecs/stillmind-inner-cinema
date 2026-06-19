@@ -9,8 +9,11 @@ export type HistoryEntry = {
   breathCount: number;
   thoughtCount: number;
   selectedAction: string;
+  distanceAfter?: DistanceAfter;
   source: "preset" | "stepfun";
 };
+
+export type DistanceAfter = "yes" | "some" | "no";
 
 const STORAGE_KEY = "stillmind-history-v1";
 const MAX_ENTRIES = 30;
@@ -28,6 +31,10 @@ function isHistoryEntry(value: unknown): value is HistoryEntry {
     typeof v.breathCount === "number" &&
     typeof v.thoughtCount === "number" &&
     typeof v.selectedAction === "string" &&
+    (v.distanceAfter === undefined ||
+      v.distanceAfter === "yes" ||
+      v.distanceAfter === "some" ||
+      v.distanceAfter === "no") &&
     (v.source === "preset" || v.source === "stepfun")
   );
 }
@@ -74,6 +81,22 @@ export function appendHistory(
   } catch {
     return [next];
   }
+}
+
+export function updateHistoryEntry(
+  id: string,
+  patch: Partial<Pick<HistoryEntry, "selectedAction" | "distanceAfter">>,
+): HistoryEntry[] {
+  const current = loadHistory();
+  const updated = current.map((entry) =>
+    entry.id === id ? { ...entry, ...patch } : entry,
+  );
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  } catch {
+    // The in-memory result still lets the current session remain consistent.
+  }
+  return updated;
 }
 
 export function clearHistory(): void {
