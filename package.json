@@ -2,25 +2,49 @@
   "name": "stillmind-inner-cinema",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.19.4"
+  },
+  "workspaces": [
+    "mobile",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint:web": "eslint src packages test",
+    "lint:mobile": "npm --workspace mobile run lint",
+    "lint": "npm run lint:web && npm run lint:mobile",
+    "typecheck:web": "tsc --noEmit",
+    "typecheck:domain": "tsc -p packages/domain/tsconfig.json --noEmit",
+    "typecheck:content": "tsc -p packages/content/tsconfig.json --noEmit",
+    "typecheck:mobile": "tsc -p mobile/tsconfig.json --noEmit",
+    "typecheck": "npm run typecheck:web && npm run typecheck:domain && npm run typecheck:content && npm run typecheck:mobile",
+    "test:domain": "tsx --test packages/domain/test/routing.test.ts",
+    "test:content": "tsx --test packages/content/test/catalog.test.ts",
+    "test:api": "tsx --test test/api-cinema.test.ts",
+    "test:analytics": "tsx --test test/analytics.test.ts",
+    "test:timeline": "tsx --test test/timeline.test.ts",
+    "test": "npm run test:domain && npm run test:content && npm run test:api && npm run test:analytics && npm run test:timeline"
   },
   "dependencies": {
+    "@stillmind/domain": "*",
     "next": "16.2.7",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@expo/metro-runtime": "^56.0.15",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "expo-router": "~56.2.11",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

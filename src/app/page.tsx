@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
+import { containsHighRiskLanguage } from "@stillmind/domain";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { HistoryList } from "@/components/HistoryList";
 import {
@@ -12,7 +13,7 @@ import {
   type HistoryEntry,
 } from "@/lib/history";
 
-type Step = "home" | "cinema" | "perspective" | "observer" | "return";
+type Step = "home" | "cinema" | "perspective" | "observer" | "return" | "support";
 type Cinema = CinemaPayload;
 type GenerationSource = "preset" | "stepfun";
 
@@ -141,6 +142,11 @@ export default function Home() {
   const enterCinema = (override?: string) => {
     const input = (override ?? trigger).trim() || demoTrigger;
     setTrigger(input);
+    if (containsHighRiskLanguage(input)) {
+      setIsGenerating(false);
+      setStep("support");
+      return;
+    }
     setLiveCinema(null);
     setGenerationSource("preset");
     setIsGenerating(true);
@@ -325,6 +331,8 @@ export default function Home() {
               onStartAgain={startAgain}
             />
           )}
+
+          {step === "support" && <SupportPanel onBack={startAgain} />}
         </div>
       </section>
     </main>
@@ -336,6 +344,30 @@ export default function Home() {
       />
     )}
     </>
+  );
+}
+
+function SupportPanel({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="panel-enter w-full space-y-7">
+      <p className="text-sm text-violet-200">先回到现实支持</p>
+      <h1 className="text-4xl font-semibold leading-tight text-stone-50">
+        这不是一个人扛住的时刻。
+      </h1>
+      <p className="text-base leading-7 text-stone-300">
+        如果你有即时危险、医疗紧急情况，或无法保证自己的安全，请立即联系当地紧急服务、前往急诊，或让可信任的人陪在你身边。
+      </p>
+      <div className="rounded-lg border border-amber-200/20 bg-amber-100/5 p-5 text-sm leading-6 text-stone-300">
+        StillMind 只提供一般性的短暂停顿与觉察提示，不提供诊断、治疗或危机处置。
+      </div>
+      <button
+        type="button"
+        onClick={onBack}
+        className="w-full rounded-full border border-violet-200/25 bg-violet-300/10 px-5 py-4 font-semibold text-violet-100"
+      >
+        返回首页
+      </button>
+    </div>
   );
 }
 

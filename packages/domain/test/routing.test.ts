@@ -1,0 +1,192 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+  buildWeeklyReview,
+  containsHighRiskLanguage,
+  evaluateSafety,
+  METHOD_CATALOG,
+  validPracticeSessions,
+  recommendMethods,
+  type DurationMinutes,
+  type PracticeSession,
+  type StateMode,
+} from "../src/index";
+
+test("high activation and impulsive mode prefer an acute eyes-open method", () => {
+  const result = recommendMethods({
+    activation: 5,
+    mode: "impulsive",
+    duration: 1,
+    outcome: "pause",
+    eyesOpenPreferred: true,
+    bodyFocusAllowed: false,
+    breathChangeAllowed: false,
+  });
+  assert.equal(result.kind, "practice");
+  if (result.kind === "practice") assert.equal(result.primary.id, "logout-pause");
+});
+
+test("safety gate always wins over favorites", () => {
+  const result = recommendMethods({
+    activation: 2,
+    mode: "looping",
+    duration: 3,
+    outcome: "distance",
+    history: { "inner-cinema": { favorite: true, betterCount: 10 } },
+    safety: { cannotStaySafe: true },
+  });
+  assert.equal(result.kind, "support");
+});
+
+test("medical emergency has highest safety priority", () => {
+  assert.deepEqual(evaluateSafety({ medicalEmergency: true, immediateDanger: true }), {
+    allowed: false,
+    reason: "medical-emergency",
+    action: "medical-help",
+  });
+});
+
+test("high-risk language is detected before reflective exercises", () => {
+  assert.equal(containsHighRiskLanguage("我现在无法保证自己安全"), true);
+  assert.equal(containsHighRiskLanguage("I might hurt myself tonight"), true);
+  assert.equal(containsHighRiskLanguage("我很生气，想先暂停回复"), false);
+});
+
+test("comfort constraints exclude body and breath practices", () => {
+  const result = recommendMethods({
+    activation: 3,
+    mode: "tense",
+    duration: 3,
+    outcome: "settle",
+    bodyFocusAllowed: false,
+    breathChangeAllowed: false,
+  });
+  assert.equal(result.kind, "practice");
+  if (result.kind !== "practice") return;
+  for (const method of [result.primary, ...result.alternatives]) {
+    assert.equal(method.bodyFocus, false);
+    assert.equal(method.breathChange, false);
+  }
+});
+
+test("eyes-open preference and high activation exclude ineligible methods", () => {
+  const result = recommendMethods({
+    activation: 4,
+    mode: "hurt",
+    duration: 3,
+    outcome: "pause",
+    eyesOpenPreferred: true,
+  });
+  assert.equal(result.kind, "practice");
+  if (result.kind !== "practice") return;
+  for (const method of [result.primary, ...result.alternatives]) {
+    assert.equal(method.eyesOpen, true);
+    assert.equal(method.acuteEligible, true);
+  }
+});
+
+test("every supported mode and duration produces a known practice", () => {
+  const modes: StateMode[] = ["looping", "tense", "impulsive", "numb", "hurt", "curious"];
+  const durations: DurationMinutes[] = [1, 3, 5, 10];
+  for (const mode of modes) {
+    for (const duration of durations) {
+      const result = recommendMethods({ activation: 2, mode, duration, outcome: "choose" });
+      assert.equal(result.kind, "practice");
+      if (result.kind === "practice") {
+        assert.equal(METHOD_CATALOG.some((method) => method.id === result.primary.id), true);
+      }
+    }
+  }
+});
+
+test("a favorite cannot bypass explicit method hiding", () => {
+  const result = recommendMethods({
+    activation: 2,
+    mode: "looping",
+    duration: 3,
+    outcome: "distance",
+    hiddenMethodIds: ["inner-cinema"],
+    history: { "inner-cinema": { favorite: true, betterCount: 99 } },
+  });
+  assert.equal(result.kind, "practice");
+  if (result.kind === "practice") {
+    assert.notEqual(result.primary.id, "inner-cinema");
+    assert.equal(result.alternatives.some((method) => method.id === "inner-cinema"), false);
+  }
+});
+
+test("weekly review excludes sessions outside the interval and hides low-sample averages", () => {
+  const sessions: PracticeSession[] = [
+    {
+      id: "a",
+      schemaVersion: 1,
+      startedAt: "2026-06-20T10:00:00.000Z",
+      status: "completed",
+      mode: "looping",
+      methodId: "inner-cinema",
+      durationSeconds: 60,
+      activationBefore: 4,
+      activationAfter: 2,
+      result: "better",
+      contentVersion: "1",
+    },
+    {
+      id: "old",
+      schemaVersion: 1,
+      startedAt: "2026-06-01T10:00:00.000Z",
+      status: "completed",
+      mode: "tense",
+      methodId: "paced-breath",
+      durationSeconds: 60,
+      result: "same",
+      contentVersion: "1",
+    },
+  ];
+  const review = buildWeeklyReview(sessions, new Date("2026-06-19T00:00:00.000Z"));
+  assert.equal(review.sessions, 1);
+  assert.equal(review.results.better, 1);
+  assert.equal(review.averageActivationChange, undefined);
+});
+
+test("weekly review ignores malformed dates and reports an average only with enough samples", () => {
+  const base: Omit<PracticeSession, "id" | "startedAt" | "activationBefore" | "activationAfter"> = {
+    schemaVersion: 1,
+    status: "completed",
+    mode: "tense",
+    methodId: "paced-breath",
+    durationSeconds: 60,
+    result: "better",
+    contentVersion: "1",
+  };
+  const sessions: PracticeSession[] = [
+    { ...base, id: "a", startedAt: "2026-06-20T10:00:00.000Z", activationBefore: 5, activationAfter: 3 },
+    { ...base, id: "b", startedAt: "2026-06-21T10:00:00.000Z", activationBefore: 4, activationAfter: 3 },
+    { ...base, id: "bad", startedAt: "not-a-date", activationBefore: 5, activationAfter: 1 },
+  ];
+  const review = buildWeeklyReview(sessions, new Date("2026-06-19T00:00:00.000Z"));
+  assert.equal(review.sessions, 2);
+  assert.equal(review.completed, 2);
+  assert.equal(review.averageActivationChange, 1.5);
+});
+
+test("stored-session validation drops malformed and unknown records", () => {
+  const valid: PracticeSession = {
+    id: "valid",
+    schemaVersion: 1,
+    startedAt: "2026-06-20T10:00:00.000Z",
+    status: "completed",
+    mode: "looping",
+    methodId: "inner-cinema",
+    durationSeconds: 60,
+    result: "better",
+    contentVersion: "1",
+  };
+  const sessions = validPracticeSessions([
+    valid,
+    { ...valid, id: "bad-method", methodId: "diagnose-me" },
+    { ...valid, id: "bad-date", startedAt: "yesterday-ish" },
+    { ...valid, id: "bad-rating", activationBefore: 9 },
+    null,
+  ]);
+  assert.deepEqual(sessions, [valid]);
+});

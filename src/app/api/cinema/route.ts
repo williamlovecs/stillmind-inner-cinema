@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server";
+import { containsHighRiskLanguage } from "@stillmind/domain";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 
 type GenerationSource = "preset" | "stepfun";
 
 const endpoint = "https://api.stepfun.com/v1/chat/completions";
 const model = process.env.STEPFUN_MODEL || "step-3.7-flash";
+const MAX_BODY_BYTES = 4096;
+const MAX_TRIGGER_LENGTH = 500;
+const PROHIBITED_OUTPUT = /抑郁症|焦虑症|人格障碍|创伤后|你就是|你属于|diagnos|personality disorder/i;
+
+function compact(value: string, max: number): string {
+  return value.trim().slice(0, max);
+}
 
 function isCinemaPayload(value: unknown): value is CinemaPayload {
   if (!value || typeof value !== "object") {
@@ -32,6 +40,32 @@ function isCinemaPayload(value: unknown): value is CinemaPayload {
   );
 }
 
+function normalizeCinema(value: unknown): CinemaPayload | undefined {
+  if (!isCinemaPayload(value)) return undefined;
+  const cinema: CinemaPayload = {
+    title: compact(value.title, 24),
+    innerNoise: value.innerNoise.slice(0, 4).map((line) => compact(line, 24)).filter(Boolean),
+    scenes: value.scenes.slice(0, 3).map((scene, index) => ({
+      label: compact(scene.label, 16) || `镜头 0${index + 1}`,
+      line: compact(scene.line, 56),
+    })).filter((scene) => scene.line),
+    roleView: compact(value.roleView, 60),
+    audienceView: compact(value.audienceView, 72),
+    witnessView: compact(value.witnessView, 60),
+  };
+  const allText = [cinema.title, ...cinema.innerNoise, ...cinema.scenes.map((scene) => scene.line), cinema.roleView, cinema.audienceView, cinema.witnessView].join(" ");
+  if (!cinema.title || cinema.scenes.length < 2 || PROHIBITED_OUTPUT.test(allText)) return undefined;
+  return cinema;
+}
+
+function json(data: unknown, status = 200) {
+  return NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
+}
+
+function presetResponse(trigger: string) {
+  return json({ cinema: getPreset(trigger), source: "preset" satisfies GenerationSource });
+}
+
 function parseJsonContent(content: string) {
   const trimmed = content.trim();
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
@@ -47,6 +81,11 @@ const rateBuckets = new Map<string, number[]>();
 
 function checkRate(ip: string): boolean {
   const now = Date.now();
+  if (rateBuckets.size > 2000) {
+    for (const [key, timestamps] of rateBuckets) {
+      if (!timestamps.some((timestamp) => now - timestamp < RATE_WINDOW_MS)) rateBuckets.delete(key);
+    }
+  }
   const bucket = rateBuckets.get(ip) ?? [];
   const fresh = bucket.filter((ts) => now - ts < RATE_WINDOW_MS);
   if (fresh.length >= RATE_MAX) {
@@ -69,28 +108,27 @@ function clientIp(request: Request): string {
 export async function POST(request: Request) {
   const ip = clientIp(request);
   if (!checkRate(ip)) {
-    return NextResponse.json(
-      { error: "Too many requests. Try again in a minute." },
-      { status: 429 },
-    );
+    return json({ error: "rate-limit" }, 429);
   }
+
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) return json({ error: "payload-too-large" }, 413);
 
   const body = (await request.json().catch(() => null)) as {
     trigger?: unknown;
   } | null;
   const trigger =
-    typeof body?.trigger === "string" ? body.trigger.trim().slice(0, 700) : "";
+    typeof body?.trigger === "string" ? body.trigger.trim().slice(0, MAX_TRIGGER_LENGTH) : "";
 
   if (!trigger) {
-    return NextResponse.json({ error: "Missing trigger." }, { status: 400 });
+    return json({ error: "missing-trigger" }, 400);
   }
+
+  if (containsHighRiskLanguage(trigger)) return json({ error: "safety-boundary" }, 422);
 
   const apiKey = process.env.STEPFUN_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({
-      cinema: getPreset(trigger),
-      source: "preset" satisfies GenerationSource,
-    });
+    return presetResponse(trigger);
   }
 
   const controller = new AbortController();
@@ -138,23 +176,14 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      return NextResponse.json({
-        cinema: getPreset(trigger),
-        source: "preset" satisfies GenerationSource,
-        detail: `StepFun request failed: ${response.status} ${text}`.slice(0, 200),
-      });
+      return presetResponse(trigger);
     }
 
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content;
 
     if (typeof content !== "string") {
-      return NextResponse.json({
-        cinema: getPreset(trigger),
-        source: "preset" satisfies GenerationSource,
-        detail: "StepFun response did not include content.",
-      });
+      return presetResponse(trigger);
     }
 
     let parsed: unknown;
@@ -162,35 +191,18 @@ export async function POST(request: Request) {
     try {
       parsed = parseJsonContent(content);
     } catch {
-      return NextResponse.json({
-        cinema: getPreset(trigger),
-        source: "preset" satisfies GenerationSource,
-        detail: "StepFun response was not valid JSON.",
-      });
+      return presetResponse(trigger);
     }
 
-    if (!isCinemaPayload(parsed)) {
-      return NextResponse.json({
-        cinema: getPreset(trigger),
-        source: "preset" satisfies GenerationSource,
-        detail: "StepFun response did not match cinema schema.",
-      });
-    }
+    const cinema = normalizeCinema(parsed);
+    if (!cinema) return presetResponse(trigger);
 
-    return NextResponse.json({
-      cinema: parsed,
+    return json({
+      cinema,
       source: "stepfun" satisfies GenerationSource,
     });
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? `StepFun generation failed: ${error.message}`
-        : "StepFun generation failed.";
-    return NextResponse.json({
-      cinema: getPreset(trigger),
-      source: "preset" satisfies GenerationSource,
-      detail: message.slice(0, 200),
-    });
+  } catch {
+    return presetResponse(trigger);
   } finally {
     clearTimeout(timeout);
   }
