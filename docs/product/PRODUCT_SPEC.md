@@ -32,6 +32,7 @@ The initial audience is adults who are generally functional but become caught in
 - Recommended method plus two alternatives.
 - Session player with pause, stop, accessibility alternative, and haptic rhythm where appropriate.
 - Before/after check and grounded action.
+- If a method feels worse or is stopped, the user can immediately reduce that method in future recommendations without losing manual access in the method library.
 
 ### Practices
 
@@ -73,6 +74,7 @@ The user can exit at every state. Exiting is recorded only as a local session ou
 
 - Deterministic rules select an eligible set.
 - A local preference score ranks eligible methods using explicit favorites, completions, and self-reported results.
+- Negative self-reports never become an identity label; they only lower future ranking and can prompt an explicit "reduce recommendation" control.
 - AI may generate an Inner Cinema scene or weekly narrative only after opt-in, with deterministic fallback.
 - AI never decides safety eligibility, diagnosis, or identity-level interpretation.
 

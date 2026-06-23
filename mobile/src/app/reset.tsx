@@ -23,7 +23,7 @@ function parseActivation(value?: string): 1 | 2 | 3 | 4 | 5 { const n = Number(v
 
 export default function ResetScreen() {
   const params = useLocalSearchParams<{ mode?: StateMode; methodId?: MethodId; duration?: string; activation?: string; outcome?: DesiredOutcome; direct?: string }>();
-  const { preferences, sessions, addSession } = useApp();
+  const { preferences, sessions, addSession, updatePreferences } = useApp();
   const [phase, setPhase] = useState<Phase>("recommend");
   const [mode] = useState<StateMode>(params.mode ?? "looping");
   const [activationBefore, setActivationBefore] = useState(parseActivation(params.activation));
@@ -44,6 +44,7 @@ export default function ResetScreen() {
   const recommendedId = recommendation.kind === "practice" ? recommendation.primary.id : "grounded-action";
   const [methodId, setMethodId] = useState<MethodId>(params.methodId ?? recommendedId);
   const method = METHOD_BY_ID.get(methodId)!;
+  const methodHidden = preferences.hiddenMethodIds.includes(methodId);
   const basePractice = getPracticeVariant(methodId, duration);
   const practiceMinutes = basePractice?.minutes ?? duration;
   const [generatedPractice, setGeneratedPractice] = useState<typeof basePractice>();
@@ -209,10 +210,16 @@ export default function ResetScreen() {
     setPhase("done");
   };
 
+  const hideCurrentMethod = async () => {
+    if (methodHidden) return;
+    await updatePreferences({ hiddenMethodIds: [...preferences.hiddenMethodIds, methodId] });
+    track("method_preference_changed", { method_id: methodId, preference: "hidden", enabled: true });
+  };
+
   if (phase === "support") return <SupportView onBack={() => setPhase("recommend")} />;
   if (phase === "practice" && practice) return <PracticePlayer methodTitle={method.title} practice={practice} stepIndex={stepIndex} seconds={seconds} paused={paused} onPause={togglePause} onStop={() => { track("practice_ended", { method_id: methodId, status: "stopped", elapsed_bucket: stepIndex === 0 ? "under_half" : "half_or_more" }); setResult("stopped"); setPhase("check"); }} />;
   if (phase === "check") return <CheckView methodTitle={method.title} result={result} activation={activationAfter} onResult={setResult} onActivation={setActivationAfter} onNext={() => setPhase("action")} />;
-  if (phase === "action") return <ActionView action={action} onAction={setAction} onComplete={complete} />;
+  if (phase === "action") return <ActionView action={action} onAction={setAction} onComplete={complete} methodAdjustment={result === "worse" || result === "stopped" ? { methodTitle: method.title, hidden: methodHidden, onHideMethod: hideCurrentMethod } : undefined} />;
   if (phase === "done") return <DoneView action={action} onReturn={() => router.replace("/(tabs)")} />;
 
   return (
@@ -263,8 +270,8 @@ function CheckView({ methodTitle, result, activation, onResult, onActivation, on
   return <Screen><TopBar title={methodTitle} onClose={() => router.back()} /><View style={styles.centerCopy}><Text style={type.display}>现在，和刚才相比呢？</Text><Text style={type.body}>没有正确答案。“更不舒服”也会帮助 StillMind 少推荐这种方法。</Text></View><View style={styles.stack}>{([['better','多了一点选择'],['same','差不多'],['worse','更不舒服'],['stopped','我停止了']] as [SessionResult,string][]).map(([value,label]) => <Chip key={value} label={label} selected={result === value} onPress={() => onResult(value)} />)}</View><Text style={type.label}>此刻强烈程度</Text><View style={styles.row}>{([1,2,3,4,5] as const).map((value) => <Chip key={value} label={String(value)} selected={activation === value} onPress={() => onActivation(value)} />)}</View><PrimaryButton label="回到现实行动" disabled={!result} onPress={onNext} /></Screen>;
 }
 
-function ActionView({ action, onAction, onComplete }: { action: string; onAction: (value: string) => void; onComplete: () => void }) {
-  return <Screen><TopBar title="回到行动" onClose={() => router.back()} /><View style={styles.centerCopy}><Text style={type.display}>只选下一件小事。</Text><Text style={type.body}>不是解决整件事，只是不让剧情继续替你决定。</Text></View><View style={styles.stack}>{ACTIONS.map((item) => <Chip key={item} label={item} selected={action === item} onPress={() => onAction(item)} />)}</View><PrimaryButton label="保存并完成" onPress={onComplete} /></Screen>;
+function ActionView({ action, onAction, onComplete, methodAdjustment }: { action: string; onAction: (value: string) => void; onComplete: () => void; methodAdjustment?: { methodTitle: string; hidden: boolean; onHideMethod: () => void } }) {
+  return <Screen><TopBar title="回到行动" onClose={() => router.back()} /><View style={styles.centerCopy}><Text style={type.display}>只选下一件小事。</Text><Text style={type.body}>不是解决整件事，只是不让剧情继续替你决定。</Text></View><View style={styles.stack}>{ACTIONS.map((item) => <Chip key={item} label={item} selected={action === item} onPress={() => onAction(item)} />)}</View>{methodAdjustment ? <Surface style={styles.adjustmentCard}><Text style={type.label}>方法调整</Text><Text style={type.body}>如果“{methodAdjustment.methodTitle}”这次不适合你，可以减少它出现在推荐里的次数。你仍然可以在方法库里手动打开。</Text><SecondaryButton label={methodAdjustment.hidden ? "已减少推荐" : `减少推荐“${methodAdjustment.methodTitle}”`} disabled={methodAdjustment.hidden} onPress={methodAdjustment.onHideMethod} /></Surface> : null}<PrimaryButton label="保存并完成" onPress={onComplete} /></Screen>;
 }
 
 function DoneView({ action, onReturn }: { action: string; onReturn: () => void }) {
@@ -284,5 +291,5 @@ const styles = StyleSheet.create({
   player: { paddingBottom: 28 }, progressRow: { flexDirection: "row", gap: 6 }, progressSegment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.12)" }, progressActive: { backgroundColor: colors.lavender },
   playerCenter: { flex: 1, justifyContent: "center", gap: spacing.md }, projection: { minHeight: 310, borderRadius: 28, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: "rgba(8,12,27,0.9)", alignItems: "center", justifyContent: "center", padding: 28, gap: 18, shadowColor: colors.violet, shadowOpacity: 0.24, shadowRadius: 34 },
   stepCount: { color: colors.textFaint, fontSize: 12, letterSpacing: 2 }, stepTitle: { color: colors.lavender, fontSize: 16, fontWeight: "800", letterSpacing: 2 }, instruction: { color: colors.text, fontSize: 24, lineHeight: 36, fontWeight: "700", textAlign: "center" }, secondsSmall: { color: colors.textFaint, fontSize: 13 }, alternative: { color: colors.textMuted, fontSize: 13, lineHeight: 20, textAlign: "center" },
-  controls: { flexDirection: "row", gap: 10 }, control: { flex: 1 }, centerCopy: { gap: 12, marginTop: spacing.xl }, stack: { gap: 10 }, done: { flex: 1, justifyContent: "center", gap: 24 }, centerText: { textAlign: "center" }, actionCard: { gap: 10 }, supportCard: { gap: 10 },
+  controls: { flexDirection: "row", gap: 10 }, control: { flex: 1 }, centerCopy: { gap: 12, marginTop: spacing.xl }, stack: { gap: 10 }, adjustmentCard: { gap: 12 }, done: { flex: 1, justifyContent: "center", gap: 24 }, centerText: { textAlign: "center" }, actionCard: { gap: 10 }, supportCard: { gap: 10 },
 });
