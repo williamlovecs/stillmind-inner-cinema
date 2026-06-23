@@ -156,6 +156,7 @@ Do not claim clinical outcomes, awakening guarantees, consciousness ranking, tra
 ## Pre-Submit Checklist
 
 - [ ] `npm run verify:release` passes.
+- [ ] `npm run check:release-readiness` passes engineering gates; warnings are tracked as human/external gates.
 - [ ] `npm run check:claims` passes with no public medical, diagnosis, ranking, or guaranteed-outcome claims.
 - [ ] EAS preview build installed on a real iPhone.
 - [ ] Support, privacy, and terms URLs return 200.

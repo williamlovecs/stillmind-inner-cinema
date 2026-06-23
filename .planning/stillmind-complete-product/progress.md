@@ -36,3 +36,4 @@
 - Added a root `verify:release` command that chains tests, typecheck, lint, Next production build, Expo Doctor, iOS bundle export, and Expo Web export.
 - Added GitHub Actions CI on `main` and pull requests with Node 22.14.0 to match the EAS cloud-build runtime.
 - Confirmed `npm run verify:release` passes locally; CI/export artifacts are kept out of git via `.expo-ci/`.
+- Added release-readiness engineering audit for support/privacy/terms, issue templates, App Store package, Expo config, icon dimensions, mobile support links, safety boundaries, and explicit human/external gates.

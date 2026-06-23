@@ -40,6 +40,7 @@ Run from `mobile/` with Node >=20.19.4:
 
 ```powershell
 npm run verify:release
+npm run check:release-readiness
 npx eas-cli login
 npx eas-cli project:init
 npx eas-cli build:configure
