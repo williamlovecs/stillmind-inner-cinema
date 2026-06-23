@@ -156,6 +156,7 @@ Do not claim clinical outcomes, awakening guarantees, consciousness ranking, tra
 ## Pre-Submit Checklist
 
 - [ ] `npm run verify:release` passes.
+- [ ] `npm run check:claims` passes with no public medical, diagnosis, ranking, or guaranteed-outcome claims.
 - [ ] EAS preview build installed on a real iPhone.
 - [ ] Support, privacy, and terms URLs return 200.
 - [ ] Private support mailbox is monitored or launch scope remains clearly limited.

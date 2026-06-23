@@ -67,4 +67,4 @@ The current audit reports moderate transitive advisories in the Expo/Next toolch
 - [ ] Network-off and AI-failure paths complete.
 - [ ] App Store privacy labels match the shipping binary.
 - [ ] Support and emergency-boundary links work in target countries.
-
+- [ ] `npm run check:claims` passes on public product and App Store copy.
