@@ -17,6 +17,12 @@ Current public URL drafts:
 - Privacy: `https://stillmind-inner-cinema.vercel.app/privacy`
 - Terms: `https://stillmind-inner-cinema.vercel.app/terms`
 
+Current support process:
+
+- Non-sensitive product feedback routes to public GitHub issue templates.
+- GitHub blank issues are disabled to reduce accidental disclosure of private trigger text.
+- A monitored private support mailbox remains a human gate before broad App Store launch.
+
 ## Identifiers
 
 - Working bundle identifier: `com.stillmind.innercinema`.
@@ -56,6 +62,7 @@ Do not submit until the preview build has passed the real-device matrix.
 - Individual session delete, export, delete all.
 - Privacy and terms links.
 - Public support link.
+- Issue templates for bug reports, experience feedback, and safety/boundary feedback.
 - Device restart persistence.
 
 ## App Review Guideline 4.2 Evidence

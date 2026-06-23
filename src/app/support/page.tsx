@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-const feedbackUrl = "https://github.com/williamlovecs/stillmind-inner-cinema/issues";
+const feedbackUrl = "https://github.com/williamlovecs/stillmind-inner-cinema/issues/new/choose";
 
 export const metadata: Metadata = {
   title: "支持与反馈 · StillMind: Inner Cinema",
@@ -36,14 +36,14 @@ export default function SupportPage() {
         <div className="mt-10 grid gap-4">
           <SupportCard
             title="产品反馈"
-            body="流程卡住、页面打不开、文案不清楚、练习体验不舒服，都可以提交。请尽量说明设备、浏览器或 App 版本，以及你走到哪一步。"
+            body="流程卡住、页面打不开、文案不清楚、练习体验不舒服，都可以提交。GitHub issue 是公开的，请不要写私人触发内容、联系方式、医疗信息或危机细节。"
             href={feedbackUrl}
-            label="打开 GitHub 反馈入口"
+            label="打开公开反馈模板"
             external
           />
           <SupportCard
             title="隐私与数据"
-            body="当前版本默认本地优先。你可以在 App 内导出或清除本机数据。Web demo 的本地记录可通过清理浏览器站点数据删除。"
+            body="当前版本默认本地优先。你可以在 App 内导出或清除本机数据。Web demo 的本地记录可通过清理浏览器站点数据删除。正式上架前，私密支持邮箱仍需确认。"
             href="/privacy"
             label="查看隐私政策"
           />

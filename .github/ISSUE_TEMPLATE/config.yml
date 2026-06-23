@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: StillMind support page
+    url: https://stillmind-inner-cinema.vercel.app/support
+    about: Read the product boundary, support options, privacy links, and immediate-safety note.
+  - name: Privacy policy
+    url: https://stillmind-inner-cinema.vercel.app/privacy
+    about: Learn what is local, what can be sent for optional AI, and how to clear local data.
+  - name: Terms
+    url: https://stillmind-inner-cinema.vercel.app/terms
+    about: Review the general-wellness and non-clinical product boundary.

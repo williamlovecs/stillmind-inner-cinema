@@ -18,6 +18,7 @@ Everything in this file requires a person, external account, legal judgment, or 
 - Confirm legal publisher name and copyright.
 - Replace `hello@stillmind.app` if the mailbox is not operational.
 - Confirm public privacy, terms, and support URLs render from the production deployment.
+- Activate a monitored private support mailbox before broad App Store release; public GitHub issues are only for non-sensitive product feedback.
 - Obtain qualified legal review for privacy, consumer, subscription, and wellness claims in launch jurisdictions.
 - Decide whether optional AI provider processing requires additional cross-border disclosure.
 - Confirm age rating and whether product is adults-only.

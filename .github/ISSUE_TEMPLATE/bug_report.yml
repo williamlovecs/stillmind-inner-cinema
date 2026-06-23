@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a product bug without sharing private emotional content.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please do not include private trigger text, medical information, contact information, or crisis details. GitHub issues are public.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug in product terms. Avoid private emotional details.
+      placeholder: "Example: The Reset flow stayed on the loading state after I tapped Start."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "iPhone 15 / iOS 26, Safari, Chrome, Vercel web"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Product area
+      options:
+        - Web demo
+        - Native app
+        - Reset flow
+        - Practice library
+        - Reflection/history
+        - Profile/privacy
+        - Legal/support pages
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy-check
+    attributes:
+      label: Privacy check
+      options:
+        - label: I did not include private trigger text, medical information, contact information, or crisis details.
+          required: true

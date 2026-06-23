@@ -1,0 +1,44 @@
+name: Safety or boundary feedback
+description: Report product wording or flow that feels unsafe, overclaiming, or too clinical.
+title: "[Safety]: "
+labels:
+  - safety
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is for product-safety feedback, not crisis support. If there is immediate danger, contact local emergency services or a trusted person now. Do not post personal crisis details here.
+  - type: textarea
+    id: concern
+    attributes:
+      label: What wording or flow concerned you?
+      placeholder: "Example: This sentence felt like advice instead of observation."
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Concern type
+      options:
+        - Sounds clinical or diagnostic
+        - Feels like advice or pressure
+        - Could invite unsafe use
+        - Privacy concern
+        - Accessibility concern
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: safer
+    attributes:
+      label: Safer alternative, if you have one
+      placeholder: "Example: Say 'notice the thought' instead of 'fix the thought'."
+  - type: checkboxes
+    id: privacy-check
+    attributes:
+      label: Privacy and crisis check
+      options:
+        - label: I did not include private trigger text, medical information, contact information, or crisis details.
+          required: true
+        - label: I understand this issue tracker is not monitored as emergency support.
+          required: true

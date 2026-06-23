@@ -1,0 +1,44 @@
+name: Experience feedback
+description: Share non-sensitive feedback about clarity, usefulness, or product flow.
+title: "[Feedback]: "
+labels:
+  - feedback
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for product feedback only. Please summarize patterns without posting private emotional content. GitHub issues are public.
+  - type: textarea
+    id: context
+    attributes:
+      label: What were you trying to do?
+      placeholder: "Example: I wanted a short reset before replying to a conflict."
+    validations:
+      required: true
+  - type: textarea
+    id: worked
+    attributes:
+      label: What felt useful?
+      placeholder: "Example: The perspective card helped me pause."
+  - type: textarea
+    id: confusing
+    attributes:
+      label: What felt confusing, too much, or not useful?
+      placeholder: "Example: I was not sure which method to choose."
+  - type: dropdown
+    id: completion
+    attributes:
+      label: Did you finish the flow?
+      options:
+        - Yes
+        - No
+        - Partly
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy-check
+    attributes:
+      label: Privacy check
+      options:
+        - label: I did not include private trigger text, medical information, contact information, or crisis details.
+          required: true
