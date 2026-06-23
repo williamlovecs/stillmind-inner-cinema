@@ -75,6 +75,7 @@ export default function ProfileScreen() {
         {preferences.reminderEnabled ? <View style={styles.reminderTimes}>{[8, 12, 18, 21].map((hour) => <Chip key={hour} label={`${String(hour).padStart(2, "0")}:00`} selected={preferences.reminderHour === hour} onPress={() => changeReminderHour(hour)} />)}</View> : null}
       </View>
       <View style={styles.section}><SectionHeading title="关于" />
+        <ActionRow icon="help-circle-outline" title="支持与反馈" onPress={() => Linking.openURL("https://stillmind-inner-cinema.vercel.app/support")} />
         <ActionRow icon="shield-checkmark-outline" title="隐私政策" onPress={() => Linking.openURL("https://stillmind-inner-cinema.vercel.app/privacy")} />
         <ActionRow icon="document-text-outline" title="服务条款" onPress={() => Linking.openURL("https://stillmind-inner-cinema.vercel.app/terms")} />
         <Surface style={styles.boundary}><Text style={type.bodyStrong}>产品边界</Text><Text style={type.body}>StillMind 是一般觉察与状态切换工具，不提供诊断、治疗或紧急支持。如有即时危险，请联系当地紧急服务或可信任的人。</Text></Surface>

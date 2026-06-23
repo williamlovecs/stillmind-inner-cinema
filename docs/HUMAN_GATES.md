@@ -17,7 +17,7 @@ Everything in this file requires a person, external account, legal judgment, or 
 
 - Confirm legal publisher name and copyright.
 - Replace `hello@stillmind.app` if the mailbox is not operational.
-- Confirm public privacy and support URLs.
+- Confirm public privacy, terms, and support URLs render from the production deployment.
 - Obtain qualified legal review for privacy, consumer, subscription, and wellness claims in launch jurisdictions.
 - Decide whether optional AI provider processing requires additional cross-border disclosure.
 - Confirm age rating and whether product is adults-only.
@@ -54,4 +54,3 @@ Go to public App Store only when:
 - App Store metadata makes no diagnosis, treatment, awakening guarantee, or consciousness-ranking claim.
 
 No-go if any core flow depends on AI/network, deletion is broken, reviewer cannot access value without credentials, or legal/privacy answers do not match behavior.
-

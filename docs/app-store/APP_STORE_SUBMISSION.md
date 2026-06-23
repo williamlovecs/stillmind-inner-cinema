@@ -11,6 +11,12 @@ Required external accounts:
 - Expo account and EAS project linkage.
 - Final support URL, privacy-policy URL, and support email.
 
+Current public URL drafts:
+
+- Support: `https://stillmind-inner-cinema.vercel.app/support`
+- Privacy: `https://stillmind-inner-cinema.vercel.app/privacy`
+- Terms: `https://stillmind-inner-cinema.vercel.app/terms`
+
 ## Identifiers
 
 - Working bundle identifier: `com.stillmind.innercinema`.
@@ -49,6 +55,7 @@ Do not submit until the preview build has passed the real-device matrix.
 - Dynamic Type, VoiceOver labels, Reduce Motion, high contrast.
 - Individual session delete, export, delete all.
 - Privacy and terms links.
+- Public support link.
 - Device restart persistence.
 
 ## App Review Guideline 4.2 Evidence

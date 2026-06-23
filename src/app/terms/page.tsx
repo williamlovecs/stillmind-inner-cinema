@@ -82,21 +82,20 @@ export default function TermsPage() {
 
           <Section title="7. 联系方式">
             <p>
-              产品问题或条款请求：<a
-                className="text-amber-100/90 underline underline-offset-2"
-                href="https://github.com/williamlovecs/stillmind-inner-cinema/issues"
-                target="_blank"
-                rel="noreferrer"
-              >
-                GitHub 反馈入口
-              </a>
+              产品问题或条款请求：
+              <Link className="text-amber-100/90 underline underline-offset-2" href="/support">
+                支持与反馈
+              </Link>
             </p>
           </Section>
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-6 text-xs text-stone-500">
-          <Link href="/privacy" className="hover:text-stone-300">
+          <Link href="/privacy" className="mr-4 hover:text-stone-300">
             ← 隐私政策
+          </Link>
+          <Link href="/support" className="hover:text-stone-300">
+            支持与反馈
           </Link>
         </div>
       </section>
