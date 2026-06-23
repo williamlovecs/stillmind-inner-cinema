@@ -29,6 +29,7 @@
     "test": "npm run test:domain && npm run test:content && npm run test:api && npm run test:analytics && npm run test:timeline",
     "check:claims": "node scripts/check-public-claims.mjs",
     "check:release-readiness": "node scripts/check-release-readiness.mjs",
+    "analyze:seed-users": "node scripts/summarize-seed-users.mjs",
     "doctor:mobile": "npx expo-doctor@latest mobile",
     "build:mobile:ios": "cd mobile && npx expo export --platform ios --output-dir ../.expo-ci/ios --clear",
     "build:mobile:web": "cd mobile && npx expo export --platform web --output-dir ../.expo-ci/web --clear",

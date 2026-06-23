@@ -72,6 +72,8 @@ Do not guide unless the user is blocked for more than 20 seconds. If you help, r
 
 Record one row per user.
 
+Use `docs/research/seed_user_results_template.csv` as the starting file. Keep a private copy for real results if the notes contain even lightly sensitive context.
+
 | Field | Values / notes |
 | --- | --- |
 | Session ID | `S01` to `S15`; no names |
@@ -162,3 +164,11 @@ After 15 users, summarize:
 - go/no-go decision and reasoning.
 
 Store only anonymized aggregated notes.
+
+You can generate the threshold summary from the CSV:
+
+```powershell
+npm run analyze:seed-users -- path\to\seed_user_results.csv
+```
+
+The script reports `INSUFFICIENT_DATA`, `GO_BROADER_TESTFLIGHT`, `NO_GO_MORE_ITERATION`, or `NO_GO_FIX_PRODUCT`. It is a decision aid, not a substitute for reading the qualitative notes.

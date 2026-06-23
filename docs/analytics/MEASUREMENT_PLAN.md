@@ -94,6 +94,7 @@ Each experiment must specify a guardrail for worse/stopped rate and cannot weake
 
 - Daily during seed test: crashes, blocked flows, worse/stopped reports.
 - Use `docs/research/SEED_USER_PROTOCOL.md` for the first 15 guided sessions before interpreting any numeric funnel as product-market signal.
+- Summarize the first 15 anonymized rows with `npm run analyze:seed-users -- path\to\seed_user_results.csv`.
 - Weekly: funnel, cohort retention, method outcomes, AI fallback, qualitative notes.
 - Monthly after launch: paid cohorts, refunds, support themes, privacy requests.
 - Any safety spike pauses the affected method before growth work continues.
