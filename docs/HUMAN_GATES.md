@@ -27,6 +27,7 @@ Everything in this file requires a person, external account, legal judgment, or 
 ## Product Judgment Gates
 
 - Observe at least 15 first-time users; engineering cannot prove comprehension or felt usefulness.
+- Run the 15-user protocol in `docs/research/SEED_USER_PROTOCOL.md` and summarize the go/no-go result before broad TestFlight or App Store launch.
 - Validate that “Inner Cinema” creates distance rather than confusion.
 - Review every method with a qualified mindfulness/mental-health safety advisor without turning the product into clinical care.
 - Decide whether release/forgiveness remains in launch catalog after adverse-use review.

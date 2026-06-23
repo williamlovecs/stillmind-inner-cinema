@@ -93,7 +93,7 @@ Each experiment must specify a guardrail for worse/stopped rate and cannot weake
 ## Review Cadence
 
 - Daily during seed test: crashes, blocked flows, worse/stopped reports.
+- Use `docs/research/SEED_USER_PROTOCOL.md` for the first 15 guided sessions before interpreting any numeric funnel as product-market signal.
 - Weekly: funnel, cohort retention, method outcomes, AI fallback, qualitative notes.
 - Monthly after launch: paid cohorts, refunds, support themes, privacy requests.
 - Any safety spike pauses the affected method before growth work continues.
-

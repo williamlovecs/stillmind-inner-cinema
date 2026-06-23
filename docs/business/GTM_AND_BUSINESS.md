@@ -68,6 +68,7 @@ Do not optimize price before proving repeated useful resets.
 - Recruit from founder community, product/design peers, and mindfulness-adjacent users.
 - Observe the first session live when possible.
 - Ask what happened before opening the app, what felt wrong, and what they did next.
+- Use `docs/research/SEED_USER_PROTOCOL.md` for the script, privacy boundary, scoring rubric, and go/no-go thresholds.
 - Success signal: at least 8/15 complete a reset; at least 5/15 report more choice before acting.
 
 ### Weeks 3-4: 50 unguided users
@@ -121,4 +122,3 @@ The method catalog alone is copyable. The defensible asset is the loop that lear
 - No consciousness score, identity type, or moral streak.
 - No unmoderated community feed in the first product.
 - No AI dependency for the core experience.
-
