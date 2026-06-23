@@ -34,6 +34,11 @@ check("submission package includes privacy nutrition draft", () => fileContains(
 check("submission package includes screenshot story", () => fileContains("docs/app-store/SUBMISSION_PACKAGE.md", "Screenshot Set"));
 check("human gates document exists", () => fileExists("docs/HUMAN_GATES.md"));
 check("seed-user protocol exists", () => fileExists("docs/research/SEED_USER_PROTOCOL.md"));
+check("seed-user result template exists", () => fileExists("docs/research/seed_user_results_template.csv"));
+check("seed-user analyzer exists", () => fileExists("scripts/summarize-seed-users.mjs"));
+check("seed-user analyzer npm script exists", () => scriptIncludes(pkg, "analyze:seed-users", "summarize-seed-users"));
+check("seed-user analyzer tests exist", () => scriptIncludes(pkg, "test:seed-users", "seed-users.test.ts"));
+check("npm test runs seed-user analyzer tests", () => scriptIncludes(pkg, "test", "test:seed-users"));
 check("GTM links seed-user protocol", () => fileContains("docs/business/GTM_AND_BUSINESS.md", "SEED_USER_PROTOCOL.md"));
 check("measurement plan links seed-user protocol", () => fileContains("docs/analytics/MEASUREMENT_PLAN.md", "SEED_USER_PROTOCOL.md"));
 

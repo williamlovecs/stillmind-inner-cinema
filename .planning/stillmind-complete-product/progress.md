@@ -37,3 +37,4 @@
 - Added GitHub Actions CI on `main` and pull requests with Node 22.14.0 to match the EAS cloud-build runtime.
 - Confirmed `npm run verify:release` passes locally; CI/export artifacts are kept out of git via `.expo-ci/`.
 - Added release-readiness engineering audit for support/privacy/terms, issue templates, App Store package, Expo config, icon dimensions, mobile support links, safety boundaries, and explicit human/external gates.
+- Added automated seed-user analyzer tests covering empty templates, broader-TestFlight GO, iteration NO-GO, severe safety pause, and per-method "worse" pause signals; release readiness now checks the analyzer, template, npm script, and test integration.
