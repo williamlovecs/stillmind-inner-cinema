@@ -26,7 +26,7 @@
 - Hardened the server API with request/output limits, no-store responses, bounded rate-map cleanup, prohibited diagnostic/identity output fallback, no provider-detail leakage, and high-risk 422 boundary.
 - Added consistent high-risk language routing in the native Reset flow and Web entry flow.
 - Added a final 1024x1024 StillMind observer-ring icon and splash configuration.
-- Automated verification: 24 tests pass across routing, content, storage validation, API, analytics, and absolute timeline boundaries; full TypeScript pass; Web and Expo lint pass; Expo Doctor 21/21; Next production build pass; iOS Hermes bundle pass; Expo Web 12-route export pass.
+- Automated verification: 33 tests pass across routing, weekly next-step logic, content, storage validation, API, analytics, seed-user decisions, and absolute timeline boundaries; full TypeScript pass; Web and Expo lint pass; Expo Doctor 21/21; Next production build pass; iOS Hermes bundle pass; Expo Web 12-route export pass.
 - Hardened accessibility and lifecycle behavior: 44pt minimum chips, Reduce Motion support, absolute practice timeline, and automatic pause when the app leaves the foreground.
 - Production HTTP smoke: `/`, `/privacy`, `/terms` return 200; normal Cinema returns 3 scenes; high-risk text returns 422.
 - EAS CLI check: not logged in. Signed cloud build/TestFlight remain external credential steps.
@@ -38,3 +38,4 @@
 - Confirmed `npm run verify:release` passes locally; CI/export artifacts are kept out of git via `.expo-ci/`.
 - Added release-readiness engineering audit for support/privacy/terms, issue templates, App Store package, Expo config, icon dimensions, mobile support links, safety boundaries, and explicit human/external gates.
 - Added automated seed-user analyzer tests covering empty templates, broader-TestFlight GO, iteration NO-GO, severe safety pause, and per-method "worse" pause signals; release readiness now checks the analyzer, template, npm script, and test integration.
+- Added weekly next-practice suggestions in the native Reflection tab: coarse local history now proposes one small next experiment without identity labels, and the event is tracked with privacy-safe reason buckets.

@@ -19,5 +19,6 @@ export type {
   SafetyInput,
   SessionResult,
   StateMode,
+  WeeklyNextStep,
   WeeklyReview,
 } from "./types";

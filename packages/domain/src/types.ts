@@ -115,4 +115,16 @@ export type WeeklyReview = {
   methodCounts: Partial<Record<MethodId, number>>;
   modeCounts: Partial<Record<StateMode, number>>;
   averageActivationChange?: number;
+  nextStep: WeeklyNextStep;
+};
+
+export type WeeklyNextStep = {
+  title: string;
+  body: string;
+  cta: string;
+  mode: StateMode;
+  methodId: MethodId;
+  duration: DurationMinutes;
+  outcome: DesiredOutcome;
+  reasonCodes: string[];
 };

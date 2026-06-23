@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { configureAnalytics, reminderHourBucket, sessionCountBucket, track, type AnalyticsEnvelope } from "../mobile/src/lib/analytics";
+import { configureAnalytics, reminderHourBucket, sessionCountBucket, track, weeklyNextStepReason, type AnalyticsEnvelope } from "../mobile/src/lib/analytics";
 
 test("analytics is inert until a privacy-reviewed sink is configured", () => {
   configureAnalytics(undefined);
@@ -24,4 +24,7 @@ test("analytics buckets avoid precise behavioral timestamps and counts", () => {
   assert.equal(sessionCountBucket(20), "7+");
   assert.equal(reminderHourBucket(8), "morning");
   assert.equal(reminderHourBucket(21), "night");
+  assert.equal(weeklyNextStepReason(["weekly:better-signal", "method:inner-cinema"]), "better-signal");
+  assert.equal(weeklyNextStepReason(["weekly:repeated-mode", "mode:impulsive"]), "repeated-mode");
+  assert.equal(weeklyNextStepReason([]), "no-data");
 });

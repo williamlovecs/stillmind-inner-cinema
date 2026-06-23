@@ -46,6 +46,7 @@ Allowed events contain only enumerated or coarse fields:
 | `practice_ended` | method_id, status, elapsed_bucket |
 | `after_check_saved` | result, activation_change_bucket, grounded_action_id |
 | `weekly_review_opened` | session_count_bucket, has_average |
+| `weekly_next_step_started` | method_id, duration_bucket, reason_code |
 | `ai_requested` | feature, consent_state |
 | `ai_completed` | feature, source, latency_bucket, fallback_reason |
 | `data_exported` | format |

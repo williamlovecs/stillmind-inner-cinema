@@ -80,7 +80,29 @@ type Reminder = {
 
 ### WeeklyReview
 
-Weekly reviews are derived from sessions and can be recomputed. Cached reviews contain aggregate counts and the user's chosen next experiment, never an inferred identity label.
+Weekly reviews are derived from sessions and can be recomputed. Cached reviews contain aggregate counts and a suggested next experiment, never an inferred identity label.
+
+```ts
+type WeeklyNextStep = {
+  title: string;
+  body: string;
+  cta: string;
+  mode: PracticeSession["mode"];
+  methodId: string;
+  duration: 1 | 3 | 5 | 10;
+  outcome: "pause" | "settle" | "distance" | "release" | "choose" | "awareness";
+  reasonCodes: string[];
+};
+```
+
+The next-step suggestion is generated from coarse weekly counts only:
+
+- no data -> shortest pause;
+- repeated worse/stopped outcomes -> lower-intensity pause;
+- repeated better outcomes -> continue the most-used helpful method;
+- repeated mode -> try the matching method family.
+
+It must not describe the user as a type of person or infer diagnosis, trauma, spiritual level, attachment style, or personality.
 
 ## Analytics Allowlist
 

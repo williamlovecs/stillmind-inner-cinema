@@ -12,7 +12,7 @@
 
 - Native routes: Today, Practices, Reflection, Me, Reset, and method details.
 - Twelve offline methods with declared duration variants, state/comfort routing, pause/stop, haptics, after-check, and grounded action.
-- Local-first SQLite history, weekly review, favorites, method hiding, custom reminder times, export, individual deletion, and delete-all.
+- Local-first SQLite history, weekly review with a coarse next-practice experiment, favorites, method hiding, custom reminder times, export, individual deletion, and delete-all.
 - Optional AI is consented and replaceable; the production API currently returns a safe preset when StepFun is absent or fails.
 - App Store icon, EAS profiles, bundle identifier, metadata draft, submission runbook, privacy/security register, and human gates exist.
 - Current verification is strong at code/bundle/HTTP level, but a signed iOS build and real-device accessibility/background/notification QA remain unproven because EAS is not logged in.

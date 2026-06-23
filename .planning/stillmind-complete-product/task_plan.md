@@ -21,7 +21,7 @@ The public product is a practical state-shift tool. The deeper framework may dra
 | 6. Backend and infrastructure | in_progress | Production AI API and fallback are hardened; production analytics/observability decision remains |
 | 7. Commercial and GTM system | in_progress | Business, KPI, pricing, onboarding, retention, and validation plans exist; live cohorts and payment evidence remain external |
 | 8. Safety, privacy, and compliance | complete | Claim boundaries, local-first controls, crisis routing, risk register, and App Store privacy draft exist; legal review is external |
-| 9. Adversarial QA and hardening | in_progress | 17 automated tests, lint, typecheck, Doctor, bundles, builds, and HTTP smoke pass; real-device accessibility/background QA remains |
+| 9. Adversarial QA and hardening | in_progress | 33 automated tests, lint, typecheck, Doctor, bundles, builds, and HTTP smoke pass; real-device accessibility/background QA remains |
 | 10. Distribution and App Store handoff | in_progress | EAS config, icon, metadata, runbook, and human gates exist; signed EAS/TestFlight build requires account login |
 
 ## In Scope

@@ -169,6 +169,59 @@ test("weekly review ignores malformed dates and reports an average only with eno
   assert.equal(review.averageActivationChange, 1.5);
 });
 
+test("weekly review suggests the shortest pause when there is no data", () => {
+  const review = buildWeeklyReview([], new Date("2026-06-19T00:00:00.000Z"));
+  assert.equal(review.nextStep.methodId, "logout-pause");
+  assert.equal(review.nextStep.duration, 1);
+  assert.deepEqual(review.nextStep.reasonCodes, ["weekly:no-data"]);
+});
+
+test("weekly review lowers intensity after repeated worse or stopped signals", () => {
+  const base: Omit<PracticeSession, "id" | "startedAt" | "result"> = {
+    schemaVersion: 1,
+    status: "completed",
+    mode: "looping",
+    methodId: "inner-cinema",
+    durationSeconds: 180,
+    contentVersion: "1",
+  };
+  const sessions: PracticeSession[] = [
+    { ...base, id: "a", startedAt: "2026-06-20T10:00:00.000Z", result: "worse" },
+    { ...base, id: "b", startedAt: "2026-06-21T10:00:00.000Z", result: "stopped" },
+    { ...base, id: "c", startedAt: "2026-06-22T10:00:00.000Z", result: "better" },
+  ];
+  const review = buildWeeklyReview(sessions, new Date("2026-06-19T00:00:00.000Z"));
+  assert.equal(review.nextStep.methodId, "logout-pause");
+  assert.equal(review.nextStep.duration, 1);
+  assert.equal(review.nextStep.reasonCodes.includes("weekly:uneasy-signal"), true);
+  assert.equal(review.nextStep.body.includes("类型"), false);
+});
+
+test("weekly review continues a method after repeated better outcomes", () => {
+  const sessions: PracticeSession[] = [
+    weeklySession("a", "inner-cinema", "looping", "better"),
+    weeklySession("b", "inner-cinema", "looping", "better"),
+    weeklySession("c", "person-shift", "hurt", "same"),
+    weeklySession("d", "inner-cinema", "looping", "same"),
+  ];
+  const review = buildWeeklyReview(sessions, new Date("2026-06-19T00:00:00.000Z"));
+  assert.equal(review.nextStep.methodId, "inner-cinema");
+  assert.equal(review.nextStep.duration, 3);
+  assert.equal(review.nextStep.reasonCodes.includes("weekly:better-signal"), true);
+});
+
+test("weekly review uses repeated mode as a next experiment without identity labels", () => {
+  const sessions: PracticeSession[] = [
+    weeklySession("a", "grounded-action", "impulsive", "same"),
+    weeklySession("b", "grounded-action", "impulsive", "same"),
+    weeklySession("c", "wide-gaze", "tense", "same"),
+  ];
+  const review = buildWeeklyReview(sessions, new Date("2026-06-19T00:00:00.000Z"));
+  assert.equal(review.nextStep.methodId, "logout-pause");
+  assert.deepEqual(review.nextStep.reasonCodes, ["weekly:repeated-mode", "mode:impulsive"]);
+  assert.equal(review.nextStep.body.includes("你是"), false);
+});
+
 test("stored-session validation drops malformed and unknown records", () => {
   const valid: PracticeSession = {
     id: "valid",
@@ -190,3 +243,18 @@ test("stored-session validation drops malformed and unknown records", () => {
   ]);
   assert.deepEqual(sessions, [valid]);
 });
+
+function weeklySession(id: string, methodId: PracticeSession["methodId"], mode: PracticeSession["mode"], result: PracticeSession["result"]): PracticeSession {
+  const day = Number(id.charCodeAt(0) - 96);
+  return {
+    id,
+    schemaVersion: 1,
+    startedAt: `2026-06-${19 + day}T10:00:00.000Z`,
+    status: "completed",
+    mode,
+    methodId,
+    durationSeconds: 60,
+    result,
+    contentVersion: "1",
+  };
+}
