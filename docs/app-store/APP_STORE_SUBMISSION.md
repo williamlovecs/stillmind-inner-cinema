@@ -25,6 +25,7 @@ The publisher must confirm bundle ID ownership before the first signed build. Ch
 Run from `mobile/` with Node >=20.19.4:
 
 ```powershell
+npm run verify:release
 npx eas-cli login
 npx eas-cli project:init
 npx eas-cli build:configure
@@ -89,4 +90,3 @@ StillMind is a non-clinical general-wellness app. The reviewer can use all core 
 - [ ] If purchases are enabled: products approved, restore works, terms/privacy linked.
 - [ ] Xcode/iOS SDK requirements satisfied by EAS build image at submission time.
 - [ ] TestFlight external testing notes and feedback channel ready.
-

@@ -24,6 +24,7 @@ npm --workspace mobile run start
 Useful checks:
 
 ```powershell
+npm run verify:release
 npm run typecheck:mobile
 npm run lint:mobile
 npx expo-doctor mobile

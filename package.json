@@ -26,7 +26,12 @@
     "test:api": "tsx --test test/api-cinema.test.ts",
     "test:analytics": "tsx --test test/analytics.test.ts",
     "test:timeline": "tsx --test test/timeline.test.ts",
-    "test": "npm run test:domain && npm run test:content && npm run test:api && npm run test:analytics && npm run test:timeline"
+    "test": "npm run test:domain && npm run test:content && npm run test:api && npm run test:analytics && npm run test:timeline",
+    "doctor:mobile": "npx expo-doctor@latest mobile",
+    "build:mobile:ios": "cd mobile && npx expo export --platform ios --output-dir ../.expo-ci/ios --clear",
+    "build:mobile:web": "cd mobile && npx expo export --platform web --output-dir ../.expo-ci/web --clear",
+    "verify": "npm run test && npm run typecheck && npm run lint && npm run build",
+    "verify:release": "npm run verify && npm run doctor:mobile && npm run build:mobile:ios && npm run build:mobile:web"
   },
   "dependencies": {
     "@stillmind/domain": "*",

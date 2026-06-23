@@ -30,3 +30,9 @@
 - Hardened accessibility and lifecycle behavior: 44pt minimum chips, Reduce Motion support, absolute practice timeline, and automatic pause when the app leaves the foreground.
 - Production HTTP smoke: `/`, `/privacy`, `/terms` return 200; normal Cinema returns 3 scenes; high-risk text returns 422.
 - EAS CLI check: not logged in. Signed cloud build/TestFlight remain external credential steps.
+
+## 2026-06-23
+
+- Added a root `verify:release` command that chains tests, typecheck, lint, Next production build, Expo Doctor, iOS bundle export, and Expo Web export.
+- Added GitHub Actions CI on `main` and pull requests with Node 22.14.0 to match the EAS cloud-build runtime.
+- Confirmed `npm run verify:release` passes locally; CI/export artifacts are kept out of git via `.expo-ci/`.
