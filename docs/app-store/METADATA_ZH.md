@@ -1,5 +1,7 @@
 # StillMind App Store Metadata (Chinese Draft)
 
+Canonical submission package: `SUBMISSION_PACKAGE.md`. Keep this file as the shorter Chinese copy source; the package file adds review notes, privacy-label draft, screenshot plan, and external gates.
+
 ## Name
 
 StillMind
@@ -54,4 +56,3 @@ Screenshots must use actual shipping UI and must not claim clinical outcomes.
 ## What's New (First Release)
 
 StillMind 首个原生版本：即时 Reset、十二种练习、本地推荐、私密历史、周度回顾、提醒与可选 AI 内在电影。
-

@@ -1,5 +1,7 @@
 # StillMind App Store Submission Runbook
 
+Start with `SUBMISSION_PACKAGE.md` for App Store Connect copy, review notes, privacy-label draft, screenshot story, and pre-submit checklist. This runbook covers build and submission mechanics.
+
 ## Build Strategy
 
 StillMind uses Expo/EAS so iOS builds can be produced from Windows in a cloud macOS environment. The app is native React Native, not a WebView wrapper.
@@ -94,6 +96,7 @@ StillMind is a non-clinical general-wellness app. The reviewer can use all core 
 
 ## Submission Gates
 
+- [ ] App Store Connect copy reviewed against `SUBMISSION_PACKAGE.md`.
 - [ ] Final 1024x1024 icon and splash assets.
 - [ ] iPhone 6.9-inch and 6.5-inch screenshots; iPad only if supported.
 - [ ] App description, keywords, category, age rating, copyright.

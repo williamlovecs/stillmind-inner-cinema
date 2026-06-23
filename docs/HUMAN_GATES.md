@@ -16,6 +16,7 @@ Everything in this file requires a person, external account, legal judgment, or 
 ## Policy and Identity Gates
 
 - Confirm legal publisher name and copyright.
+- Confirm App Store Connect copy, screenshots, privacy labels, age rating, export compliance, and review notes against `docs/app-store/SUBMISSION_PACKAGE.md`.
 - Replace `hello@stillmind.app` if the mailbox is not operational.
 - Confirm public privacy, terms, and support URLs render from the production deployment.
 - Activate a monitored private support mailbox before broad App Store release; public GitHub issues are only for non-sensitive product feedback.
