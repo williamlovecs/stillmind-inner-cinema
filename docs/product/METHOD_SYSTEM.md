@@ -171,6 +171,8 @@ The method library exposes short paths so users can start from a common moment r
 
 Path copy must describe a situation and next experiment, never "you are the kind of person who..." language. The first session in a path still follows the same stop controls, after-check, and reduction of unsuitable recommendations.
 
+Path progress is derived locally from completed non-worse sessions. A method marked worse, stopped, or reduced by the user does not silently advance the path. Progress is shown as "completed stages / total stages," not as a rank, consciousness score, or achievement level.
+
 ## Recommendation Explainability
 
 Every recommendation must say why in plain language, for example:

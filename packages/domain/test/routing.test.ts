@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildWeeklyReview,
+  buildPracticePathProgress,
   containsHighRiskLanguage,
   evaluateSafety,
   METHOD_BY_ID,
@@ -130,6 +131,31 @@ test("practice paths are complete, routable, and non-labeling", () => {
     }
     assert.equal(path.duration, path.stages[0]?.duration);
   }
+});
+
+test("practice path progress advances only through completed non-worse stages", () => {
+  const path = PRACTICE_PATHS.find((item) => item.id === "exit-inner-movie");
+  assert.ok(path);
+  const sessions: PracticeSession[] = [
+    weeklySession("a", "inner-cinema", "looping", "better"),
+    weeklySession("b", "person-shift", "looping", "worse"),
+    weeklySession("c", "thought-watching", "looping", "better"),
+  ];
+  const progress = buildPracticePathProgress(path, sessions);
+  assert.equal(progress.completedStages, 1);
+  assert.equal(progress.nextStage?.methodId, "person-shift");
+  assert.deepEqual(progress.reasonCodes, ["path:in-progress", "stage:2"]);
+});
+
+test("practice path progress respects methods hidden by the user", () => {
+  const path = PRACTICE_PATHS.find((item) => item.id === "observer-foundation");
+  assert.ok(path);
+  const sessions: PracticeSession[] = [weeklySession("a", "thought-watching", "curious", "better")];
+  const progress = buildPracticePathProgress(path, sessions, ["open-awareness"]);
+  assert.equal(progress.completedStages, 1);
+  assert.equal(progress.nextStage, undefined);
+  assert.equal(progress.blockedByHiddenMethod, true);
+  assert.deepEqual(progress.reasonCodes, ["path:hidden-method", "method:open-awareness"]);
 });
 
 test("weekly review excludes sessions outside the interval and hides low-sample averages", () => {

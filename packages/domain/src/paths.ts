@@ -1,4 +1,4 @@
-import type { PracticePathDefinition } from "./types";
+import type { MethodId, PracticePathDefinition, PracticePathProgress, PracticeSession } from "./types";
 
 export const PRACTICE_PATHS: readonly PracticePathDefinition[] = [
   {
@@ -62,3 +62,42 @@ export const PRACTICE_PATHS: readonly PracticePathDefinition[] = [
     ],
   },
 ] as const;
+
+export function buildPracticePathProgress(
+  path: PracticePathDefinition,
+  sessions: readonly PracticeSession[],
+  hiddenMethodIds: readonly MethodId[] = [],
+): PracticePathProgress {
+  const completedMethods = new Set(
+    sessions
+      .filter((session) => session.status === "completed" && session.result !== "worse" && session.result !== "stopped")
+      .map((session) => session.methodId),
+  );
+  const hidden = new Set(hiddenMethodIds);
+  let completedStages = 0;
+
+  for (const stage of path.stages) {
+    if (!completedMethods.has(stage.methodId)) break;
+    completedStages += 1;
+  }
+
+  const firstIncomplete = path.stages[completedStages];
+  const nextStage = firstIncomplete && !hidden.has(firstIncomplete.methodId) ? firstIncomplete : undefined;
+  const blockedByHiddenMethod = Boolean(firstIncomplete && hidden.has(firstIncomplete.methodId));
+  const reasonCodes = completedStages === path.stages.length
+    ? ["path:complete"]
+    : blockedByHiddenMethod
+      ? ["path:hidden-method", `method:${firstIncomplete?.methodId}`]
+      : completedStages === 0
+        ? ["path:not-started"]
+        : ["path:in-progress", `stage:${completedStages + 1}`];
+
+  return {
+    pathId: path.id,
+    completedStages,
+    totalStages: path.stages.length,
+    nextStage,
+    blockedByHiddenMethod,
+    reasonCodes,
+  };
+}

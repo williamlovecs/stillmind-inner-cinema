@@ -75,6 +75,15 @@ export type PracticePathDefinition = {
   stages: readonly PracticePathStage[];
 };
 
+export type PracticePathProgress = {
+  pathId: PracticePathId;
+  completedStages: number;
+  totalStages: number;
+  nextStage?: PracticePathStage;
+  blockedByHiddenMethod: boolean;
+  reasonCodes: string[];
+};
+
 export type MethodHistory = Partial<Record<MethodId, {
   favorite?: boolean;
   completedCount?: number;
