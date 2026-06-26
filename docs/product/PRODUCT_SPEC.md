@@ -37,6 +37,7 @@ The initial audience is adults who are generally functional but become caught in
 ### Practices
 
 - Twelve method families grouped as Distance, Settle, Observe, Release, and Return.
+- Short practice paths for common moments such as "pause before replying," "exit the inner movie," "observer foundation," and "gentle release."
 - Search and filters for time, eyes-open, no-audio, body-neutral, and saved.
 - Method detail: what it is, when it may fit, when to skip, evidence note, and duration variants.
 - Guided and silent variants; all core text sessions work offline.

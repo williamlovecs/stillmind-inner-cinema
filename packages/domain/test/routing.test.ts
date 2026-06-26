@@ -4,7 +4,9 @@ import {
   buildWeeklyReview,
   containsHighRiskLanguage,
   evaluateSafety,
+  METHOD_BY_ID,
   METHOD_CATALOG,
+  PRACTICE_PATHS,
   validPracticeSessions,
   recommendMethods,
   type DurationMinutes,
@@ -112,6 +114,21 @@ test("a favorite cannot bypass explicit method hiding", () => {
   if (result.kind === "practice") {
     assert.notEqual(result.primary.id, "inner-cinema");
     assert.equal(result.alternatives.some((method) => method.id === "inner-cinema"), false);
+  }
+});
+
+test("practice paths are complete, routable, and non-labeling", () => {
+  assert.equal(PRACTICE_PATHS.length >= 3, true);
+  for (const path of PRACTICE_PATHS) {
+    assert.equal(path.stages.length >= 3, true);
+    assert.equal(path.summary.includes("你是"), false);
+    assert.equal(path.bestFor.includes("类型"), false);
+    for (const stage of path.stages) {
+      const method = METHOD_BY_ID.get(stage.methodId);
+      assert.ok(method, `${path.id} references missing method ${stage.methodId}`);
+      assert.equal(method.durations.includes(stage.duration), true, `${stage.methodId} must support ${stage.duration} minutes for ${path.id}`);
+    }
+    assert.equal(path.duration, path.stages[0]?.duration);
   }
 });
 

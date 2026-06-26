@@ -40,3 +40,4 @@
 - Added automated seed-user analyzer tests covering empty templates, broader-TestFlight GO, iteration NO-GO, severe safety pause, and per-method "worse" pause signals; release readiness now checks the analyzer, template, npm script, and test integration.
 - Added weekly next-practice suggestions in the native Reflection tab: coarse local history now proposes one small next experiment without identity labels, and the event is tracked with privacy-safe reason buckets.
 - Added a post-practice control for worse/stopped sessions that lets users reduce future recommendations for the current method while keeping it manually available in the library.
+- Added Practice Paths to the native method library so the 12-method system is presented as non-labeling sequences for common moments instead of only a flat catalog.

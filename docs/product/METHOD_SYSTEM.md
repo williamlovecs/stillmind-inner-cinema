@@ -158,6 +158,19 @@ Progress is described through observable practice capabilities:
 
 These are practice milestones, not levels of human worth, consciousness, morality, or awakening.
 
+## Practice Paths
+
+The method library exposes short paths so users can start from a common moment rather than choose from a flat catalog. Paths are not personality types; they are temporary practice sequences.
+
+| Path | When it may fit | Sequence |
+| --- | --- | --- |
+| 先别立刻回复 | The user wants to reply, prove, argue, post, or buy immediately | 登出暂停 -> 宽视野 -> 回到行动 |
+| 退出内在电影 | A thought or interpersonal trigger keeps replaying | 内在电影 -> 人称切换 -> 看念头 |
+| 见证力基础 | The user has enough space to train observation | 看念头 -> 开放觉察 -> 觉察锚点 |
+| 松开重播 | Relational hurt or resentment keeps looping | 内在电影 -> 松开与宽恕 -> 回到行动 |
+
+Path copy must describe a situation and next experiment, never "you are the kind of person who..." language. The first session in a path still follows the same stop controls, after-check, and reduction of unsuitable recommendations.
+
 ## Recommendation Explainability
 
 Every recommendation must say why in plain language, for example:

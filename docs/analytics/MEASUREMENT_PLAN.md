@@ -43,6 +43,7 @@ Allowed events contain only enumerated or coarse fields:
 | `reset_started` | mode, duration_bucket, activation_bucket, source |
 | `recommendation_shown` | method_id, reason_codes, alternative_count |
 | `practice_started` | method_id, duration_bucket, offline |
+| `practice_path_started` | path_id, method_id, duration_bucket |
 | `practice_ended` | method_id, status, elapsed_bucket |
 | `after_check_saved` | result, activation_change_bucket, grounded_action_id |
 | `weekly_review_opened` | session_count_bucket, has_average |

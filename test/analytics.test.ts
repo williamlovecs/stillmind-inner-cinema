@@ -11,10 +11,12 @@ test("analytics emits only the typed sanitized envelope", async () => {
   const events: AnalyticsEnvelope[] = [];
   configureAnalytics((event) => { events.push(event); });
   track("practice_started", { method_id: "inner-cinema", duration_bucket: 1, source: "offline" });
+  track("practice_path_started", { path_id: "exit-inner-movie", method_id: "inner-cinema", duration_bucket: 1 });
   await Promise.resolve();
-  assert.equal(events.length, 1);
+  assert.equal(events.length, 2);
   assert.equal(events[0].name, "practice_started");
   assert.deepEqual(events[0].payload, { method_id: "inner-cinema", duration_bucket: 1, source: "offline" });
+  assert.deepEqual(events[1].payload, { path_id: "exit-inner-movie", method_id: "inner-cinema", duration_bucket: 1 });
   configureAnalytics(undefined);
 });
 

@@ -1,4 +1,4 @@
-import type { MethodId, SessionResult, StateMode } from "@stillmind/domain";
+import type { MethodId, PracticePathId, SessionResult, StateMode } from "@stillmind/domain";
 
 type DurationBucket = 1 | 3 | 5 | 10;
 
@@ -10,6 +10,7 @@ export type AnalyticsEvents = {
   after_check_saved: { method_id: MethodId; result: SessionResult; activation_change_bucket: "down" | "same" | "up"; grounded_action_id: string };
   weekly_review_opened: { session_count_bucket: "0" | "1-2" | "3-6" | "7+"; has_average: boolean };
   weekly_next_step_started: { method_id: MethodId; duration_bucket: DurationBucket; reason_code: WeeklyNextStepReason };
+  practice_path_started: { path_id: PracticePathId; method_id: MethodId; duration_bucket: DurationBucket };
   ai_requested: { feature: "inner-cinema"; consent_state: "enabled" };
   ai_completed: { feature: "inner-cinema"; source: "preset" | "stepfun" | "offline"; latency_bucket: "under_2s" | "2-4s" | "over_4s"; fallback_reason: "none" | "timeout" | "invalid" | "network" };
   data_exported: { format: "json" };

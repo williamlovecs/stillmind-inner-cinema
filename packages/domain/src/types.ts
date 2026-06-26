@@ -20,6 +20,7 @@ export type DurationMinutes = 1 | 3 | 5 | 10;
 export type EvidenceTier = "supported" | "informed" | "experimental";
 export type PracticeFamily = "distance" | "settle" | "observe" | "release" | "return" | "reflect";
 export type SessionResult = "better" | "same" | "worse" | "stopped";
+export type PracticePathId = "pause-before-reply" | "exit-inner-movie" | "observer-foundation" | "gentle-release";
 
 export type SafetyInput = {
   immediateDanger?: boolean;
@@ -53,6 +54,25 @@ export type MethodDefinition = {
   breathChange: boolean;
   acuteEligible: boolean;
   premium: boolean;
+};
+
+export type PracticePathStage = {
+  label: string;
+  methodId: MethodId;
+  duration: DurationMinutes;
+  why: string;
+};
+
+export type PracticePathDefinition = {
+  id: PracticePathId;
+  title: string;
+  subtitle: string;
+  summary: string;
+  bestFor: string;
+  mode: StateMode;
+  outcome: DesiredOutcome;
+  duration: DurationMinutes;
+  stages: readonly PracticePathStage[];
 };
 
 export type MethodHistory = Partial<Record<MethodId, {
