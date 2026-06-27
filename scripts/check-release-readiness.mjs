@@ -16,6 +16,8 @@ check("App Store metadata guard npm script exists", () => scriptIncludes(pkg, "c
 check("release readiness runs App Store metadata guard", () => scriptIncludes(pkg, "check:release-readiness", "check:app-store"));
 check("GTM readiness guard npm script exists", () => scriptIncludes(pkg, "check:gtm", "check-gtm-readiness"));
 check("release readiness runs GTM readiness guard", () => scriptIncludes(pkg, "check:release-readiness", "check:gtm"));
+check("source-boundary guard npm script exists", () => scriptIncludes(pkg, "check:source-boundary", "check-source-boundary"));
+check("release readiness runs source-boundary guard", () => scriptIncludes(pkg, "check:release-readiness", "check:source-boundary"));
 check("verify:release exports iOS bundle", () => scriptIncludes(pkg, "verify:release", "build:mobile:ios"));
 check("verify:release exports mobile web bundle", () => scriptIncludes(pkg, "verify:release", "build:mobile:web"));
 check("GitHub CI runs verify:release", () => fileContains(".github/workflows/ci.yml", "npm run verify:release"));
@@ -47,6 +49,8 @@ check("seed-user analyzer tests exist", () => scriptIncludes(pkg, "test:seed-use
 check("npm test runs seed-user analyzer tests", () => scriptIncludes(pkg, "test", "test:seed-users"));
 check("GTM links seed-user protocol", () => fileContains("docs/business/GTM_AND_BUSINESS.md", "SEED_USER_PROTOCOL.md"));
 check("measurement plan links seed-user protocol", () => fileContains("docs/analytics/MEASUREMENT_PLAN.md", "SEED_USER_PROTOCOL.md"));
+check("source material boundary exists", () => fileExists("docs/research/SOURCE_MATERIAL_BOUNDARY.md"));
+check("source material boundary excludes rankings and labels", () => fileContains("docs/research/SOURCE_MATERIAL_BOUNDARY.md", "consciousness scores") && fileContains("docs/research/SOURCE_MATERIAL_BOUNDARY.md", "fixed ego/personality labels"));
 
 check("practice paths domain model exists", () => fileExists("packages/domain/src/paths.ts"));
 check("practice paths are exported from domain", () => fileContains("packages/domain/src/index.ts", "PRACTICE_PATHS") && fileContains("packages/domain/src/index.ts", "buildPracticePathProgress"));
