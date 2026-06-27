@@ -25,6 +25,7 @@ Useful checks:
 
 ```powershell
 npm run verify:release
+npm run check:eas
 npm run typecheck:mobile
 npm run lint:mobile
 npx expo-doctor mobile
@@ -37,8 +38,11 @@ npx expo export --platform ios --output-dir C:\tmp\stillmind-ios
 
 ```powershell
 cd mobile
+npm run check:eas
 npx eas-cli login
+npx eas-cli whoami
 npx eas-cli project:init
+npx eas-cli project:info
 npx eas-cli build --platform ios --profile preview
 ```
 
