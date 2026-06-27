@@ -10,6 +10,8 @@ const app = readJson("mobile/app.json")?.expo;
 
 check("verify:release script exists", () => scriptIncludes(pkg, "verify:release", "verify"));
 check("verify script runs public-claim guard", () => scriptIncludes(pkg, "verify", "check:claims"));
+check("App Store metadata guard npm script exists", () => scriptIncludes(pkg, "check:app-store", "check-app-store-metadata"));
+check("release readiness runs App Store metadata guard", () => scriptIncludes(pkg, "check:release-readiness", "check:app-store"));
 check("verify:release exports iOS bundle", () => scriptIncludes(pkg, "verify:release", "build:mobile:ios"));
 check("verify:release exports mobile web bundle", () => scriptIncludes(pkg, "verify:release", "build:mobile:web"));
 check("GitHub CI runs verify:release", () => fileContains(".github/workflows/ci.yml", "npm run verify:release"));

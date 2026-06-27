@@ -43,3 +43,9 @@
 - Added Practice Paths to the native method library so the 12-method system is presented as non-labeling sequences for common moments instead of only a flat catalog.
 - Added local Practice Path progress: path cards now show completed stages, the next stage to try, and respect methods the user has reduced from future recommendations.
 - Added release-readiness gates for Practice Paths so the domain model, progress tests, mobile rendering, analytics allowlist, and product documentation must stay in sync before an iOS release.
+
+## 2026-06-27
+
+- Added an App Store metadata guard that checks Chinese App Store copy length, required metadata sections, screenshot story completeness, bundle ID/URL alignment, review notes, privacy-label draft, real-shipping-UI screenshot requirement, iOS icon dimensions, tablet setting, notification purpose string, and production API base URL.
+- Wired `npm run check:app-store` into `npm run check:release-readiness` so the release gate now covers both engineering readiness and App Store submission metadata readiness.
+- Confirmed `npm run verify:release` passes with the new guard: tests, typecheck, lint, public-claim guard, Next production build, release-readiness audit, App Store metadata guard, Expo Doctor, iOS export, and mobile Web export all pass locally.
