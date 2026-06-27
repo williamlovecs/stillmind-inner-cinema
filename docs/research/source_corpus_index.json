@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-06-28",
+  "visibility": "internal-non-public",
+  "purpose": [
+    "Structure founder-provided StillMind source material for product research.",
+    "Provide a safe bridge from spiritual/source concepts to ordinary user-facing product language.",
+    "Prepare a rights-reviewed metadata layer before any future retrieval or knowledge-grounded feature."
+  ],
+  "globalRules": {
+    "mayUseFor": [
+      "practice taxonomy",
+      "internal concept maps",
+      "method-fit hypotheses",
+      "non-labeling product language",
+      "future retrieval planning after demand validation and rights review"
+    ],
+    "mustNotUseFor": [
+      "public claims of consciousness ranking",
+      "spiritual status or awakening scores",
+      "fixed ego or personality labels",
+      "diagnosis, treatment, trauma processing, or crisis care",
+      "quoting source passages in UI, App Store copy, marketing, analytics, or public docs without rights review",
+      "claiming the app knows a user's hidden cause, motive, karmic meaning, or metaphysical structure"
+    ],
+    "publicTranslationRule": "Translate source concepts into plain language about attention, reaction loops, observer perspective, practice fit, and grounded action."
+  },
+  "sources": [
+    {
+      "id": "consciousness-intensity-volume-1",
+      "type": "local-pdf",
+      "title": "《意识强度》最新电子版 上册",
+      "localPathHint": "E:\\BaiduNetdiskDownload\\《意识强度》最新电子版\\最终版-意识强度-上q.pdf",
+      "pageCount": 502,
+      "encrypted": false,
+      "outlineReadable": true,
+      "rightsStatus": "private-user-provided; not cleared for public quotation",
+      "publicExcerptPolicy": "no-public-quotes",
+      "observedOutlineSignals": [
+        "心智控制区",
+        "自主意识区",
+        "旧有惯性区"
+      ],
+      "allowedProductMappings": [
+        "reaction loop recognition",
+        "observer-mode language",
+        "separating observation from interpretation",
+        "small grounded action after noticing a pattern"
+      ],
+      "blockedMappings": [
+        "consciousness score",
+        "spiritual rank",
+        "awakening guarantee",
+        "identity diagnosis"
+      ],
+      "ragReadiness": "metadata-only"
+    },
+    {
+      "id": "consciousness-intensity-volume-2",
+      "type": "local-pdf",
+      "title": "《意识强度》最新电子版 下册",
+      "localPathHint": "E:\\BaiduNetdiskDownload\\《意识强度》最新电子版\\最终版-意识强度-下q.pdf",
+      "pageCount": 404,
+      "encrypted": false,
+      "outlineReadable": true,
+      "rightsStatus": "private-user-provided; not cleared for public quotation",
+      "publicExcerptPolicy": "no-public-quotes",
+      "observedOutlineSignals": [
+        "神经联络区",
+        "灵性结构区",
+        "模块交换区"
+      ],
+      "allowedProductMappings": [
+        "attention-state vocabulary",
+        "method sequencing hypotheses",
+        "practice-path design",
+        "weekly non-authoritative reflection prompts"
+      ],
+      "blockedMappings": [
+        "metaphysical authority",
+        "soul-level classification",
+        "medical or clinical explanation",
+        "hidden-motive interpretation"
+      ],
+      "ragReadiness": "metadata-only"
+    },
+    {
+      "id": "stillmind-prior-notes",
+      "type": "founder-notes",
+      "title": "Prior StillMind / 古零 / 沉寂小我 notes",
+      "localPathHint": "C:\\Users\\willi\\.codex\\attachments\\...",
+      "pageCount": null,
+      "encrypted": false,
+      "outlineReadable": false,
+      "rightsStatus": "founder-provided working notes",
+      "publicExcerptPolicy": "paraphrase-only",
+      "observedOutlineSignals": [
+        "小我降噪",
+        "观察者模式",
+        "情绪触发",
+        "内在电影"
+      ],
+      "allowedProductMappings": [
+        "StillMind origin story",
+        "live reset loop",
+        "method library requirements",
+        "non-therapy positioning"
+      ],
+      "blockedMappings": [
+        "fixed ego mode quiz",
+        "percentage-based ego reduction",
+        "user type labeling",
+        "clinical promise"
+      ],
+      "ragReadiness": "metadata-only"
+    },
+    {
+      "id": "praxis-distillation-artifacts",
+      "type": "derived-notes",
+      "title": "Praxis / prior source-family distillation artifacts",
+      "localPathHint": "referenced in prior attachment discussions",
+      "pageCount": null,
+      "encrypted": false,
+      "outlineReadable": false,
+      "rightsStatus": "derived planning notes; verify before reuse",
+      "publicExcerptPolicy": "paraphrase-only",
+      "observedOutlineSignals": [
+        "structured concepts",
+        "practice candidates",
+        "knowledge-base shell",
+        "source-grounded v2"
+      ],
+      "allowedProductMappings": [
+        "future corpus schema",
+        "internal retrieval taxonomy",
+        "method recommendation constraints"
+      ],
+      "blockedMappings": [
+        "public knowledge authority",
+        "raw source passage reuse",
+        "unreviewed paid guidance",
+        "diagnostic advice"
+      ],
+      "ragReadiness": "metadata-only"
+    }
+  ],
+  "futureRagGates": [
+    "validate seed-user demand before building retrieval",
+    "perform rights review before indexing passages",
+    "store only bounded, reviewed source chunks outside public repo",
+    "attach source-to-product mapping labels to every retrievable concept",
+    "run public-claim and source-boundary guards before release",
+    "keep user trigger text out of analytics and research notes"
+  ]
+}

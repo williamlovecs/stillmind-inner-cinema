@@ -17,6 +17,8 @@ Known local source files inspected on 2026-06-28:
 
 The two PDF volumes together form a 906-page source corpus. The outline includes areas such as 心智控制区, 自主意识区, 旧有惯性区, 神经联络区, and other metaphysical/system-model sections. These names may be useful internally, but public product copy must translate them into ordinary user language: attention, reaction loops, observer perspective, practice fit, and grounded action.
 
+The machine-readable companion index lives at `docs/research/source_corpus_index.json`. It is intentionally metadata-only: it records source identities, page counts, outline signals, allowed product mappings, blocked mappings, and future RAG gates without storing protected passages or public-ready quotations.
+
 ## Allowed Translation
 
 | Source idea | StillMind product translation | Release-safe language |
