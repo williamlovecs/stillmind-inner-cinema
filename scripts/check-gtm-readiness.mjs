@@ -11,6 +11,9 @@ const gtm = readText("docs/business/GTM_AND_BUSINESS.md");
 const measurement = readText("docs/analytics/MEASUREMENT_PLAN.md");
 const humanGates = readText("docs/HUMAN_GATES.md");
 const release = readText("scripts/check-release-readiness.mjs");
+const seedTestPage = readText("src/app/support/seed-test/page.tsx");
+const supportPage = readText("src/app/support/page.tsx");
+const mobileProfile = readText("mobile/src/app/(tabs)/profile.tsx");
 const pkg = readJson("package.json");
 
 const expectedSeedHeaders = [
@@ -57,6 +60,11 @@ check("seed protocol defines GO thresholds", () => hasAll(seedProtocol, ["at lea
 check("seed protocol defines pause triggers", () => hasAll(seedProtocol, ["4 or more users stop", "3 or more users interpret it as diagnosis", "2 or more users report feeling worse", "any severe safety concern"]));
 check("seed protocol includes 48-72 hour follow-up", () => hasAll(seedProtocol, ["48-72 hours", "Did you use StillMind again?"]));
 check("seed protocol links analyzer command", () => seedProtocol.includes("npm run analyze:seed-users"));
+check("seed tester handoff page exists", () => Boolean(seedTestPage));
+check("seed tester handoff protects private stories", () => hasAll(seedTestPage, ["不要提交私人故事", "不要写：具体人名", "医疗史", "危机细节"]));
+check("seed tester handoff defines core tasks and questions", () => hasAll(seedTestPage, ["测试任务", "完成后回答这 5 个问题", "Reflection", "Profile"]));
+check("support page links seed tester handoff", () => supportPage.includes("/support/seed-test"));
+check("mobile Profile links seed tester handoff", () => mobileProfile.includes("https://stillmind-inner-cinema.vercel.app/support/seed-test"));
 
 check("GTM plan defines six-week validation loop", () => hasAll(gtm, ["Six-Week Validation Loop", "Weeks 1-2: 15 guided users", "Weeks 3-4: 50 unguided users", "Weeks 5-6: willingness to pay"]));
 check("GTM plan keeps first release free unless StoreKit is ready", () => hasAll(gtm, ["The first App Store release should be free", "StoreKit", "restore purchase"]));

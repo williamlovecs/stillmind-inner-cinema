@@ -42,6 +42,12 @@ export default function SupportPage() {
             external
           />
           <SupportCard
+            title="种子用户测试"
+            body="如果你是被邀请的早期测试者，请先看测试说明。反馈只需要泛化场景、完成情况、困惑点和是否更有选择，不需要任何私人故事。"
+            href="/support/seed-test"
+            label="查看测试说明"
+          />
+          <SupportCard
             title="隐私与数据"
             body="当前版本默认本地优先。你可以在 App 内导出或清除本机数据。Web demo 的本地记录可通过清理浏览器站点数据删除。正式上架前，私密支持邮箱仍需确认。"
             href="/privacy"

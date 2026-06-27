@@ -24,10 +24,12 @@ check("GitHub CI runs verify:release", () => fileContains(".github/workflows/ci.
 check("CI pins Node 22.14.0", () => fileContains(".github/workflows/ci.yml", "22.14.0"));
 
 check("support page route exists", () => fileExists("src/app/support/page.tsx"));
+check("seed tester handoff route exists", () => fileExists("src/app/support/seed-test/page.tsx"));
 check("privacy page route exists", () => fileExists("src/app/privacy/page.tsx"));
 check("terms page route exists", () => fileExists("src/app/terms/page.tsx"));
 check("support page links to issue template chooser", () => fileContains("src/app/support/page.tsx", "issues/new/choose"));
 check("support page warns GitHub issues are public", () => fileContains("src/app/support/page.tsx", "GitHub issue 是公开的"));
+check("support page links seed tester handoff", () => fileContains("src/app/support/page.tsx", "/support/seed-test"));
 
 check("SUPPORT.md exists", () => fileExists("SUPPORT.md"));
 check("blank GitHub issues are disabled", () => fileContains(".github/ISSUE_TEMPLATE/config.yml", "blank_issues_enabled: false"));
@@ -74,6 +76,7 @@ check("Expo notifications plugin is configured", () => arrayIncludes(app?.plugin
 check("iOS app icon exists", () => fileExists("mobile/assets/images/stillmind-icon.png"));
 check("iOS app icon is 1024x1024 PNG", () => pngSize("mobile/assets/images/stillmind-icon.png", 1024, 1024));
 check("mobile Profile links support URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/support"));
+check("mobile Profile links seed tester handoff", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/support/seed-test"));
 check("mobile Profile links privacy URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/privacy"));
 check("mobile Profile links terms URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/terms"));
 check("mobile Profile exposes export", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "导出本机数据"));

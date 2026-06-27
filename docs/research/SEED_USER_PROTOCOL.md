@@ -47,6 +47,12 @@ Before the session:
 3. Explain they can stop at any moment.
 4. Ask permission to take non-sensitive notes about flow, confusion, and completion.
 
+For invited testers, share the public handoff page first:
+
+`https://stillmind-inner-cinema.vercel.app/support/seed-test`
+
+This page repeats the privacy boundary, the core test tasks, and the five post-session questions without exposing the internal scoring rubric.
+
 Opening script:
 
 > I am testing whether StillMind helps a person pause before reacting. Please use a generic version of a real-ish moment, without private names or details. This is not therapy, advice, or crisis support. I am watching the product flow, not judging your experience.
