@@ -2,6 +2,14 @@
 
 Everything in this file requires a person, external account, legal judgment, or real-market evidence. It is deliberately separated from engineering work.
 
+For an evidence-based engineering progress snapshot, run:
+
+```powershell
+npm run status:launch
+```
+
+This reports completed repository gates separately from human/external gates. It does not replace the gate list below.
+
 ## Distribution Gates
 
 | Gate | Owner | Evidence needed | Current state |
