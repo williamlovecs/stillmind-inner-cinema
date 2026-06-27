@@ -42,6 +42,14 @@ check("npm test runs seed-user analyzer tests", () => scriptIncludes(pkg, "test"
 check("GTM links seed-user protocol", () => fileContains("docs/business/GTM_AND_BUSINESS.md", "SEED_USER_PROTOCOL.md"));
 check("measurement plan links seed-user protocol", () => fileContains("docs/analytics/MEASUREMENT_PLAN.md", "SEED_USER_PROTOCOL.md"));
 
+check("practice paths domain model exists", () => fileExists("packages/domain/src/paths.ts"));
+check("practice paths are exported from domain", () => fileContains("packages/domain/src/index.ts", "PRACTICE_PATHS") && fileContains("packages/domain/src/index.ts", "buildPracticePathProgress"));
+check("practice path progress tests exist", () => fileContains("packages/domain/test/routing.test.ts", "practice path progress"));
+check("mobile method library renders practice paths", () => fileContains("mobile/src/app/(tabs)/practices.tsx", "PRACTICE_PATHS") && fileContains("mobile/src/app/(tabs)/practices.tsx", "buildPracticePathProgress"));
+check("practice path analytics event is allowlisted", () => fileContains("mobile/src/lib/analytics.ts", "practice_path_started") && fileContains("docs/analytics/MEASUREMENT_PLAN.md", "practice_path_started"));
+check("method system documents practice paths", () => fileContains("docs/product/METHOD_SYSTEM.md", "## Practice Paths"));
+check("product spec includes practice paths", () => fileContains("docs/product/PRODUCT_SPEC.md", "Short practice paths"));
+
 check("Expo app config exists", () => Boolean(app));
 check("Expo app name is StillMind", () => app?.name === "StillMind");
 check("Expo bundle identifier is set", () => app?.ios?.bundleIdentifier === "com.stillmind.innercinema");

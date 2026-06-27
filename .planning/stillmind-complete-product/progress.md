@@ -42,3 +42,4 @@
 - Added a post-practice control for worse/stopped sessions that lets users reduce future recommendations for the current method while keeping it manually available in the library.
 - Added Practice Paths to the native method library so the 12-method system is presented as non-labeling sequences for common moments instead of only a flat catalog.
 - Added local Practice Path progress: path cards now show completed stages, the next stage to try, and respect methods the user has reduced from future recommendations.
+- Added release-readiness gates for Practice Paths so the domain model, progress tests, mobile rendering, analytics allowlist, and product documentation must stay in sync before an iOS release.
