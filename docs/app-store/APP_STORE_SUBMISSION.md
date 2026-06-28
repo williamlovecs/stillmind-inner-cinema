@@ -39,6 +39,7 @@ The publisher must confirm bundle ID ownership before the first signed build. Ch
 Run from `mobile/` with Node >=20.19.4:
 
 ```powershell
+npm run status:launch -- --live
 npm run verify:release
 npm run check:release-readiness
 npm run check:eas

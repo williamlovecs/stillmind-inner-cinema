@@ -6,9 +6,10 @@ For an evidence-based engineering progress snapshot, run:
 
 ```powershell
 npm run status:launch
+npm run status:launch -- --live
 ```
 
-This reports completed repository gates separately from human/external gates. It does not replace the gate list below.
+The default report is repository-only. The `--live` report also probes the local git state, Expo/EAS login, EAS project linkage, and the production support handoff URL. It does not replace the gate list below.
 
 ## Distribution Gates
 

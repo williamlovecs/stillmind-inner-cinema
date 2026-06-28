@@ -20,6 +20,7 @@ check("source-boundary guard npm script exists", () => scriptIncludes(pkg, "chec
 check("release readiness runs source-boundary guard", () => scriptIncludes(pkg, "check:release-readiness", "check:source-boundary"));
 check("launch status report npm script exists", () => scriptIncludes(pkg, "status:launch", "report-launch-status"));
 check("launch status report script exists", () => fileExists("scripts/report-launch-status.mjs"));
+check("launch status report supports live probes", () => fileContains("scripts/report-launch-status.mjs", "--live") && fileContains("scripts/report-launch-status.mjs", "collectLiveChecks"));
 check("verify:release exports iOS bundle", () => scriptIncludes(pkg, "verify:release", "build:mobile:ios"));
 check("verify:release exports mobile web bundle", () => scriptIncludes(pkg, "verify:release", "build:mobile:web"));
 check("GitHub CI runs verify:release", () => fileContains(".github/workflows/ci.yml", "npm run verify:release"));

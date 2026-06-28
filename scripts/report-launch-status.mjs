@@ -1,7 +1,11 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const jsonMode = process.argv.includes("--json");
+const liveMode = process.argv.includes("--live");
+const npxCommand = process.platform === "win32" ? "cmd.exe" : "npx";
+const npxPrefix = process.platform === "win32" ? ["/c", "npx"] : [];
 
 const pkg = readJson("package.json");
 const app = readJson("mobile/app.json")?.expo;
@@ -98,9 +102,12 @@ const sections = [
   ]),
 ];
 
+const liveChecks = liveMode ? await collectLiveChecks() : [];
+
 const report = {
   generatedAt: new Date().toISOString(),
   repo: process.cwd(),
+  liveMode,
   sections: sections.map((item) => ({
     name: item.name,
     passed: item.passed,
@@ -109,6 +116,7 @@ const report = {
     externalGates: item.externalGates,
     missingEngineering: item.checks.filter((check) => !check.ok).map((check) => check.label),
   })),
+  liveChecks,
 };
 
 if (jsonMode) {
@@ -126,6 +134,16 @@ if (jsonMode) {
       for (const gate of item.externalGates) console.log(`  - ${gate}`);
     }
     console.log("");
+  }
+  if (liveMode) {
+    console.log("Live external probes:");
+    for (const check of liveChecks) {
+      const detail = check.detail ? ` - ${check.detail}` : "";
+      console.log(`  ${check.ok ? "OK" : "PENDING"} ${check.label}${detail}`);
+    }
+    console.log("");
+  } else {
+    console.log("Run `npm run status:launch -- --live` to probe EAS login/project and production URLs.");
   }
   console.log("Use `npm run status:launch -- --json` for machine-readable output.");
 }
@@ -159,4 +177,61 @@ function readJson(path) {
   const fullPath = join(process.cwd(), path);
   if (!existsSync(fullPath)) return null;
   return JSON.parse(readFileSync(fullPath, "utf8"));
+}
+
+async function collectLiveChecks() {
+  const productionUrl = "https://stillmind-inner-cinema.vercel.app/support/seed-test";
+  return [
+    localCommandCheck("Git working tree clean", "git", ["status", "-sb"], {
+      okWhen: (output) => output.trim() === "## main...origin/main",
+      detail: (output) => output.trim().split(/\r?\n/).slice(0, 3).join(" | "),
+    }),
+    localCommandCheck("Expo/EAS logged in", npxCommand, [...npxPrefix, "eas-cli", "whoami"], {
+      cwd: join(process.cwd(), "mobile"),
+      okWhen: (output) => !/not logged in/i.test(output) && output.trim().length > 0,
+      detail: (output) => output.trim().split(/\s+/)[0] ?? "",
+    }),
+    localCommandCheck("EAS project linked", npxCommand, [...npxPrefix, "eas-cli", "project:info"], {
+      cwd: join(process.cwd(), "mobile"),
+      okWhen: (output) => /Project ID|projectId|ID/i.test(output),
+      detail: (output) => firstUsefulLine(output),
+    }),
+    await urlCheck("Production seed-test URL", productionUrl),
+  ];
+}
+
+function localCommandCheck(label, command, args, options = {}) {
+  try {
+    const output = execFileSync(command, args, {
+      cwd: options.cwd ?? process.cwd(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 20_000,
+    });
+    const ok = options.okWhen ? Boolean(options.okWhen(output)) : true;
+    return { label, ok, detail: options.detail ? options.detail(output) : firstUsefulLine(output) };
+  } catch (error) {
+    const output = `${error.stdout?.toString?.() ?? ""}${error.stderr?.toString?.() ?? ""}`.trim();
+    return { label, ok: false, detail: firstUsefulLine(output) || error.message };
+  }
+}
+
+async function urlCheck(label, url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  try {
+    const response = await fetch(url, { signal: controller.signal, cache: "no-store" });
+    return { label, ok: response.ok, detail: `${response.status} ${url}` };
+  } catch (error) {
+    return { label, ok: false, detail: `${error.name}: ${url}` };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function firstUsefulLine(output) {
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line.length > 0) ?? "";
 }
