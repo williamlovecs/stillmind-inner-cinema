@@ -52,6 +52,12 @@ check("seed-user analyzer exists", () => fileExists("scripts/summarize-seed-user
 check("seed-user analyzer npm script exists", () => scriptIncludes(pkg, "analyze:seed-users", "summarize-seed-users"));
 check("seed-user analyzer tests exist", () => scriptIncludes(pkg, "test:seed-users", "seed-users.test.ts"));
 check("npm test runs seed-user analyzer tests", () => scriptIncludes(pkg, "test", "test:seed-users"));
+check("payment interview protocol exists", () => fileExists("docs/research/PAYMENT_INTERVIEW_PROTOCOL.md"));
+check("payment interview template exists", () => fileExists("docs/research/payment_interview_results_template.csv"));
+check("payment interview analyzer exists", () => fileExists("scripts/summarize-payment-interviews.mjs"));
+check("payment interview analyzer npm script exists", () => scriptIncludes(pkg, "analyze:payment-interviews", "summarize-payment-interviews"));
+check("payment interview analyzer tests exist", () => scriptIncludes(pkg, "test:payment-interviews", "payment-interviews.test.ts"));
+check("npm test runs payment interview analyzer tests", () => scriptIncludes(pkg, "test", "test:payment-interviews"));
 check("real-device QA template exists", () => fileExists("docs/app-store/real_device_qa_template.csv"));
 check("real-device QA analyzer exists", () => fileExists("scripts/summarize-device-qa.mjs"));
 check("real-device QA analyzer npm script exists", () => scriptIncludes(pkg, "analyze:device-qa", "summarize-device-qa"));
@@ -99,6 +105,7 @@ warnIfMissing("Apple Developer is external", "Confirm paid Apple Developer membe
 warnIfMissing("Real-device QA is external", "Install an EAS preview/TestFlight build on a real iPhone, fill a private copy of docs/app-store/real_device_qa_template.csv, then run `npm run analyze:device-qa -- path\\to\\real_device_qa_results.csv`.");
 warnIfMissing("Legal review is external", "Have privacy, consumer, subscription, wellness, and optional-AI disclosures reviewed before broad launch.");
 warnIfMissing("Seed-user results are external", "Run docs/research/SEED_USER_PROTOCOL.md with 15 users and summarize the go/no-go result.");
+warnIfMissing("Payment interviews are external", "Before paid launch, run docs/research/PAYMENT_INTERVIEW_PROTOCOL.md and require `npm run analyze:payment-interviews` to return GO_TEST_PAID_OFFER.");
 
 const failed = checks.filter((item) => !item.ok);
 

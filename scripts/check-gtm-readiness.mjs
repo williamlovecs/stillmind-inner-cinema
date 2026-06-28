@@ -7,6 +7,8 @@ const warnings = [];
 
 const seedProtocol = readText("docs/research/SEED_USER_PROTOCOL.md");
 const seedTemplate = readText("docs/research/seed_user_results_template.csv");
+const paymentProtocol = readText("docs/research/PAYMENT_INTERVIEW_PROTOCOL.md");
+const paymentTemplate = readText("docs/research/payment_interview_results_template.csv");
 const gtm = readText("docs/business/GTM_AND_BUSINESS.md");
 const measurement = readText("docs/analytics/MEASUREMENT_PLAN.md");
 const humanGates = readText("docs/HUMAN_GATES.md");
@@ -44,13 +46,43 @@ const expectedSeedHeaders = [
   "followup_recommend",
 ];
 
+const expectedPaymentHeaders = [
+  "interview_id",
+  "surface",
+  "recruit_segment",
+  "prior_use_count",
+  "completed_reset",
+  "recent_usefulness",
+  "paid_offer_shown",
+  "preferred_offer",
+  "selected_price_cny",
+  "price_reaction",
+  "purchase_intent_score",
+  "would_attempt_purchase",
+  "main_value_reason",
+  "main_objection",
+  "expects_therapy_or_crisis_help",
+  "privacy_concern",
+  "needs_human_coach",
+  "non_sensitive_quote",
+  "followup_permission",
+];
+
 check("seed-user protocol exists", () => Boolean(seedProtocol));
 check("seed-user CSV template exists", () => Boolean(seedTemplate));
 check("seed-user analyzer exists", () => fileExists("scripts/summarize-seed-users.mjs"));
 check("seed-user analyzer npm script exists", () => scriptIncludes("analyze:seed-users", "summarize-seed-users"));
 check("seed-user analyzer tests are in npm test", () => scriptIncludes("test", "test:seed-users"));
 check("seed-user template has exact expected headers", () => firstCsvLine(seedTemplate).join(",") === expectedSeedHeaders.join(","));
-check("seed-user analyzer handles the blank template", () => analyzerOutput("docs/research/seed_user_results_template.csv").includes("no user rows yet"));
+check("seed-user analyzer handles the blank template", () => analyzerOutput("scripts/summarize-seed-users.mjs", "docs/research/seed_user_results_template.csv").includes("no user rows yet"));
+
+check("payment interview protocol exists", () => Boolean(paymentProtocol));
+check("payment interview CSV template exists", () => Boolean(paymentTemplate));
+check("payment interview analyzer exists", () => fileExists("scripts/summarize-payment-interviews.mjs"));
+check("payment interview analyzer npm script exists", () => scriptIncludes("analyze:payment-interviews", "summarize-payment-interviews"));
+check("payment interview analyzer tests are in npm test", () => scriptIncludes("test", "test:payment-interviews"));
+check("payment interview template has exact expected headers", () => firstCsvLine(paymentTemplate).join(",") === expectedPaymentHeaders.join(","));
+check("payment interview analyzer handles the blank template", () => analyzerOutput("scripts/summarize-payment-interviews.mjs", "docs/research/payment_interview_results_template.csv").includes("no interview rows yet"));
 
 check("seed protocol targets 15 first-time users", () => hasAll(seedProtocol, ["Target sample: 15", "15 first-time users"]));
 check("seed protocol protects raw trigger privacy", () => hasAll(seedProtocol, ["Do not collect raw trigger text", "Not allowed:", "medical history or diagnoses"]));
@@ -66,11 +98,18 @@ check("seed tester handoff defines core tasks and questions", () => hasAll(seedT
 check("support page links seed tester handoff", () => supportPage.includes("/support/seed-test"));
 check("mobile Profile links seed tester handoff", () => mobileProfile.includes("https://stillmind-inner-cinema.vercel.app/support/seed-test"));
 
+check("payment protocol defines qualified sample", () => hasAll(paymentProtocol, ["Minimum before paid launch: 5 qualified interviews", "Qualified means"]));
+check("payment protocol protects private and medical data", () => hasAll(paymentProtocol, ["Do not collect medical history", "Raw trigger text", "Payment card details"]));
+check("payment protocol defines paid offer cards", () => hasAll(paymentProtocol, ["Offer A: StillMind Plus", "Offer B: 21-Day Reset Path", "Offer C: Founder-Led Cohort"]));
+check("payment protocol defines go/no-go rules", () => hasAll(paymentProtocol, ["Go to paid-offer experiment", "No-go / fix positioning", "No-go / fix safety and trust"]));
+check("payment protocol links analyzer command", () => paymentProtocol.includes("npm run analyze:payment-interviews"));
+
 check("GTM plan defines six-week validation loop", () => hasAll(gtm, ["Six-Week Validation Loop", "Weeks 1-2: 15 guided users", "Weeks 3-4: 50 unguided users", "Weeks 5-6: willingness to pay"]));
 check("GTM plan keeps first release free unless StoreKit is ready", () => hasAll(gtm, ["The first App Store release should be free", "StoreKit", "restore purchase"]));
 check("GTM plan includes channel order", () => hasAll(gtm, ["Channel Order", "Founder-led community", "No paid acquisition before second-use retention"]));
 check("GTM plan includes moat development", () => hasAll(gtm, ["Moat Development", "Learning", "Retention", "Distribution"]));
 check("GTM plan references seed-user protocol", () => gtm.includes("SEED_USER_PROTOCOL.md"));
+check("GTM plan references payment interview protocol", () => hasAll(gtm, ["PAYMENT_INTERVIEW_PROTOCOL.md", "npm run analyze:payment-interviews"]));
 
 check("measurement plan defines useful resets North Star", () => hasAll(measurement, ["Useful resets", "more choice before acting"]));
 check("measurement plan defines initial funnel and safety targets", () => hasAll(measurement, ["First reset completion: >=40%", "First useful reset: >=25%", "Seven-day second useful reset: >=20%", "Worse + stopped: <=15%"]));
@@ -79,12 +118,21 @@ check("measurement plan includes privacy-safe event allowlist", () => hasAll(mea
 check("measurement plan links seed-user protocol", () => measurement.includes("SEED_USER_PROTOCOL.md"));
 
 check("human gates require 15 seed users before public App Store", () => hasAll(humanGates, ["Observe at least 15 first-time users", "Run the 15-user protocol", "before broad TestFlight or App Store launch"]));
+check("human gates require payment interviews before paid offers", () => hasAll(humanGates, ["PAYMENT_INTERVIEW_PROTOCOL.md", "GO_TEST_PAID_OFFER"]));
 check("release readiness checks seed-user assets", () => hasAll(release, ["seed-user protocol exists", "seed-user result template exists", "seed-user analyzer exists"]));
+check("release readiness checks payment interview assets", () => hasAll(release, ["payment interview protocol exists", "payment interview analyzer exists", "payment interview analyzer tests exist"]));
 
 if (!fileExists("docs/research/seed_user_results.csv")) {
   warnings.push({
     label: "no real seed-user result file",
     detail: "Expected before broad TestFlight/App Store: copy seed_user_results_template.csv to a private results file and collect 15 anonymized rows.",
+  });
+}
+
+if (!fileExists("docs/research/payment_interview_results.csv")) {
+  warnings.push({
+    label: "no real payment interview result file",
+    detail: "Expected before paid launch: copy payment_interview_results_template.csv to a private results file and collect at least 5 qualified interviews.",
   });
 }
 
@@ -104,7 +152,7 @@ if (failed.length > 0) {
   process.exit(1);
 }
 
-console.log("\nGTM readiness guard passed. Real seed-user sessions and market evidence remain human/external gates.");
+console.log("\nGTM readiness guard passed. Real seed-user sessions, payment interviews, and market evidence remain human/external gates.");
 
 function check(label, fn) {
   let ok = false;
@@ -139,8 +187,8 @@ function firstCsvLine(source) {
   return firstLine.split(",").map((value) => value.trim());
 }
 
-function analyzerOutput(path) {
-  return execFileSync(process.execPath, ["scripts/summarize-seed-users.mjs", path], {
+function analyzerOutput(script, path) {
+  return execFileSync(process.execPath, [script, path], {
     cwd: process.cwd(),
     encoding: "utf8",
   });

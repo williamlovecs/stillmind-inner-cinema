@@ -80,8 +80,9 @@ Do not optimize price before proving repeated useful resets.
 ### Weeks 5-6: willingness to pay
 
 - Show two clearly described Plus offers without charging if StoreKit is not ready.
-- Run five payment interviews and one price-choice survey.
-- Success signal: >=10% qualified intent or at least 5 genuine purchase attempts among repeat users.
+- Use `docs/research/PAYMENT_INTERVIEW_PROTOCOL.md` for the script, offer cards, privacy boundary, and go/no-go rules.
+- Run five payment interviews and one price-choice survey, then summarize with `npm run analyze:payment-interviews`.
+- Success signal: `npm run analyze:payment-interviews` returns `GO_TEST_PAID_OFFER`, with at least 5 qualified interviews, 3 high-intent users, and 2 users who would attempt purchase today.
 
 ## Channel Order
 

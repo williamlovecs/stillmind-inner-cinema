@@ -48,6 +48,7 @@ The default report is repository-only. The `--live` report also probes the local
 - Choose free launch vs configured StoreKit subscription.
 - If paid: create App Store products, price tiers, trial terms, restore-purchase test account, and subscription disclosure.
 - Validate payment intent before scaling AI or content cost.
+- Run `docs/research/PAYMENT_INTERVIEW_PROTOCOL.md` and require `npm run analyze:payment-interviews` to return `GO_TEST_PAID_OFFER` before enabling paid offers.
 - Do not sign employer contracts until individual-data separation and procurement/privacy review exist.
 
 ## Creative Gates
