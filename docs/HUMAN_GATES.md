@@ -19,6 +19,7 @@ The default report is repository-only. The `--live` report also probes the local
 | Bundle ID confirmation | Founder | Identifier exists in Apple account | Pending |
 | Expo/EAS login and project link | Founder/Codex with credential | `eas project:info` | Pending |
 | Signing and preview build | EAS/Apple | Installable iOS artifact | Pending |
+| Real-device QA | Founder/Codex with device | `npm run analyze:device-qa` returns `PASS_REAL_DEVICE_QA` on a real-device results file | Pending |
 | TestFlight review | Apple | External testing approved | Pending |
 | App Store review | Apple | Approved version | Pending |
 
@@ -60,6 +61,7 @@ The default report is repository-only. The `--live` report also probes the local
 Go to public App Store only when:
 
 - Preview build passes the real-device matrix with no critical issue.
+- `npm run analyze:device-qa -- path\to\real_device_qa_results.csv` returns `PASS_REAL_DEVICE_QA`.
 - Safety, privacy, export, and delete paths match policy text.
 - At least 15 seed users have completed the product and no unresolved severe adverse pattern exists.
 - Support channel is monitored.

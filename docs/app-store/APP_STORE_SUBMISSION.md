@@ -55,7 +55,15 @@ npx eas-cli submit --platform ios --profile production
 
 Do not submit until the preview build has passed the real-device matrix.
 
+Record the matrix in a private copy of `docs/app-store/real_device_qa_template.csv`, then summarize it with:
+
+```powershell
+npm run analyze:device-qa -- path\to\real_device_qa_results.csv
+```
+
 ## Real-Device Test Matrix
+
+The template test IDs below must all be completed with `result=pass` before public App Store submission unless a human gate explicitly accepts a documented exception.
 
 - Fresh install and onboarding.
 - Skip text input and complete a local reset.
@@ -103,6 +111,7 @@ StillMind is a non-clinical general-wellness app. The reviewer can use all core 
 
 - [ ] App Store Connect copy reviewed against `SUBMISSION_PACKAGE.md`.
 - [ ] Final 1024x1024 icon and splash assets.
+- [ ] Real-device QA CSV summarized as `PASS_REAL_DEVICE_QA`.
 - [ ] iPhone 6.9-inch and 6.5-inch screenshots; iPad only if supported.
 - [ ] App description, keywords, category, age rating, copyright.
 - [ ] Real support email and URLs.

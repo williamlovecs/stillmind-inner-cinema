@@ -159,6 +159,7 @@ Do not claim clinical outcomes, awakening guarantees, consciousness ranking, tra
 - [ ] `npm run check:release-readiness` passes engineering gates; warnings are tracked as human/external gates.
 - [ ] `npm run check:claims` passes with no public medical, diagnosis, ranking, or guaranteed-outcome claims.
 - [ ] EAS preview build installed on a real iPhone.
+- [ ] Real-device QA CSV summarized with `npm run analyze:device-qa` and decision `PASS_REAL_DEVICE_QA`.
 - [ ] Support, privacy, and terms URLs return 200.
 - [ ] Private support mailbox is monitored or launch scope remains clearly limited.
 - [ ] Reviewer can complete the core value without account, payment, microphone, or AI.

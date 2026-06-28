@@ -53,6 +53,8 @@ check("screenshot set requires real shipping UI", () => hasAll(submissionPackage
 check("pre-submit checklist includes claim guard", () => hasAll(submissionPackage, ["npm run check:claims", "diagnosis", "treatment"]));
 check("runbook includes EAS build and submit commands", () => hasAll(runbook, ["eas-cli build --platform ios", "eas-cli submit --platform ios"]));
 check("runbook lists real-device test matrix", () => hasAll(runbook, ["Real-Device Test Matrix", "Privacy and terms links", "Public support link"]));
+check("runbook links real-device QA analyzer", () => hasAll(runbook, ["real_device_qa_template.csv", "npm run analyze:device-qa", "PASS_REAL_DEVICE_QA"]));
+check("real-device QA template exists", () => fileExists("docs/app-store/real_device_qa_template.csv"));
 
 check("iOS icon path is configured", () => typeof app?.ios?.icon === "string" && fileExists(join("mobile", app.ios.icon.replace(/^\.\//, ""))));
 check("iOS icon is a 1024 PNG", () => pngSize(join("mobile", app?.ios?.icon?.replace(/^\.\//, "") ?? ""), 1024, 1024));

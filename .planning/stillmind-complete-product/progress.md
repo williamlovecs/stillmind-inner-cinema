@@ -56,3 +56,4 @@
 - Added a metadata-only `source_corpus_index.json` for the 906-page corpus and upgraded the source-boundary guard from warning to required gate; future RAG must remain rights-reviewed, non-public, seed-demand-gated, and product-safe before implementation.
 - Added a public `/support/seed-test` handoff plus mobile Profile link so invited TestFlight/seed users get a privacy-safe task list and feedback prompts before the 15-user validation loop.
 - Added `npm run status:launch`, a repository-grounded status reporter that separates completed engineering gates from EAS, Apple, legal, real-device, and seed-user external gates. It now also supports `--live` probes for local git cleanliness, Expo/EAS login, EAS project linkage, and the production Vercel alias.
+- Added a real-device QA template plus `npm run analyze:device-qa` and tests; App Store/runbook/release-readiness now require a `PASS_REAL_DEVICE_QA` summary before broad TestFlight or App Store submission.

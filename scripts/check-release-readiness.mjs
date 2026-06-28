@@ -52,6 +52,11 @@ check("seed-user analyzer exists", () => fileExists("scripts/summarize-seed-user
 check("seed-user analyzer npm script exists", () => scriptIncludes(pkg, "analyze:seed-users", "summarize-seed-users"));
 check("seed-user analyzer tests exist", () => scriptIncludes(pkg, "test:seed-users", "seed-users.test.ts"));
 check("npm test runs seed-user analyzer tests", () => scriptIncludes(pkg, "test", "test:seed-users"));
+check("real-device QA template exists", () => fileExists("docs/app-store/real_device_qa_template.csv"));
+check("real-device QA analyzer exists", () => fileExists("scripts/summarize-device-qa.mjs"));
+check("real-device QA analyzer npm script exists", () => scriptIncludes(pkg, "analyze:device-qa", "summarize-device-qa"));
+check("real-device QA analyzer tests exist", () => scriptIncludes(pkg, "test:device-qa", "device-qa.test.ts"));
+check("npm test runs real-device QA analyzer tests", () => scriptIncludes(pkg, "test", "test:device-qa"));
 check("GTM links seed-user protocol", () => fileContains("docs/business/GTM_AND_BUSINESS.md", "SEED_USER_PROTOCOL.md"));
 check("measurement plan links seed-user protocol", () => fileContains("docs/analytics/MEASUREMENT_PLAN.md", "SEED_USER_PROTOCOL.md"));
 check("source material boundary exists", () => fileExists("docs/research/SOURCE_MATERIAL_BOUNDARY.md"));
@@ -91,7 +96,7 @@ check("public claim guard exists", () => fileExists("scripts/check-public-claims
 
 warnIfMissing("EAS login is external", "Run `npx eas-cli whoami` from mobile/ after Expo credentials are available.");
 warnIfMissing("Apple Developer is external", "Confirm paid Apple Developer membership and App Store Connect app record manually.");
-warnIfMissing("Real-device QA is external", "Install an EAS preview/TestFlight build on a real iPhone and run the matrix in docs/app-store/APP_STORE_SUBMISSION.md.");
+warnIfMissing("Real-device QA is external", "Install an EAS preview/TestFlight build on a real iPhone, fill a private copy of docs/app-store/real_device_qa_template.csv, then run `npm run analyze:device-qa -- path\\to\\real_device_qa_results.csv`.");
 warnIfMissing("Legal review is external", "Have privacy, consumer, subscription, wellness, and optional-AI disclosures reviewed before broad launch.");
 warnIfMissing("Seed-user results are external", "Run docs/research/SEED_USER_PROTOCOL.md with 15 users and summarize the go/no-go result.");
 
