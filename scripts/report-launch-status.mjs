@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -6,6 +6,8 @@ const jsonMode = process.argv.includes("--json");
 const liveMode = process.argv.includes("--live");
 const npxCommand = process.platform === "win32" ? "cmd.exe" : "npx";
 const npxPrefix = process.platform === "win32" ? ["/c", "npx"] : [];
+const vercelCommand = process.platform === "win32" ? "cmd.exe" : "vercel";
+const vercelPrefix = process.platform === "win32" ? ["/c", "vercel"] : [];
 
 const pkg = readJson("package.json");
 const app = readJson("mobile/app.json")?.expo;
@@ -180,7 +182,6 @@ function readJson(path) {
 }
 
 async function collectLiveChecks() {
-  const productionUrl = "https://stillmind-inner-cinema.vercel.app/support/seed-test";
   return [
     localCommandCheck("Git working tree clean", "git", ["status", "-sb"], {
       okWhen: (output) => output.trim() === "## main...origin/main",
@@ -189,44 +190,35 @@ async function collectLiveChecks() {
     localCommandCheck("Expo/EAS logged in", npxCommand, [...npxPrefix, "eas-cli", "whoami"], {
       cwd: join(process.cwd(), "mobile"),
       okWhen: (output) => !/not logged in/i.test(output) && output.trim().length > 0,
-      detail: (output) => output.trim().split(/\s+/)[0] ?? "",
+      detail: (output) => firstUsefulLine(output),
     }),
     localCommandCheck("EAS project linked", npxCommand, [...npxPrefix, "eas-cli", "project:info"], {
       cwd: join(process.cwd(), "mobile"),
       okWhen: (output) => /Project ID|projectId|ID/i.test(output),
       detail: (output) => firstUsefulLine(output),
     }),
-    await urlCheck("Production seed-test URL", productionUrl),
+    localCommandCheck("Production Vercel alias ready", vercelCommand, [...vercelPrefix, "inspect", "stillmind-inner-cinema.vercel.app"], {
+      okWhen: (output) => /status\s+● Ready/i.test(output) && output.includes("https://stillmind-inner-cinema.vercel.app"),
+      detail: (output) => firstMatchingLine(output, "status") || firstMatchingLine(output, "url") || firstUsefulLine(output),
+    }),
   ];
 }
 
 function localCommandCheck(label, command, args, options = {}) {
-  try {
-    const output = execFileSync(command, args, {
-      cwd: options.cwd ?? process.cwd(),
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-      timeout: 20_000,
-    });
-    const ok = options.okWhen ? Boolean(options.okWhen(output)) : true;
-    return { label, ok, detail: options.detail ? options.detail(output) : firstUsefulLine(output) };
-  } catch (error) {
-    const output = `${error.stdout?.toString?.() ?? ""}${error.stderr?.toString?.() ?? ""}`.trim();
-    return { label, ok: false, detail: firstUsefulLine(output) || error.message };
-  }
-}
-
-async function urlCheck(label, url) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10_000);
-  try {
-    const response = await fetch(url, { signal: controller.signal, cache: "no-store" });
-    return { label, ok: response.ok, detail: `${response.status} ${url}` };
-  } catch (error) {
-    return { label, ok: false, detail: `${error.name}: ${url}` };
-  } finally {
-    clearTimeout(timeout);
-  }
+  const result = spawnSync(command, args, {
+    cwd: options.cwd ?? process.cwd(),
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    timeout: 20_000,
+  });
+  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
+  const commandSucceeded = result.status === 0 && !result.error;
+  const ok = commandSucceeded && (options.okWhen ? Boolean(options.okWhen(output)) : true);
+  return {
+    label,
+    ok,
+    detail: (options.detail ? options.detail(output) : firstUsefulLine(output)) || result.error?.message || "",
+  };
 }
 
 function firstUsefulLine(output) {
@@ -234,4 +226,11 @@ function firstUsefulLine(output) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .find((line) => line.length > 0) ?? "";
+}
+
+function firstMatchingLine(output, fragment) {
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line.toLowerCase().includes(fragment.toLowerCase())) ?? "";
 }
