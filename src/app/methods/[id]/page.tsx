@@ -74,7 +74,7 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
             href="/"
             className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-stone-300 transition hover:bg-white/[0.1]"
           >
-            Inner Cinema
+            观电影法
           </Link>
         </header>
 

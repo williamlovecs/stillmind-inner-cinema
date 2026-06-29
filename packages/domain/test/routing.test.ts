@@ -150,12 +150,12 @@ test("practice path progress advances only through completed non-worse stages", 
 test("practice path progress respects methods hidden by the user", () => {
   const path = PRACTICE_PATHS.find((item) => item.id === "observer-foundation");
   assert.ok(path);
-  const sessions: PracticeSession[] = [weeklySession("a", "thought-watching", "curious", "better")];
-  const progress = buildPracticePathProgress(path, sessions, ["open-awareness"]);
+  const sessions: PracticeSession[] = [weeklySession("a", "paced-breath", "curious", "better")];
+  const progress = buildPracticePathProgress(path, sessions, ["thought-watching"]);
   assert.equal(progress.completedStages, 1);
   assert.equal(progress.nextStage, undefined);
   assert.equal(progress.blockedByHiddenMethod, true);
-  assert.deepEqual(progress.reasonCodes, ["path:hidden-method", "method:open-awareness"]);
+  assert.deepEqual(progress.reasonCodes, ["path:hidden-method", "method:thought-watching"]);
 });
 
 test("weekly review excludes sessions outside the interval and hides low-sample averages", () => {

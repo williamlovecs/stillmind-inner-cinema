@@ -4,7 +4,7 @@ import Link from "next/link";
 const feedbackUrl = "https://github.com/williamlovecs/stillmind-inner-cinema/issues/new/choose";
 
 export const metadata: Metadata = {
-  title: "支持与反馈 · StillMind: Inner Cinema",
+  title: "支持与反馈 · StillMind",
   description: "StillMind 的支持入口、数据请求、产品边界和反馈方式。",
 };
 

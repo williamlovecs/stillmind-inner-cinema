@@ -19,7 +19,7 @@ const evidenceLabels: Record<MethodDefinition["evidenceTier"], string> = {
 
 export const metadata = {
   title: "方法库 | StillMind",
-  description: "StillMind 的 12 种短练习与 4 条练习路径。",
+  description: "StillMind 的 12 种沉寂小我方法与 4 条练习路径。",
 };
 
 export default function MethodsPage() {
@@ -50,25 +50,25 @@ export default function MethodsPage() {
             href="/"
             className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-stone-300 transition hover:bg-white/[0.1]"
           >
-            返回内在电影
+            返回观电影法
           </Link>
         </header>
 
         <section className="grid gap-8 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
-            <p className="text-sm uppercase tracking-[0.28em] text-violet-200/70">Web ready method system</p>
+            <p className="text-sm uppercase tracking-[0.28em] text-violet-200/70">StillMind method system</p>
             <h1 className="mt-4 max-w-3xl text-5xl font-semibold leading-tight text-stone-50 sm:text-6xl">
-              12 种短练习，组成完整的沉寂小我入口。
+              12 种方法，都是沉寂小我的入口。
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-300">
-              从三幕内在电影开始，延伸到呼吸、看念头、宽视野、人称切换、回到行动和复盘锚点。每个方法都是一个短暂停顿，不给你贴标签。
+              呼吸法、凝视法、登出法、宽恕法、内观法、觉察法、观电影法、意识聚焦法、稳定法、意识抽离法、人称替代法和合一法并列存在。你从当前状态选择一个方法，而不是被某一种方法定义。
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/#inner-cinema"
                 className="rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-950/30"
               >
-                先体验 Inner Cinema
+                体验观电影法
               </Link>
               <a
                 href="#paths"
@@ -81,7 +81,7 @@ export default function MethodsPage() {
           <div className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/72 p-5 shadow-2xl shadow-violet-950/20 backdrop-blur-xl">
             <p className="text-sm font-medium text-stone-100">产品边界</p>
             <p className="mt-3 text-sm leading-6 text-stone-400">
-              StillMind 提供一般性的暂停、观察和回到行动提示。不提供诊断、治疗、危机处置，也不替代专业支持。
+              StillMind 提供一般性的暂停、观察、注意力练习和回到行动提示。不提供诊断、治疗、危机处置，也不替代专业支持。
             </p>
             <div className="mt-5 grid grid-cols-3 gap-2">
               <Stat label="方法" value="12" />

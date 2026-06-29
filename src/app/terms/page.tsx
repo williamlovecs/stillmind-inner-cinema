@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "服务条款 · StillMind: Inner Cinema",
+  title: "服务条款 · StillMind",
   description: "StillMind 的服务条款。它不是医疗服务，不替代专业心理帮助。",
 };
 
