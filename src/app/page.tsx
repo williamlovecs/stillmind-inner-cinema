@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 import { containsHighRiskLanguage } from "@stillmind/domain";
@@ -415,7 +416,7 @@ function HomePanel({
 }) {
   return (
     <div className="panel-enter w-full">
-      <div className="cinema-portal mb-7 rounded-[2rem] border border-white/10 bg-black/30 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
+      <div id="inner-cinema" className="cinema-portal mb-7 rounded-[2rem] border border-white/10 bg-black/30 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
         <div className="cinema-screen rounded-[1.4rem] border border-white/10 px-5 py-8 text-center">
           <p className="text-xs tracking-[0.28em] text-stone-400">正在观影，而不是经历</p>
           <p className="mt-3 text-sm leading-6 text-stone-300">
@@ -471,6 +472,12 @@ function HomePanel({
         >
           进入内在电影
         </button>
+        <Link
+          href="/methods"
+          className="mt-3 flex h-12 w-full items-center justify-center rounded-full border border-violet-200/20 bg-violet-100/[0.06] text-sm font-medium text-violet-100 transition hover:bg-violet-100/[0.11]"
+        >
+          查看完整方法库 · 12 种短练习
+        </Link>
       </div>
     </div>
   );
