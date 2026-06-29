@@ -17,6 +17,7 @@ import {
 } from "@stillmind/domain";
 
 const SESSION_KEY = "stillmind.web.sessions.v1";
+const SEED_FEEDBACK_KEY = "stillmind.web.seedFeedback.v1";
 
 const STATE_OPTIONS: Array<{ id: StateMode; label: string; body: string; outcome: DesiredOutcome; activation: 1 | 2 | 3 | 4 | 5 }> = [
   { id: "impulsive", label: "想立刻反击", body: "先不让冲动替你决定。", outcome: "pause", activation: 4 },
@@ -28,6 +29,20 @@ const STATE_OPTIONS: Array<{ id: StateMode; label: string; body: string; outcome
 ];
 
 const ACTIONS = ["喝水 + 走路 3 分钟", "回到当前任务 25 分钟", "先不回复，稍后再决定", "写下一句事实，不写评价"];
+
+type ReuseIntent = "会" | "不确定" | "不会";
+
+type SeedFeedback = {
+  id: string;
+  sessionId: string;
+  createdAt: string;
+  mode: StateMode;
+  methodId: MethodId;
+  intensityBefore: number;
+  intensityAfter: number;
+  reuseIntent: ReuseIntent;
+  note: string;
+};
 
 const METHOD_MARKS: Record<MethodId, string> = {
   "inner-cinema": "观",
@@ -68,6 +83,25 @@ function storeSessions(sessions: PracticeSession[]) {
   window.localStorage.setItem(SESSION_KEY, JSON.stringify(sessions.slice(0, 30)));
 }
 
+function storeSeedFeedback(feedback: SeedFeedback) {
+  try {
+    const raw = window.localStorage.getItem(SEED_FEEDBACK_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    const list = Array.isArray(parsed) ? parsed : [];
+    window.localStorage.setItem(SEED_FEEDBACK_KEY, JSON.stringify([feedback, ...list].slice(0, 50)));
+  } catch {
+    window.localStorage.setItem(SEED_FEEDBACK_KEY, JSON.stringify([feedback]));
+  }
+}
+
+function toActivationBucket(value: number): 1 | 2 | 3 | 4 | 5 {
+  if (value <= 1) return 1;
+  if (value <= 3) return 2;
+  if (value <= 5) return 3;
+  if (value <= 7) return 4;
+  return 5;
+}
+
 function practiceFor(methodId: MethodId, duration: DurationMinutes): PracticeVariant | undefined {
   const exact = getPracticeVariant(methodId, duration);
   if (exact) return exact;
@@ -86,7 +120,10 @@ export default function ResetPage() {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [paused, setPaused] = useState(false);
   const [result, setResult] = useState<SessionResult | undefined>();
-  const [activationAfter, setActivationAfter] = useState<1 | 2 | 3 | 4 | 5>(state.activation);
+  const [intensityBefore, setIntensityBefore] = useState(Math.min(10, state.activation * 2));
+  const [intensityAfter, setIntensityAfter] = useState(Math.min(10, state.activation * 2));
+  const [reuseIntent, setReuseIntent] = useState<ReuseIntent>("不确定");
+  const [feedbackNote, setFeedbackNote] = useState("");
   const [action, setAction] = useState(ACTIONS[0]);
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
   const [manualChoice, setManualChoice] = useState(false);
@@ -143,7 +180,9 @@ export default function ResetPage() {
     setPhase("choose");
     setManualChoice(false);
     setResult(undefined);
-    setActivationAfter(STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3);
+    const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
+    setIntensityBefore(Math.min(10, nextActivation * 2));
+    setIntensityAfter(Math.min(10, nextActivation * 2));
   }
 
   function chooseMethod(id: MethodId) {
@@ -161,6 +200,8 @@ export default function ResetPage() {
     setPaused(false);
     setPhase("practice");
     setResult(undefined);
+    setFeedbackNote("");
+    setReuseIntent("不确定");
   }
 
   function stopPractice() {
@@ -169,25 +210,38 @@ export default function ResetPage() {
   }
 
   function completeSession() {
-    if (!result || !practice) return;
+    if (!practice) return;
+    const sessionId = `web-${Date.now()}`;
+    const finalResult: SessionResult = result ?? (intensityAfter < intensityBefore ? "better" : intensityAfter > intensityBefore ? "worse" : "same");
     const session: PracticeSession = {
-      id: `web-${Date.now()}`,
+      id: sessionId,
       schemaVersion: 1,
       startedAt: startedAt.current,
       completedAt: new Date().toISOString(),
-      status: result === "stopped" ? "stopped" : "completed",
+      status: finalResult === "stopped" ? "stopped" : "completed",
       mode,
       methodId: method.id,
       durationSeconds: totalSeconds,
-      activationBefore: state.activation,
-      activationAfter,
-      result,
+      activationBefore: toActivationBucket(intensityBefore),
+      activationAfter: toActivationBucket(intensityAfter),
+      result: finalResult,
       groundedActionId: action,
       contentVersion: practice.contentVersion,
     };
     const next = [session, ...sessions].slice(0, 30);
     setSessions(next);
     storeSessions(next);
+    storeSeedFeedback({
+      id: `seed-${Date.now()}`,
+      sessionId,
+      createdAt: new Date().toISOString(),
+      mode,
+      methodId: method.id,
+      intensityBefore,
+      intensityAfter,
+      reuseIntent,
+      note: feedbackNote.trim().slice(0, 500),
+    });
     setPhase("done");
   }
 
@@ -214,14 +268,16 @@ export default function ResetPage() {
           </nav>
         </header>
 
-        <section className="grid min-w-0 flex-1 gap-6 py-8 lg:grid-cols-[0.9fr_1.25fr] lg:items-stretch">
-          <aside className="min-w-0 max-w-[calc(100vw-2.5rem)] space-y-5 lg:max-w-none">
-            <div className="rounded-[2rem] border border-violet-200/15 bg-slate-950/55 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
+        <section className="grid w-full min-w-0 flex-1 gap-6 overflow-hidden py-8 lg:grid-cols-[0.9fr_1.25fr] lg:items-stretch">
+          <aside className="w-full min-w-0 max-w-[350px] space-y-5 sm:max-w-full">
+            <div className="w-full min-w-0 max-w-[350px] overflow-hidden rounded-[2rem] border border-violet-200/15 bg-slate-950/55 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl sm:max-w-full">
               <p className="text-sm uppercase tracking-[0.26em] text-violet-200/65">Web Reset</p>
               <h1 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">此刻，被什么带走了？</h1>
               <p className="mt-4 break-all text-base leading-7 text-stone-300">选一个当前状态，直接开始一次沉寂小我练习。</p>
+              <div className="mt-4 break-all rounded-2xl border border-violet-200/20 bg-violet-200/[0.08] p-3 text-sm leading-6 text-violet-50">第一次体验：选当前状态，做 1 分钟推荐练习，完成后反馈是否更稳定。</div>
+              <p className="mt-3 text-xs leading-5 text-stone-500">请不要输入真实姓名、隐私事件、创伤细节、医疗或危机场景。本工具只是日常情绪 reset 和自我观察练习，不替代心理咨询或医疗帮助。</p>
             </div>
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-xl">
+            <div className="w-full min-w-0 max-w-[350px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-xl sm:max-w-full">
               <p className="px-1 text-sm font-medium text-stone-100">当前状态</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
                 {STATE_OPTIONS.map((item) => <button key={item.id} type="button" onClick={() => changeMode(item.id)} className={`rounded-2xl border p-4 text-left transition ${mode === item.id ? "border-violet-200/70 bg-violet-200/14 shadow-lg shadow-violet-950/20" : "border-white/10 bg-slate-950/36 hover:border-violet-200/35"}`}><span className="block text-base font-semibold text-white">{item.label}</span><span className="mt-1 block text-sm leading-6 text-stone-400">{item.body}</span></button>)}
@@ -229,7 +285,7 @@ export default function ResetPage() {
             </div>
           </aside>
 
-          <section className="grid min-h-[720px] min-w-0 max-w-[calc(100vw-2.5rem)] gap-5 rounded-[2.2rem] lg:max-w-none border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:p-5 lg:grid-rows-[auto_1fr]">
+          <section className="grid min-h-[720px] w-full min-w-0 max-w-[350px] gap-5 overflow-hidden rounded-[2.2rem] border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:max-w-full sm:p-5 lg:grid-rows-[auto_1fr]">
             <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
               <div>
                 <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">Recommended practice</p>
@@ -249,13 +305,14 @@ export default function ResetPage() {
               <div className="flex min-h-[520px] min-w-0 flex-col rounded-[2rem] border border-white/10 bg-slate-950/55 p-5 shadow-inner shadow-black/30">
                 {phase === "choose" && practice ? <ChoosePractice method={method} practice={practice} onStart={startPractice} /> : null}
                 {phase === "practice" && practice && currentStep ? <PracticePlayer method={method} practice={practice} stepIndex={stepIndex} secondsLeft={secondsLeft} progress={progress} paused={paused} onPause={() => setPaused((value) => !value)} onStop={stopPractice} /> : null}
-                {phase === "check" ? <CheckView result={result} activationAfter={activationAfter} action={action} onResult={setResult} onActivation={setActivationAfter} onAction={setAction} onComplete={completeSession} /> : null}
+                {phase === "check" ? <CheckView result={result} intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} action={action} onResult={setResult} onIntensityBefore={setIntensityBefore} onIntensityAfter={setIntensityAfter} onReuseIntent={setReuseIntent} onFeedbackNote={setFeedbackNote} onAction={setAction} onComplete={completeSession} /> : null}
                 {phase === "done" ? <DoneView method={method} action={action} onAgain={resetAgain} /> : null}
               </div>
 
               <aside className="min-w-0 space-y-4">
                 <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-4">
                   <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">12 种方法</p><p className="text-xs text-stone-500">可手动选择</p></div>
+                  <p className="mt-2 text-xs leading-5 text-stone-500">第一次不用手动选择方法，系统已根据当前状态推荐。</p>
                   <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-2">
                     {METHOD_CATALOG.map((item) => <button key={item.id} type="button" onClick={() => chooseMethod(item.id)} className={`group rounded-2xl border p-3 text-left transition ${item.id === method.id ? "border-violet-200/70 bg-violet-200/14" : "border-white/10 bg-slate-950/32 hover:border-violet-200/35"}`}><span className="flex items-center gap-2"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-300/80 to-amber-200/70 text-sm font-bold text-slate-950">{METHOD_MARKS[item.id]}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-white">{item.title}</span><span className="block truncate text-xs text-stone-500">{FAMILY_LABELS[item.family]}</span></span></span></button>)}
                   </div>
@@ -343,9 +400,42 @@ function StabilityPractice({ instruction, secondsLeft }: { instruction: string; 
   return <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-slate-950/70 p-6 text-center"><div className={`mx-auto grid h-56 w-56 place-items-center rounded-[2rem] border border-emerald-100/15 bg-[repeating-conic-gradient(from_0deg,rgba(167,243,208,0.12)_0deg_12deg,rgba(15,23,42,0.2)_12deg_24deg)] transition duration-700 ${steady ? "scale-95 opacity-70 blur-[0.2px]" : "scale-100 opacity-100"}`}><span className="rounded-full bg-slate-950/70 px-4 py-2 text-sm text-emerald-50">{steady ? "画面已放慢" : "画面在牵引注意"}</span></div><button type="button" onClick={() => setSteady((value) => !value)} className="mx-auto rounded-full border border-emerald-100/30 bg-emerald-100/10 px-5 py-3 text-sm font-semibold text-emerald-50">{steady ? "允许波动" : "尝试稳定"}</button><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">剩余 {secondsLeft} 秒</p></div>;
 }
 
-function CheckView({ result, activationAfter, action, onResult, onActivation, onAction, onComplete }: { result?: SessionResult; activationAfter: 1 | 2 | 3 | 4 | 5; action: string; onResult: (value: SessionResult) => void; onActivation: (value: 1 | 2 | 3 | 4 | 5) => void; onAction: (value: string) => void; onComplete: () => void }) {
+function CheckView({
+  result,
+  intensityBefore,
+  intensityAfter,
+  reuseIntent,
+  feedbackNote,
+  action,
+  onResult,
+  onIntensityBefore,
+  onIntensityAfter,
+  onReuseIntent,
+  onFeedbackNote,
+  onAction,
+  onComplete,
+}: {
+  result?: SessionResult;
+  intensityBefore: number;
+  intensityAfter: number;
+  reuseIntent: ReuseIntent;
+  feedbackNote: string;
+  action: string;
+  onResult: (value: SessionResult) => void;
+  onIntensityBefore: (value: number) => void;
+  onIntensityAfter: (value: number) => void;
+  onReuseIntent: (value: ReuseIntent) => void;
+  onFeedbackNote: (value: string) => void;
+  onAction: (value: string) => void;
+  onComplete: () => void;
+}) {
   const results: Array<[SessionResult, string]> = [["better", "多了一点选择"], ["same", "差不多"], ["worse", "更不舒服"], ["stopped", "我停止了"]];
-  return <div className="flex h-full flex-col justify-center gap-6"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">After check</p><h3 className="mt-3 text-3xl font-semibold text-white">现在，和刚才相比呢？</h3><p className="mt-3 text-base leading-7 text-stone-400">没有正确答案。反馈会帮助 StillMind 下次少推荐不适合你的方法。</p></div><div className="grid gap-2 sm:grid-cols-2">{results.map(([value, label]) => <button key={value} type="button" onClick={() => onResult(value)} className={`rounded-2xl border p-4 text-left text-sm font-semibold transition ${result === value ? "border-violet-200/70 bg-violet-200/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-300 hover:border-violet-200/35"}`}>{label}</button>)}</div><div><p className="mb-2 text-sm font-medium text-stone-100">此刻强烈程度</p><div className="flex gap-2">{([1,2,3,4,5] as const).map((value) => <button key={value} type="button" onClick={() => onActivation(value)} className={`grid h-11 w-11 place-items-center rounded-full border text-sm font-semibold ${activationAfter === value ? "border-amber-200/70 bg-amber-200/18 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{value}</button>)}</div></div><div><p className="mb-2 text-sm font-medium text-stone-100">下一步回到现实</p><div className="grid gap-2 sm:grid-cols-2">{ACTIONS.map((item) => <button key={item} type="button" onClick={() => onAction(item)} className={`rounded-2xl border p-3 text-left text-sm transition ${action === item ? "border-amber-200/70 bg-amber-200/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-300"}`}>{item}</button>)}</div></div><button type="button" disabled={!result} onClick={onComplete} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">保存并完成</button></div>;
+  const intents: ReuseIntent[] = ["会", "不确定", "不会"];
+  return <div className="flex h-full flex-col justify-center gap-5"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">Seed feedback</p><h3 className="mt-3 text-3xl font-semibold text-white">这次练习，对你有帮助吗？</h3><p className="mt-3 text-base leading-7 text-stone-400">只记录在当前浏览器。不要写真实姓名、隐私事件、创伤细节或医疗危机场景。</p></div><div className="grid gap-3 sm:grid-cols-2"><IntensityScale label="练习前状态强度" value={intensityBefore} onChange={onIntensityBefore} /><IntensityScale label="练习后状态强度" value={intensityAfter} onChange={onIntensityAfter} /></div><div><p className="mb-2 text-sm font-medium text-stone-100">下次类似场景是否愿意再用</p><div className="grid gap-2 sm:grid-cols-3">{intents.map((item) => <button key={item} type="button" onClick={() => onReuseIntent(item)} className={`rounded-2xl border p-3 text-center text-sm font-semibold transition ${reuseIntent === item ? "border-violet-200/70 bg-violet-200/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-300 hover:border-violet-200/35"}`}>{item}</button>)}</div></div><div className="grid gap-2 sm:grid-cols-2">{results.map(([value, label]) => <button key={value} type="button" onClick={() => onResult(value)} className={`rounded-2xl border p-3 text-left text-sm font-semibold transition ${result === value ? "border-violet-200/70 bg-violet-200/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-300 hover:border-violet-200/35"}`}>{label}</button>)}</div><label className="block"><span className="mb-2 block text-sm font-medium text-stone-100">一句话反馈：哪里有用或哪里不舒服</span><textarea value={feedbackNote} onChange={(event) => onFeedbackNote(event.target.value)} maxLength={500} placeholder="例如：倒计时有用，但某个步骤太抽象。" className="min-h-24 w-full rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-stone-600 focus:border-violet-200/45" /></label><div><p className="mb-2 text-sm font-medium text-stone-100">下一步回到现实</p><div className="grid gap-2 sm:grid-cols-2">{ACTIONS.map((item) => <button key={item} type="button" onClick={() => onAction(item)} className={`rounded-2xl border p-3 text-left text-sm transition ${action === item ? "border-amber-200/70 bg-amber-200/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-300"}`}>{item}</button>)}</div></div><button type="button" onClick={onComplete} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950">保存反馈并完成</button></div>;
+}
+
+function IntensityScale({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
+  return <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">{label}</p><span className="text-sm font-semibold text-amber-100">{value}/10</span></div><div className="mt-3 flex flex-wrap gap-1.5">{Array.from({ length: 11 }, (_, index) => <button key={index} type="button" onClick={() => onChange(index)} className={`grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold transition ${value === index ? "border-amber-200/75 bg-amber-200/18 text-white" : "border-white/10 bg-slate-950/36 text-stone-500 hover:border-violet-200/35 hover:text-stone-200"}`}>{index}</button>)}</div></div>;
 }
 
 function DoneView({ method, action, onAgain }: { method: MethodDefinition; action: string; onAgain: () => void }) {
