@@ -473,10 +473,10 @@ function HomePanel({
           进入内在电影
         </button>
         <Link
-          href="/methods"
+          href="/reset"
           className="mt-3 flex h-12 w-full items-center justify-center rounded-full border border-violet-200/20 bg-violet-100/[0.06] text-sm font-medium text-violet-100 transition hover:bg-violet-100/[0.11]"
         >
-          查看完整方法库 · 12 种短练习
+          开始 12 方法练习器
         </Link>
       </div>
     </div>

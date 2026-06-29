@@ -65,10 +65,10 @@ export default function MethodsPage() {
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
-                href="/#inner-cinema"
+                href="/reset"
                 className="rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-950/30"
               >
-                体验观电影法
+                开始 Web 练习器
               </Link>
               <a
                 href="#paths"
