@@ -111,7 +111,7 @@ function practiceFor(methodId: MethodId, duration: DurationMinutes): PracticeVar
 }
 
 export default function ResetPage() {
-  const [mode, setMode] = useState<StateMode>("impulsive");
+  const [mode, setMode] = useState<StateMode>("looping");
   const state = STATE_OPTIONS.find((item) => item.id === mode) ?? STATE_OPTIONS[0];
   const [duration, setDuration] = useState<DurationMinutes>(1);
   const [selectedMethodId, setSelectedMethodId] = useState<MethodId | undefined>();
@@ -127,6 +127,9 @@ export default function ResetPage() {
   const [action, setAction] = useState(ACTIONS[0]);
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
   const [manualChoice, setManualChoice] = useState(false);
+  const [showAdvancedMethods, setShowAdvancedMethods] = useState(false);
+  const [showDurationOptions, setShowDurationOptions] = useState(false);
+  const [showAllStates, setShowAllStates] = useState(false);
   const startedAt = useRef<string>(new Date().toISOString());
 
   useEffect(() => {
@@ -148,6 +151,7 @@ export default function ResetPage() {
   const activeMethodId = manualChoice && selectedMethodId ? selectedMethodId : recommendedMethod.id;
   const method = METHOD_BY_ID.get(activeMethodId) ?? recommendedMethod;
   const practice = practiceFor(method.id, duration) ?? practiceFor(method.id, method.durations[0]);
+  const visibleStateOptions = showAllStates ? STATE_OPTIONS : STATE_OPTIONS.slice(0, 3);
   const currentStep = practice?.steps[stepIndex];
   const totalSeconds = practice?.steps.reduce((sum, step) => sum + step.seconds, 0) ?? 0;
   const completedSeconds = practice ? practice.steps.slice(0, stepIndex).reduce((sum, step) => sum + step.seconds, 0) + ((currentStep?.seconds ?? 0) - secondsLeft) : 0;
@@ -179,6 +183,7 @@ export default function ResetPage() {
     setMode(nextMode);
     setPhase("choose");
     setManualChoice(false);
+    setShowAdvancedMethods(false);
     setResult(undefined);
     const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
     setIntensityBefore(Math.min(10, nextActivation * 2));
@@ -188,6 +193,7 @@ export default function ResetPage() {
   function chooseMethod(id: MethodId) {
     setSelectedMethodId(id);
     setManualChoice(true);
+    setShowAdvancedMethods(true);
     setPhase("choose");
     setResult(undefined);
   }
@@ -280,20 +286,22 @@ export default function ResetPage() {
             <div className="w-full min-w-0 max-w-[350px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-xl sm:max-w-full">
               <p className="px-1 text-sm font-medium text-stone-100">当前状态</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                {STATE_OPTIONS.map((item) => <button key={item.id} type="button" onClick={() => changeMode(item.id)} className={`rounded-2xl border p-4 text-left transition ${mode === item.id ? "border-violet-200/70 bg-violet-200/14 shadow-lg shadow-violet-950/20" : "border-white/10 bg-slate-950/36 hover:border-violet-200/35"}`}><span className="block text-base font-semibold text-white">{item.label}</span><span className="mt-1 block text-sm leading-6 text-stone-400">{item.body}</span></button>)}
+                {visibleStateOptions.map((item) => <button key={item.id} type="button" onClick={() => changeMode(item.id)} className={`rounded-2xl border p-4 text-left transition ${mode === item.id ? "border-violet-200/70 bg-violet-200/14 shadow-lg shadow-violet-950/20" : "border-white/10 bg-slate-950/36 hover:border-violet-200/35"}`}><span className="block text-base font-semibold text-white">{item.label}</span><span className="mt-1 block text-sm leading-6 text-stone-400">{item.body}</span></button>)}
               </div>
+              <button type="button" onClick={() => setShowAllStates((value) => !value)} className="mt-3 w-full rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-sm font-medium text-stone-300 transition hover:border-violet-200/35 hover:text-white">{showAllStates ? "收起状态" : "更多状态"}</button>
             </div>
           </aside>
 
           <section className="grid min-h-[720px] w-full min-w-0 max-w-[350px] gap-5 overflow-hidden rounded-[2.2rem] border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:max-w-full sm:p-5 lg:grid-rows-[auto_1fr]">
             <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">Recommended practice</p>
+                <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">推荐练习</p>
                 <div className="mt-3 flex flex-wrap items-end gap-3"><h2 className="text-3xl font-semibold text-white sm:text-4xl">{method.title}</h2><span className="rounded-full border border-amber-200/25 bg-amber-100/10 px-3 py-1 text-sm text-amber-100">{practice?.minutes ?? duration} 分钟</span></div>
                 <p className="mt-3 max-w-2xl break-all text-base leading-7 text-stone-300">{recommendation.kind === "practice" && method.id === recommendation.primary.id ? recommendation.explanation : method.summary}</p>
+                <p className="mt-2 text-sm leading-6 text-violet-100/70">第一次请直接做这个推荐练习，完成后会自动进入反馈。</p>
               </div>
               <div className="flex flex-wrap gap-2 lg:justify-end">
-                {[1, 3, 5, 10].map((value) => {
+                {!showDurationOptions ? <button type="button" onClick={() => setShowDurationOptions(true)} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-300 transition hover:border-violet-200/35 hover:text-white">默认 1 分钟 · 调整</button> : [1, 3, 5, 10].map((value) => {
                   const minutes = value as DurationMinutes;
                   const available = method.durations.includes(minutes);
                   return <button key={value} type="button" disabled={!available} onClick={() => setDuration(minutes)} className={`rounded-full border px-3 py-2 text-sm transition ${duration === minutes ? "border-violet-200/70 bg-violet-200/16 text-white" : "border-white/10 bg-white/[0.04] text-stone-300 enabled:hover:border-violet-200/35 disabled:cursor-not-allowed disabled:opacity-35"}`}>{value}m</button>;
@@ -311,20 +319,19 @@ export default function ResetPage() {
 
               <aside className="min-w-0 space-y-4">
                 <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-4">
-                  <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">12 种方法</p><p className="text-xs text-stone-500">可手动选择</p></div>
+                  <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">进阶方法库</p><button type="button" onClick={() => setShowAdvancedMethods((value) => !value)} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-stone-300 transition hover:border-violet-200/35 hover:text-white">{showAdvancedMethods ? "收起" : "展开"}</button></div>
                   <p className="mt-2 text-xs leading-5 text-stone-500">第一次不用手动选择方法，系统已根据当前状态推荐。</p>
-                  <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-2">
+                  {!showAdvancedMethods ? <div className="mt-3 rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-3"><p className="text-xs uppercase tracking-[0.18em] text-violet-200/60">Current recommendation</p><p className="mt-2 text-sm font-semibold text-white">{method.title}</p><p className="mt-1 text-xs leading-5 text-stone-500">想探索 12 种方法时再展开。</p></div> : <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-2">
                     {METHOD_CATALOG.map((item) => <button key={item.id} type="button" onClick={() => chooseMethod(item.id)} className={`group rounded-2xl border p-3 text-left transition ${item.id === method.id ? "border-violet-200/70 bg-violet-200/14" : "border-white/10 bg-slate-950/32 hover:border-violet-200/35"}`}><span className="flex items-center gap-2"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-300/80 to-amber-200/70 text-sm font-bold text-slate-950">{METHOD_MARKS[item.id]}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-white">{item.title}</span><span className="block truncate text-xs text-stone-500">{FAMILY_LABELS[item.family]}</span></span></span></button>)}
-                  </div>
+                  </div>}
                 </div>
-                <div className="rounded-[1.6rem] border border-amber-200/15 bg-amber-100/[0.055] p-4">
+                {sessions.length > 0 ? <div className="rounded-[1.6rem] border border-amber-200/15 bg-amber-100/[0.055] p-4">
                   <p className="text-sm font-medium text-stone-100">本机记录</p>
                   <p className="mt-2 break-all text-sm leading-6 text-stone-400">只保存在当前浏览器，用来做 seed user 测试和下次推荐，不上传私人触发内容。</p>
                   <div className="mt-4 space-y-2">
                     {sessions.slice(0, 3).map((session) => <div key={session.id} className="rounded-2xl border border-white/10 bg-slate-950/36 p-3"><p className="text-sm font-medium text-stone-100">{METHOD_BY_ID.get(session.methodId)?.title ?? session.methodId}</p><p className="mt-1 text-xs text-stone-500">{session.result ?? "completed"} · {new Date(session.startedAt).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p></div>)}
-                    {sessions.length === 0 ? <p className="rounded-2xl border border-dashed border-white/10 p-3 text-sm text-stone-500">完成一次练习后，这里会出现本机记录。</p> : null}
                   </div>
-                </div>
+                </div> : null}
               </aside>
             </div>
           </section>
