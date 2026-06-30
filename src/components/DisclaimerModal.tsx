@@ -38,46 +38,33 @@ export function DisclaimerModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="disclaimer-title"
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#050914]/85 px-4 py-6 backdrop-blur-md sm:items-center sm:p-6"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[#050914]/82 px-4 py-6 backdrop-blur-md sm:items-center sm:p-6"
     >
-      <div className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-amber-200/20 bg-[#08111f]/96 shadow-2xl shadow-violet-950/40">
-        <div className="overflow-y-auto px-6 py-7">
-          <p className="text-xs uppercase tracking-[0.28em] text-amber-100/70">
-            在你开始之前
+      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-violet-200/20 bg-[#08111f]/96 shadow-2xl shadow-violet-950/40">
+        <div className="px-6 py-7">
+          <p className="text-xs uppercase tracking-[0.28em] text-violet-200/70">
+            使用边界
           </p>
           <h2
             id="disclaimer-title"
             className="mt-3 text-2xl font-semibold leading-tight text-stone-50"
           >
-            这只是一面镜子
+            先确认：这不是治疗工具
           </h2>
 
-          <div className="mt-5 space-y-4 text-[0.95rem] leading-7 text-stone-300">
+          <div className="mt-5 space-y-3 text-sm leading-6 text-stone-300">
             <p>
-              StillMind 不做心理诊断，不做治疗，也不替代专业心理帮助。
+              StillMind 只用于日常情绪 reset 和自我观察，不做诊断、不做治疗，也不替代专业心理帮助。
             </p>
-            <p>
-              它是一个内在电影工具：把你当下的情绪反应投到屏幕上，让你能从角色退到观众席。
-            </p>
-
-            <div className="rounded-2xl border border-amber-200/15 bg-amber-50/[0.04] p-4">
-              <p className="text-sm font-medium text-amber-100/90">
-                如果你正在经历危机
-              </p>
-              <p className="mt-1 text-sm leading-6 text-stone-300">
-                如果你有自伤、伤人或其他紧急危险，请不要继续使用本工具：
-              </p>
-              <ul className="mt-2 space-y-1 text-sm text-amber-100/85">
-                <li>· 立即联系当地急救、警方或专业危机支持</li>
-                <li>· 同时联系一位可信任、能陪在你身边的人</li>
-              </ul>
+            <div className="rounded-2xl border border-amber-200/15 bg-amber-50/[0.05] p-4 text-amber-50/90">
+              如果你有自伤、伤人、医疗紧急或无法保证安全的情况，请立即联系当地急救、警方、危机热线或身边可信任的人。
             </div>
-
             <p>
-              如果配置了第三方 AI，你输入的 trigger 文字会被发送给该服务完成单次分镜生成；
-              StillMind 自身不持久化这段输入。第三方处理方式以其服务条款和隐私政策为准。
+              请不要输入真实姓名、隐私事件、创伤细节、医疗或危机场景。
             </p>
-
+            <p>
+              如果启用第三方 AI，你输入的一句话可能会被发送给模型服务完成生成。
+            </p>
             <p className="text-xs text-stone-500">
               完整说明：{" "}
               <Link
@@ -103,7 +90,7 @@ export function DisclaimerModal() {
               type="checkbox"
               checked={checked}
               onChange={(event) => setChecked(event.target.checked)}
-              className="mt-0.5 h-4 w-4 cursor-pointer accent-amber-300"
+              className="mt-0.5 h-4 w-4 cursor-pointer accent-violet-300"
             />
             <span>我已了解，StillMind 不替代专业心理帮助。</span>
           </label>
@@ -111,9 +98,9 @@ export function DisclaimerModal() {
             type="button"
             onClick={acknowledge}
             disabled={!checked}
-            className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-amber-300 via-violet-400 to-indigo-400 text-base font-medium text-stone-900 shadow-lg shadow-violet-950/30 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-30"
+            className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 text-base font-semibold text-slate-950 shadow-lg shadow-violet-950/30 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-30"
           >
-            进入 StillMind
+            进入体验
           </button>
         </div>
       </div>

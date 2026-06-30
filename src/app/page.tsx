@@ -384,19 +384,21 @@ function Header({ step }: { step: Step }) {
         <p className="text-xs uppercase tracking-[0.28em] text-stone-500">
           StillMind
         </p>
-        <p className="mt-1 text-sm text-stone-300">内在电影</p>
+        <p className="mt-1 text-sm text-stone-300">{step === "home" ? "沉寂小我" : "内在电影"}</p>
         </div>
       </div>
-      <div className="flex gap-1.5" aria-label="Progress">
-        {steps.map((item, itemIndex) => (
-          <span
-            key={item}
-            className={`h-1.5 w-6 rounded-full transition-colors ${
-              itemIndex <= index ? "bg-stone-100" : "bg-white/15"
-            }`}
-          />
-        ))}
-      </div>
+      {step !== "home" ? (
+        <div className="flex gap-1.5" aria-label="Progress">
+          {steps.map((item, itemIndex) => (
+            <span
+              key={item}
+              className={`h-1.5 w-6 rounded-full transition-colors ${
+                itemIndex <= index ? "bg-stone-100" : "bg-white/15"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </header>
   );
 }
@@ -415,40 +417,55 @@ function HomePanel({
   onPitchDemo: () => void;
 }) {
   return (
-    <div className="panel-enter w-full">
-      <div id="inner-cinema" className="cinema-portal mb-7 rounded-[2rem] border border-white/10 bg-black/30 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl">
-        <div className="cinema-screen rounded-[1.4rem] border border-white/10 px-5 py-8 text-center">
-          <p className="text-xs tracking-[0.28em] text-stone-400">正在观影，而不是经历</p>
+    <div className="panel-enter w-full space-y-5">
+      <section className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/78 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
+        <p className="text-xs uppercase tracking-[0.28em] text-violet-200/65">StillMind 入口</p>
+        <h1 className="mt-4 text-4xl font-semibold leading-tight text-stone-50">
+          先退出剧情，再决定下一步。
+        </h1>
+        <p className="mt-3 text-base leading-7 text-stone-300">
+          第一次体验，建议直接做 1 分钟 Reset。它会记录练习前后分数，帮我们验证是否真的更稳定。
+        </p>
+        <div className="mt-5 grid gap-3">
+          <Link
+            href="/reset"
+            className="group rounded-[1.35rem] border border-violet-200/35 bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 p-[1px] shadow-lg shadow-violet-950/25"
+          >
+            <span className="block rounded-[1.28rem] bg-[#070d1b]/8 px-5 py-4 text-slate-950 transition group-hover:bg-white/10">
+              <span className="block text-lg font-semibold">开始 1 分钟 Reset</span>
+              <span className="mt-1 block text-sm font-medium opacity-80">选状态 → 推荐练习 → 前后评分</span>
+            </span>
+          </Link>
+          <button
+            type="button"
+            onClick={onPitchDemo}
+            className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] px-5 py-4 text-left transition hover:border-violet-200/35 hover:bg-white/[0.1]"
+          >
+            <span className="block text-base font-semibold text-white">看 Inner Cinema 样例</span>
+            <span className="mt-1 block text-sm leading-6 text-stone-400">把一次冲突拆成三幕电影，快速看见角色。</span>
+          </button>
+          <Link
+            href="/methods"
+            className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-left transition hover:border-violet-200/35 hover:bg-white/[0.08]"
+          >
+            <span className="block text-base font-semibold text-white">探索 12 种方法</span>
+            <span className="mt-1 block text-sm leading-6 text-stone-400">呼吸、凝视、登出、观电影、人称替代等。</span>
+          </Link>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-white/10 bg-black/25 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl">
+        <div className="cinema-screen rounded-[1.4rem] border border-white/10 px-5 py-7 text-center">
+          <p className="text-xs tracking-[0.28em] text-stone-400">INNER CINEMA</p>
           <p className="mt-3 text-sm leading-6 text-stone-300">
-            坐到观众席，看见屏幕里的自己。
+            写一句触发，把它变成一段可以观看的内在电影。
           </p>
         </div>
-        <div className="seat-row mt-4" aria-hidden="true" />
-      </div>
 
-      <p className="mb-3 text-sm tracking-[0.28em] text-stone-400">内在电影</p>
-      <h1 className="text-4xl font-semibold leading-none text-stone-50">
-        StillMind: Inner Cinema
-      </h1>
-      <h2 className="mt-4 text-2xl font-medium leading-tight text-stone-100">
-        把脑子里的剧情，变成一场可以退出的电影。
-      </h2>
-      <p className="mt-3 text-sm leading-6 text-stone-400">
-        写一句触发。进入三幕内在电影。
-      </p>
-
-      <div className="mt-6 rounded-[2rem] border border-violet-200/15 bg-[#091225]/70 p-4 shadow-2xl shadow-violet-950/20 backdrop-blur-xl">
-        <button
-          type="button"
-          onClick={onPitchDemo}
-          className="mb-3 flex h-12 w-full items-center justify-center rounded-full border border-violet-200/25 bg-violet-200/10 text-sm font-medium text-violet-100 transition hover:bg-violet-200/15"
-        >
-          一键演示
-        </button>
         <textarea
           value={trigger}
           onChange={(event) => onTriggerChange(event.target.value)}
-          className="min-h-36 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 outline-none placeholder:text-stone-500 focus:border-stone-300/60"
+          className="mt-4 min-h-28 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 outline-none placeholder:text-stone-500 focus:border-stone-300/60"
           placeholder="我被批评了，现在很想立刻为自己辩解。"
         />
 
@@ -468,21 +485,14 @@ function HomePanel({
         <button
           type="button"
           onClick={onEnter}
-          className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 text-base font-medium text-white shadow-lg shadow-violet-950/30 transition hover:brightness-110"
+          className="mt-5 flex h-14 w-full items-center justify-center rounded-full border border-violet-200/25 bg-violet-200/10 text-base font-medium text-violet-50 shadow-lg shadow-violet-950/20 transition hover:bg-violet-200/15"
         >
           进入内在电影
         </button>
-        <Link
-          href="/reset"
-          className="mt-3 flex h-12 w-full items-center justify-center rounded-full border border-violet-200/20 bg-violet-100/[0.06] text-sm font-medium text-violet-100 transition hover:bg-violet-100/[0.11]"
-        >
-          开始 12 方法练习器
-        </Link>
-      </div>
+      </section>
     </div>
   );
 }
-
 function CinemaPanel({
   cinema,
   source,
