@@ -22,12 +22,10 @@ const v = (
 });
 
 export const PRACTICE_VARIANTS: readonly PracticeVariant[] = [
-  v("inner-cinema", 1, "观电影法", "在剧情里保留一个观看焦点", "选一个刚才的场景，把它当成屏幕上的一幕。", [
-    { id: "screen", kind: "arrive", title: "银幕亮起", instruction: "用一句事实描述刚才发生了什么，不解释原因。", seconds: 12, haptic: "soft" },
-    { id: "role", kind: "observe", title: "角色正在演", instruction: "看见那个角色的表情、动作和身体反应。", seconds: 12 },
-    { id: "audience", kind: "observe", title: "观众正在看", instruction: "保留一个安静的观看焦点，不急着替角色辩解。", seconds: 12 },
-    { id: "dual-focus", kind: "observe", title: "双焦点", instruction: "一个焦点体验剧情，一个焦点知道自己正在观看。", seconds: 14 },
-    { id: "close", kind: "close", title: "灯光回来", instruction: "选择一个暂时不扩大剧情的行动。", seconds: 10, haptic: "soft" },
+  v("inner-cinema", 1, "观电影法", "把刚才一幕放到屏幕上", "选一个刚才的场景，把它当成屏幕上的一幕。不急着解释，不急着反击。只是看见：这个角色正在经历什么。", [
+    { id: "screen", kind: "arrive", title: "画面出现", instruction: "看见刚才那一幕。", seconds: 20, haptic: "soft" },
+    { id: "role", kind: "observe", title: "角色正在演", instruction: "看见身体、念头和冲动。", seconds: 20 },
+    { id: "audience", kind: "observe", title: "坐回观众席", instruction: "不急着进入剧情。", seconds: 20, haptic: "soft" },
   ], "观电影法只是 StillMind 的一种方法；你看见角色，但不必完全成为角色。"),
   v("paced-breath", 1, "呼吸法", "数呼气，不追念头", "如果数息让你不舒服，只保持自然呼吸并看着数字变化。", [
     { id: "arrive", kind: "arrive", title: "先找到呼气", instruction: "不用改变呼吸，只注意下一次呼气自然出现。", seconds: 8, alternative: "保持眼睛睁开，看着屏幕中央。" },
