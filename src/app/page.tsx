@@ -9,6 +9,7 @@ import { AmbientToggle } from "@/components/AmbientToggle";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { HistoryList } from "@/components/HistoryList";
 import {
+  PENDING_INTENSITY_KEY,
   PENDING_MODE_KEY,
   PENDING_TRIGGER_KEY,
   RESET_MODE_LABELS,
@@ -98,6 +99,7 @@ export default function Home() {
   const [voiceSupported, setVoiceSupported] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("点一下说话，发泄也可以。");
+  const [replayIntensity, setReplayIntensity] = useState(7);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const voiceBaseRef = useRef("");
   const voiceFinalRef = useRef("");
@@ -380,6 +382,7 @@ export default function Home() {
     try {
       window.sessionStorage.setItem(PENDING_TRIGGER_KEY, input.slice(0, 500));
       window.sessionStorage.setItem(PENDING_MODE_KEY, matchedMode);
+      window.sessionStorage.setItem(PENDING_INTENSITY_KEY, String(replayIntensity));
     } catch {
       // sessionStorage may be unavailable in private mode
     }
@@ -419,6 +422,8 @@ export default function Home() {
               isListening={isListening}
               voiceStatus={voiceStatus}
               matchedModeLabel={matchedModeLabel}
+              replayIntensity={replayIntensity}
+              onReplayIntensityChange={setReplayIntensity}
               onVoiceToggle={toggleVoiceInput}
               onMatchPractice={matchResetPractice}
             />
@@ -565,6 +570,8 @@ function HomePanel({
   isListening,
   voiceStatus,
   matchedModeLabel,
+  replayIntensity,
+  onReplayIntensityChange,
   onVoiceToggle,
   onMatchPractice,
 }: {
@@ -576,6 +583,8 @@ function HomePanel({
   isListening: boolean;
   voiceStatus: string;
   matchedModeLabel: string;
+  replayIntensity: number;
+  onReplayIntensityChange: (value: number) => void;
   onVoiceToggle: () => void;
   onMatchPractice: () => void;
 }) {
@@ -584,25 +593,18 @@ function HomePanel({
   return (
     <div className="panel-enter w-full space-y-4">
       <section className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/82 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
-        <p className="text-xs uppercase tracking-[0.26em] text-violet-200/65">先被看见</p>
-        <h1 className="mt-4 text-4xl font-semibold leading-tight text-stone-50">
-          脑子里的声音停不下来？
-          <span className="block text-violet-100">先让它静一点。</span>
+        <h1 className="text-4xl font-semibold leading-tight text-stone-50">
+          脑子一直在重播？
+          <span className="block text-violet-100">先暂停 1 分钟。</span>
         </h1>
         <p className="mt-3 text-base leading-7 text-stone-300">
-          安静下来时，那个围绕“我”的声音会一直说。先口述或写下一段，StillMind 会带你从角色里退回观众席。
+          写下或说出刚才发生了什么。StillMind 会带你做一次短练习，先从情绪里的角色退出来。
         </p>
-
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs text-stone-400">
-          <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-3">角色里</span>
-          <span className="rounded-2xl border border-violet-200/25 bg-violet-200/[0.09] px-2 py-3 text-violet-100">观众席</span>
-          <span className="rounded-2xl border border-amber-200/20 bg-amber-100/[0.08] px-2 py-3 text-amber-100">回到当下</span>
-        </div>
 
         <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/25 p-4 shadow-inner shadow-black/25">
           <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-stone-100">说出刚才那一幕</p>
+              <p className="text-sm font-medium text-stone-100">刚才发生了什么？</p>
               {showVoiceHint ? <p className="mt-1 text-xs leading-5 text-stone-500">{voiceStatus}</p> : null}
             </div>
             <button
@@ -640,12 +642,39 @@ function HomePanel({
             ))}
           </div>
 
+          <div className="mt-5 rounded-[1.2rem] border border-white/10 bg-white/[0.045] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-stone-100">现在脑内重播强度</p>
+                <p className="mt-1 text-xs text-stone-500">0 = 很稳定，10 = 完全被带走</p>
+              </div>
+              <span className="text-lg font-semibold text-amber-100">{replayIntensity}/10</span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {Array.from({ length: 11 }, (_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => onReplayIntensityChange(index)}
+                  className={`grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold transition ${
+                    replayIntensity === index
+                      ? "border-amber-200/75 bg-amber-200/18 text-white"
+                      : "border-white/10 bg-slate-950/36 text-stone-500 hover:border-violet-200/35 hover:text-stone-200"
+                  }`}
+                >
+                  {index}
+                </button>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-stone-500">当前推荐：{matchedModeLabel}</p>
+          </div>
+
           <button
             type="button"
             onClick={onMatchPractice}
             className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 text-base font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]"
           >
-            匹配 1 分钟练习 · {matchedModeLabel}
+            开始 1 分钟 Reset
           </button>
         </div>
 

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AmbientToggle } from "@/components/AmbientToggle";
 import { WorkflowNav } from "@/components/WorkflowNav";
 import {
+  PENDING_INTENSITY_KEY,
   PENDING_MODE_KEY,
   PENDING_TRIGGER_KEY,
   detectStateModeFromText,
@@ -220,6 +221,8 @@ export default function ResetPage() {
         const params = new URLSearchParams(window.location.search);
         const storedTrigger = window.sessionStorage.getItem(PENDING_TRIGGER_KEY) ?? "";
         const storedMode = window.sessionStorage.getItem(PENDING_MODE_KEY);
+        const storedIntensity = window.sessionStorage.getItem(PENDING_INTENSITY_KEY);
+        const parsedIntensity = storedIntensity === null ? NaN : Number(storedIntensity);
         const queryMode = params.get("mode");
         const queryMethod = params.get("method") as MethodId | null;
         const queryMethodDef = queryMethod ? METHOD_BY_ID.get(queryMethod) : undefined;
@@ -239,8 +242,14 @@ export default function ResetPage() {
         if (nextMode) {
           setMode(nextMode);
           const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
-          setIntensityBefore(Math.min(10, nextActivation * 2));
-          setIntensityAfter(Math.min(10, nextActivation * 2));
+          const nextIntensity = Number.isInteger(parsedIntensity)
+            ? Math.min(10, Math.max(0, parsedIntensity))
+            : Math.min(10, nextActivation * 2);
+          setIntensityBefore(nextIntensity);
+          setIntensityAfter(nextIntensity);
+          if (Number.isInteger(parsedIntensity)) {
+            setPhase("precheck");
+          }
           if (!queryMethodDef) {
             setManualChoice(false);
             setShowAdvancedMethods(false);
@@ -254,6 +263,7 @@ export default function ResetPage() {
         }
         window.sessionStorage.removeItem(PENDING_TRIGGER_KEY);
         window.sessionStorage.removeItem(PENDING_MODE_KEY);
+        window.sessionStorage.removeItem(PENDING_INTENSITY_KEY);
       } catch {
         // keep default recommendation if storage or URL parsing is unavailable
       }

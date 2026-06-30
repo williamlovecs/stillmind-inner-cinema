@@ -2,6 +2,7 @@ import type { StateMode } from "@stillmind/domain";
 
 export const PENDING_TRIGGER_KEY = "stillmind.pendingTrigger.v1";
 export const PENDING_MODE_KEY = "stillmind.pendingMode.v1";
+export const PENDING_INTENSITY_KEY = "stillmind.pendingIntensity.v1";
 
 export const RESET_MODE_LABELS: Record<StateMode, string> = {
   impulsive: "想立刻反击",
