@@ -8,7 +8,6 @@ import { containsHighRiskLanguage } from "@stillmind/domain";
 import { AmbientToggle } from "@/components/AmbientToggle";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { HistoryList } from "@/components/HistoryList";
-import { WorkflowNav } from "@/components/WorkflowNav";
 import {
   PENDING_MODE_KEY,
   PENDING_TRIGGER_KEY,
@@ -415,7 +414,6 @@ export default function Home() {
                 setLiveCinema(null);
                 setGenerationSource("preset");
               }}
-              onEnter={() => enterCinema()}
               onPitchDemo={startPitchDemo}
               voiceSupported={voiceSupported}
               isListening={isListening}
@@ -562,7 +560,6 @@ function HomePanel({
   trigger,
   onTriggerChange,
   onExampleClick,
-  onEnter,
   onPitchDemo,
   voiceSupported,
   isListening,
@@ -574,7 +571,6 @@ function HomePanel({
   trigger: string;
   onTriggerChange: (value: string) => void;
   onExampleClick: (value: string) => void;
-  onEnter: () => void;
   onPitchDemo: () => void;
   voiceSupported: boolean;
   isListening: boolean;
@@ -583,32 +579,25 @@ function HomePanel({
   onVoiceToggle: () => void;
   onMatchPractice: () => void;
 }) {
+  const showVoiceHint = isListening || !voiceSupported || voiceStatus !== "点一下说话，发泄也可以。";
+
   return (
-    <div className="panel-enter w-full space-y-5">
-      <WorkflowNav active="home" />
-      <section className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/78 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
-        <p className="text-xs uppercase tracking-[0.28em] text-violet-200/65">StillMind 入口</p>
+    <div className="panel-enter w-full space-y-4">
+      <section className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/82 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
+        <p className="text-xs uppercase tracking-[0.26em] text-violet-200/65">StillMind Web Reset</p>
         <h1 className="mt-4 text-4xl font-semibold leading-tight text-stone-50">
-          发生了什么？先说出来。
+          发生了什么？
+          <span className="block text-violet-100">先说出来。</span>
         </h1>
         <p className="mt-3 text-base leading-7 text-stone-300">
-          口述或写下一段情绪，StillMind 会先匹配一个 1 分钟练习；想看电影化表达时，再进入 Inner Cinema。
+          不用整理成好文字。口述或写下一段情绪，StillMind 会匹配一个 1 分钟 reset。
         </p>
-      </section>
 
-      <section className="rounded-[2rem] border border-white/10 bg-black/25 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl">
-        <div className="cinema-screen rounded-[1.4rem] border border-white/10 px-5 py-6 text-center">
-          <p className="text-xs tracking-[0.28em] text-stone-400">WHAT HAPPENED?</p>
-          <p className="mt-3 text-sm leading-6 text-stone-300">
-            不用整理成好文字。像语音备忘录一样，说出刚才那一幕。
-          </p>
-        </div>
-
-        <div className="mt-4 rounded-[1.4rem] border border-violet-200/15 bg-violet-200/[0.055] p-4">
-          <div className="flex items-center justify-between gap-3">
+        <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/25 p-4 shadow-inner shadow-black/25">
+          <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-violet-200/65">Voice input</p>
-              <p className="mt-1 text-sm leading-6 text-stone-400">当前匹配：{matchedModeLabel}</p>
+              <p className="text-sm font-medium text-stone-100">可以直接口喷输入</p>
+              {showVoiceHint ? <p className="mt-1 text-xs leading-5 text-stone-500">{voiceStatus}</p> : null}
             </div>
             <button
               type="button"
@@ -624,72 +613,47 @@ function HomePanel({
               {isListening ? "停止" : voiceSupported ? "开始说" : "语音不可用"}
             </button>
           </div>
-          <p className="mt-3 text-xs leading-5 text-stone-500">{voiceStatus}</p>
-        </div>
 
-        <textarea
-          value={trigger}
-          onChange={(event) => onTriggerChange(event.target.value)}
-          className="mt-4 min-h-28 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 outline-none placeholder:text-stone-500 focus:border-stone-300/60"
-          placeholder="我被批评了，现在很想立刻为自己辩解。"
-        />
+          <textarea
+            value={trigger}
+            onChange={(event) => onTriggerChange(event.target.value)}
+            className="mt-4 min-h-32 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 outline-none placeholder:text-stone-500 focus:border-stone-300/60"
+            placeholder="比如：我刚被批评了，现在很想立刻为自己辩解。"
+          />
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {examples.map((example) => (
-            <button
-              key={example}
-              type="button"
-              onClick={() => onExampleClick(example)}
-              className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-stone-300 transition hover:border-white/25 hover:bg-white/[0.1]"
-            >
-              {example}
-            </button>
-          ))}
-        </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {examples.map((example) => (
+              <button
+                key={example}
+                type="button"
+                onClick={() => onExampleClick(example)}
+                className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-stone-300 transition hover:border-white/25 hover:bg-white/[0.1]"
+              >
+                {example}
+              </button>
+            ))}
+          </div>
 
-        <button
-          type="button"
-          onClick={onMatchPractice}
-          className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 text-base font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]"
-        >
-          匹配 1 分钟练习 · {matchedModeLabel}
-        </button>
-
-        <div className="mt-3 grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={onEnter}
-            className="flex h-12 items-center justify-center rounded-full border border-violet-200/25 bg-violet-200/10 text-sm font-medium text-violet-50 shadow-lg shadow-violet-950/20 transition hover:bg-violet-200/15"
+            onClick={onMatchPractice}
+            className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 text-base font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]"
           >
-            只看内在电影
+            匹配 1 分钟练习 · {matchedModeLabel}
           </button>
-          <button
-            type="button"
-            onClick={onPitchDemo}
-            className="flex h-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.055] text-sm font-medium text-stone-300 transition hover:border-violet-200/35 hover:text-white"
-          >
-            演示样例
-          </button>
+        </div>
+
+        <div className="mt-4 flex items-center justify-center gap-4 text-sm text-stone-400">
+          <button type="button" onClick={onPitchDemo} className="transition hover:text-white">看个例子</button>
+          <span className="h-1 w-1 rounded-full bg-white/20" />
+          <Link href="/methods" className="transition hover:text-white">12 种方法</Link>
         </div>
       </section>
-
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        <Link
-          href="/methods"
-          className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-stone-300 transition hover:border-violet-200/35 hover:text-white"
-        >
-          探索 12 种方法
-        </Link>
-        <Link
-          href="/reset"
-          className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-stone-300 transition hover:border-violet-200/35 hover:text-white"
-        >
-          手动选择状态
-        </Link>
-      </div>
     </div>
   );
-}function CinemaPanel({
+}
+
+function CinemaPanel({
   cinema,
   source,
   isGenerating,
