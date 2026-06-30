@@ -584,19 +584,25 @@ function HomePanel({
   return (
     <div className="panel-enter w-full space-y-4">
       <section className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/82 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
-        <p className="text-xs uppercase tracking-[0.26em] text-violet-200/65">StillMind Web Reset</p>
+        <p className="text-xs uppercase tracking-[0.26em] text-violet-200/65">先被看见</p>
         <h1 className="mt-4 text-4xl font-semibold leading-tight text-stone-50">
-          发生了什么？
-          <span className="block text-violet-100">先说出来。</span>
+          脑子里的声音停不下来？
+          <span className="block text-violet-100">先让它静一点。</span>
         </h1>
         <p className="mt-3 text-base leading-7 text-stone-300">
-          不用整理成好文字。口述或写下一段情绪，StillMind 会匹配一个 1 分钟 reset。
+          安静下来时，那个围绕“我”的声音会一直说。先口述或写下一段，StillMind 会带你从角色里退回观众席。
         </p>
+
+        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs text-stone-400">
+          <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-3">角色里</span>
+          <span className="rounded-2xl border border-violet-200/25 bg-violet-200/[0.09] px-2 py-3 text-violet-100">观众席</span>
+          <span className="rounded-2xl border border-amber-200/20 bg-amber-100/[0.08] px-2 py-3 text-amber-100">回到当下</span>
+        </div>
 
         <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/25 p-4 shadow-inner shadow-black/25">
           <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-stone-100">可以直接口喷输入</p>
+              <p className="text-sm font-medium text-stone-100">说出刚才那一幕</p>
               {showVoiceHint ? <p className="mt-1 text-xs leading-5 text-stone-500">{voiceStatus}</p> : null}
             </div>
             <button
@@ -618,7 +624,7 @@ function HomePanel({
             value={trigger}
             onChange={(event) => onTriggerChange(event.target.value)}
             className="mt-4 min-h-32 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 outline-none placeholder:text-stone-500 focus:border-stone-300/60"
-            placeholder="比如：我刚被批评了，现在很想立刻为自己辩解。"
+            placeholder="比如：我刚被批评了，现在脑子里一直在反驳。"
           />
 
           <div className="mt-4 flex flex-wrap gap-2">
