@@ -15,9 +15,9 @@ import {
 import { getPracticeVariant } from "@stillmind/content";
 
 const evidenceCopy: Record<EvidenceTier, string> = {
-  supported: "有相邻机制研究支持；StillMind 不据此承诺个人效果。",
-  informed: "由行为与产品研究启发，具体体验仍需用户验证。",
-  experimental: "实验性产品练习，不作为已证实的治疗方法宣传。",
+  supported: "这是适合先尝试的基础练习。StillMind 不承诺个人效果，只帮你做一次短时观察。",
+  informed: "这个练习需要一点熟悉度。先用 1 分钟版本感受是否适合你。",
+  experimental: "这是探索型练习。把它当成一次温和尝试，不作为治疗方法使用。",
 };
 
 const modeLabels: Record<StateMode, string> = {

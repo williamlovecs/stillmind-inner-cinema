@@ -13,9 +13,9 @@ const familyLabels: Record<PracticeFamily, string> = {
 };
 
 const evidenceLabels: Record<MethodDefinition["evidenceTier"], string> = {
-  supported: "相邻机制支持",
-  informed: "产品研究启发",
-  experimental: "实验性练习",
+  supported: "适合初次练习",
+  informed: "需要一点练习",
+  experimental: "探索型练习",
 };
 
 export const metadata = {

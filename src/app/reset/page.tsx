@@ -400,7 +400,7 @@ export default function ResetPage() {
     <main className="min-h-screen overflow-hidden bg-[#050914] text-stone-50">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_22%_12%,rgba(139,92,246,0.28),transparent_32%),radial-gradient(circle_at_82%_18%,rgba(96,165,250,0.16),transparent_28%),radial-gradient(circle_at_72%_78%,rgba(245,158,11,0.18),transparent_34%),linear-gradient(135deg,#050914_0%,#07111f_46%,#0b1020_100%)]" />
       <div className="pointer-events-none fixed inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:64px_64px]" />
-      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-10">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 lg:px-10">
         <header className="flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3">
             <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-fuchsia-200 via-violet-500 to-sky-500 p-[2px] shadow-lg shadow-violet-950/30"><span className="h-full w-full rounded-full bg-[#070d1b]" /></span>
@@ -423,11 +423,11 @@ export default function ResetPage() {
               <p className="text-sm uppercase tracking-[0.26em] text-violet-200/65">先把声音放下来</p>
               <h1 className="mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">脑子里那个停不下来的声音，先让它静一点。</h1>
               <p className="mt-4 text-base leading-7 text-stone-300">这些练习都在做同一件事：从剧情里的角色，退回能观看的观众席。</p>
-              <div className="mt-4 break-all rounded-2xl border border-violet-200/20 bg-violet-200/[0.08] p-3 text-sm leading-6 text-violet-50">第一次体验：选当前状态，做 1 分钟推荐练习，看看“被带走”的程度有没有下降。</div>
+              <div className="mt-4 rounded-2xl border border-violet-200/20 bg-violet-200/[0.08] p-3 text-sm leading-6 text-violet-50">第一次体验：选当前状态，做 1 分钟推荐练习，看看“被带走”的程度有没有下降。</div>
               {incomingTrigger ? (
                 <div className="mt-4 rounded-2xl border border-amber-200/18 bg-amber-100/[0.06] p-3 text-sm leading-6 text-amber-50/90">
                   <span className="block text-xs uppercase tracking-[0.18em] text-amber-100/55">刚才说的是</span>
-                  <span className="mt-1 block break-all text-stone-200">{incomingTrigger}</span>
+                  <span className="mt-1 block break-words text-stone-200">{incomingTrigger}</span>
                 </div>
               ) : null}
               <p className="mt-3 text-xs leading-5 text-stone-500">请不要输入真实姓名、隐私事件、创伤细节、医疗或危机场景。本工具只是日常情绪 reset 和自我观察练习，不替代心理咨询或医疗帮助。</p>
@@ -463,9 +463,9 @@ export default function ResetPage() {
               </div>
             </div>
 
-            <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="grid min-w-0 gap-4">
               <div className={practiceShellClass}>
-                {phase === "choose" && practice ? <ChoosePractice method={method} practice={practice} onStart={requestStart} /> : null}
+                {phase === "choose" && practice ? <ChoosePractice method={method} practice={practice} /> : null}
                 {phase === "precheck" && practice ? <PrePracticeCheck method={method} practice={practice} intensityBefore={intensityBefore} onIntensityBefore={setIntensityBefore} onStart={startPractice} /> : null}
                 {phase === "practice" && practice && currentStep ? <PracticePlayer method={method} practice={practice} stepIndex={stepIndex} secondsLeft={secondsLeft} progress={progress} paused={paused} onPause={() => setPaused((value) => !value)} onStop={stopPractice} /> : null}
                 {phase === "check" ? <CheckView intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} onIntensityAfter={setIntensityAfter} onReuseIntent={setReuseIntent} onFeedbackNote={setFeedbackNote} onComplete={completeSession} /> : null}
@@ -476,7 +476,7 @@ export default function ResetPage() {
                 <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-4">
                   <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">进阶方法库</p><button type="button" onClick={() => setShowAdvancedMethods((value) => !value)} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-stone-300 transition hover:border-violet-200/35 hover:text-white">{showAdvancedMethods ? "收起" : "展开"}</button></div>
                   <p className="mt-2 text-xs leading-5 text-stone-500">第一次不用手动选择方法，系统已根据当前状态推荐。</p>
-                  {!showAdvancedMethods ? <div className="mt-3 rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-3"><p className="text-xs uppercase tracking-[0.18em] text-violet-200/60">当前推荐</p><p className="mt-2 text-sm font-semibold text-white">{method.title}</p><p className="mt-1 text-xs leading-5 text-stone-500">完成第一次练习后，可以探索更多方法。</p></div> : <div className="mt-3 grid max-h-[340px] grid-cols-1 gap-2 overflow-y-auto pr-1">
+                  {!showAdvancedMethods ? <div className="mt-3 rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-3"><p className="text-xs uppercase tracking-[0.18em] text-violet-200/60">当前推荐</p><p className="mt-2 text-sm font-semibold text-white">{method.title}</p><p className="mt-1 text-xs leading-5 text-stone-500">完成第一次练习后，可以探索更多方法。</p></div> : <div className="mt-3 grid max-h-[340px] gap-2 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
                     {METHOD_CATALOG.map((item) => <button key={item.id} type="button" onClick={() => chooseMethod(item.id)} className={`group rounded-2xl border p-2.5 text-left transition ${item.id === method.id ? "border-violet-200/70 bg-violet-200/14" : "border-white/10 bg-slate-950/32 hover:border-violet-200/35"}`}><span className="flex items-center gap-2"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-300/80 to-amber-200/70 text-sm font-bold text-slate-950">{METHOD_MARKS[item.id]}</span><span className="min-w-0"><span className="block truncate text-sm font-semibold text-white">{item.title}</span><span className="block truncate text-xs text-stone-500">{FAMILY_LABELS[item.family]}</span></span></span></button>)}
                   </div>}
                 </div>
@@ -496,11 +496,11 @@ export default function ResetPage() {
   );
 }
 
-function ChoosePractice({ method, practice, onStart }: { method: MethodDefinition; practice: PracticeVariant; onStart: () => void }) {
+function ChoosePractice({ method, practice }: { method: MethodDefinition; practice: PracticeVariant }) {
   const guidance = METHOD_GUIDANCE[method.id];
 
   return (
-    <div className="flex h-full flex-col justify-between gap-5">
+    <div className="flex h-full flex-col gap-5">
       <div>
         <div className="grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(180px,0.55fr)] lg:items-start">
           <div>
@@ -523,17 +523,19 @@ function ChoosePractice({ method, practice, onStart }: { method: MethodDefinitio
           </div>
         </div>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <div className="mt-4 space-y-2">
           {practice.steps.slice(0, 3).map((step, index) => (
-            <div key={step.id} className="rounded-2xl border border-white/10 bg-slate-950/42 p-3">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-violet-200/60">Step {String(index + 1).padStart(2, "0")}</p>
-              <p className="mt-2 text-sm font-semibold text-white">{step.title}</p>
-              <p className="mt-1 text-xs leading-5 text-stone-500">{step.seconds} 秒</p>
+            <div key={step.id} className="grid grid-cols-[auto_1fr_auto] items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/42 p-3">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-violet-200/20 bg-violet-200/[0.08] text-xs font-semibold text-violet-100">{index + 1}</span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold leading-6 text-white">{step.title}</p>
+                <p className="mt-1 text-sm leading-6 text-stone-400">{step.instruction}</p>
+              </div>
+              <span className="shrink-0 rounded-full border border-white/10 px-2.5 py-1 text-xs text-stone-500">{step.seconds} 秒</span>
             </div>
           ))}
         </div>
       </div>
-      <button type="button" onClick={onStart} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-3 text-sm font-semibold text-slate-950 shadow-xl shadow-violet-950/30 transition hover:scale-[1.01]">开始 {practice.minutes} 分钟练习</button>
     </div>
   );
 }
@@ -544,10 +546,12 @@ function MethodAnchorVisual({ methodId, label }: { methodId: MethodId; label: st
   if (methodId === "wide-gaze") {
     return (
       <div className={base}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(251,191,36,0.18),transparent_28%),radial-gradient(circle_at_50%_62%,rgba(168,85,247,0.18),transparent_42%)]" />
-        <div className="relative mx-auto mt-5 h-24 w-16">
-          <span className="absolute left-1/2 top-0 h-12 w-8 -translate-x-1/2 rounded-full bg-gradient-to-b from-white via-amber-200 to-orange-500 shadow-[0_0_42px_rgba(251,191,36,0.55)]" />
-          <span className="absolute bottom-0 left-1/2 h-16 w-10 -translate-x-1/2 rounded-t-full bg-gradient-to-b from-slate-700 to-slate-950" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_34%,rgba(251,191,36,0.22),transparent_30%),radial-gradient(circle_at_50%_72%,rgba(168,85,247,0.18),transparent_46%)]" />
+        <div className="relative mx-auto mt-4 h-28 w-20">
+          <span className="absolute left-1/2 top-0 h-14 w-9 -translate-x-1/2 rounded-[50%_50%_45%_45%] bg-gradient-to-b from-white via-amber-200 to-orange-500 shadow-[0_0_46px_rgba(251,191,36,0.62)]" />
+          <span className="absolute left-1/2 top-5 h-9 w-5 -translate-x-1/2 rounded-full bg-gradient-to-b from-violet-100 to-violet-500/60 blur-[0.2px]" />
+          <span className="absolute bottom-1 left-1/2 h-16 w-12 -translate-x-1/2 rounded-t-full bg-gradient-to-b from-slate-700 to-slate-950" />
+          <span className="absolute bottom-0 left-1/2 h-2 w-16 -translate-x-1/2 rounded-full bg-slate-900 shadow-[0_0_18px_rgba(251,191,36,0.18)]" />
         </div>
         <p className="relative mt-4 text-center text-sm font-medium text-stone-100">{label}</p>
       </div>
@@ -570,8 +574,9 @@ function MethodAnchorVisual({ methodId, label }: { methodId: MethodId; label: st
   if (methodId === "trigger-journal") {
     return (
       <div className={base}>
-        <div className="absolute inset-4 rounded-[1.25rem] bg-[repeating-conic-gradient(from_12deg,rgba(167,243,208,0.18)_0deg_10deg,rgba(15,23,42,0.4)_10deg_20deg)] opacity-80" />
-        <div className="absolute inset-12 rounded-full border border-emerald-100/30 bg-slate-950/65 backdrop-blur-[1px]" />
+        <div className="absolute inset-4 rounded-[1.25rem] bg-[repeating-conic-gradient(from_12deg,rgba(167,243,208,0.22)_0deg_9deg,rgba(15,23,42,0.34)_9deg_18deg)] opacity-85" />
+        <div className="absolute inset-8 rounded-[1rem] border border-emerald-100/15 bg-[radial-gradient(circle_at_50%_50%,rgba(236,253,245,0.18),transparent_28%)]" />
+        <div className="absolute inset-12 rounded-full border border-emerald-100/35 bg-slate-950/72 backdrop-blur-[1.5px]" />
         <p className="relative mt-28 text-center text-sm font-medium text-stone-100">{label}</p>
       </div>
     );
@@ -592,8 +597,13 @@ function MethodAnchorVisual({ methodId, label }: { methodId: MethodId; label: st
   if (methodId === "inner-cinema") {
     return (
       <div className={base}>
-        <div className="absolute inset-x-5 top-5 h-24 rounded-[1.2rem] border border-amber-100/15 bg-[radial-gradient(circle_at_50%_20%,rgba(245,158,11,0.24),transparent_45%),linear-gradient(180deg,rgba(30,41,59,0.7),rgba(2,6,23,0.92))]" />
+        <div className="absolute inset-x-5 top-5 h-24 overflow-hidden rounded-[1.2rem] border border-amber-100/15 bg-[linear-gradient(180deg,rgba(88,28,135,0.36),rgba(251,191,36,0.16)_48%,rgba(2,6,23,0.92))] shadow-[0_0_40px_rgba(168,85,247,0.16)]">
+          <span className="absolute inset-x-0 top-7 h-px bg-amber-100/25" />
+          <span className="absolute bottom-0 left-0 h-9 w-full bg-[linear-gradient(90deg,rgba(15,23,42,0.5),rgba(245,158,11,0.18),rgba(15,23,42,0.5))]" />
+          <span className="absolute bottom-3 left-1/2 h-8 w-7 -translate-x-1/2 rounded-t-full bg-slate-950/90 shadow-[0_0_22px_rgba(245,158,11,0.24)]" />
+        </div>
         <span className="absolute bottom-12 left-1/2 h-12 w-12 -translate-x-1/2 rounded-full bg-slate-900 shadow-[0_0_34px_rgba(168,85,247,0.24)]" />
+        <span className="absolute bottom-10 left-1/2 h-3 w-28 -translate-x-1/2 rounded-full bg-black/35" />
         <p className="relative mt-32 text-center text-sm font-medium text-stone-100">{label}</p>
       </div>
     );
