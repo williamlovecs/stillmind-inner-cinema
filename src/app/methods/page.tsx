@@ -9,7 +9,7 @@ const familyLabels: Record<PracticeFamily, string> = {
   observe: "练习观察",
   release: "松开重播",
   return: "回到行动",
-  reflect: "复盘习惯",
+  reflect: "稳定 / 拉远",
 };
 
 const evidenceLabels: Record<MethodDefinition["evidenceTier"], string> = {

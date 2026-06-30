@@ -5,7 +5,7 @@ export const PRACTICE_PATHS: readonly PracticePathDefinition[] = [
     id: "pause-before-reply",
     title: "冲动降噪",
     subtitle: "想立刻回应时，先沉寂小我",
-    summary: "从想解释、证明或反击的冲动里退一步，先登出，再凝视，最后聚焦到一个可执行细节。",
+    summary: "从想解释、证明或反击的冲动里退一步，先登出，再凝视，最后把注意缩到一个感官细节。",
     bestFor: "刚被触发，想马上回应、发消息、争辩或证明自己时。",
     mode: "impulsive",
     outcome: "pause",
@@ -13,7 +13,7 @@ export const PRACTICE_PATHS: readonly PracticePathDefinition[] = [
     stages: [
       { label: "登出", methodId: "logout-pause", duration: 1, why: "先不参与、不解释。" },
       { label: "凝视", methodId: "wide-gaze", duration: 1, why: "用固定对象稳定注意。" },
-      { label: "聚焦", methodId: "grounded-action", duration: 1, why: "把注意缩到一个具体细节。" },
+      { label: "聚焦", methodId: "grounded-action", duration: 1, why: "把注意缩到一个感官细节。" },
     ],
   },
   {
@@ -50,7 +50,7 @@ export const PRACTICE_PATHS: readonly PracticePathDefinition[] = [
     id: "gentle-release",
     title: "受伤后的沉寂",
     subtitle: "不压抑，也不继续演",
-    summary: "先用观电影法看见受伤角色，再用宽恕法旁观情绪起伏，最后用意识聚焦法回到现实细节。",
+    summary: "先用观电影法看见受伤角色，再用宽恕法旁观情绪起伏，最后用意识聚焦法回到可观察细节。",
     bestFor: "关系里的受伤、怨气或反复想起一段话时。",
     mode: "hurt",
     outcome: "release",
@@ -58,7 +58,7 @@ export const PRACTICE_PATHS: readonly PracticePathDefinition[] = [
     stages: [
       { label: "观电影", methodId: "inner-cinema", duration: 1, why: "先看见角色，不直接入戏。" },
       { label: "宽恕", methodId: "release", duration: 5, why: "允许情绪释放，同时保持旁观。" },
-      { label: "聚焦", methodId: "grounded-action", duration: 1, why: "把注意放回一个具体细节。" },
+      { label: "聚焦", methodId: "grounded-action", duration: 1, why: "把注意放回一个可观察细节。" },
     ],
   },
 ] as const;

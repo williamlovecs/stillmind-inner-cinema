@@ -10,7 +10,7 @@ import { useApp } from "@/state/AppProvider";
 import { track } from "@/lib/analytics";
 
 const FILTERS: { id: "all" | PracticeFamily; label: string }[] = [
-  { id: "all", label: "全部" }, { id: "distance", label: "拉开距离" }, { id: "settle", label: "先安定" }, { id: "observe", label: "练习观察" }, { id: "release", label: "松开重播" }, { id: "return", label: "回到行动" }, { id: "reflect", label: "复盘习惯" },
+  { id: "all", label: "全部" }, { id: "distance", label: "拉开距离" }, { id: "settle", label: "先安定" }, { id: "observe", label: "练习观察" }, { id: "release", label: "松开重播" }, { id: "return", label: "回到行动" }, { id: "reflect", label: "稳定 / 拉远" },
 ];
 
 export default function PracticesScreen() {

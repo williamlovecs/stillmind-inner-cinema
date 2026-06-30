@@ -74,7 +74,7 @@ const FAMILY_LABELS: Record<MethodDefinition["family"], string> = {
   observe: "练习观察",
   release: "松开重播",
   return: "回到行动",
-  reflect: "复盘习惯",
+  reflect: "稳定 / 拉远",
 };
 
 type MethodGuidance = {

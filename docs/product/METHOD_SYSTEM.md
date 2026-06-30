@@ -110,27 +110,30 @@ Every practice includes:
 
 ### 10. 意识聚焦法
 
-- Mechanism: restore agency through one small, reversible, concrete action.
-- Best for: the close of every session.
-- Options: drink water, walk, return to one task, wait before replying, write a factual note, contact a trusted person.
-- Core sequence: choose -> specify when/where -> make it small -> optionally set reminder.
-- Evidence tier: supported by planning and behavior-change research.
+- Mechanism: narrow attention from the large inner story into a small, concrete sensory detail.
+- Best for: broad mental noise, overwhelm, or "the whole situation is too much" moments where a smaller field of attention helps.
+- Options: the edge of a cup, a point on the wall, a sound layer, the feeling of feet on the floor, air on the skin, one color, one texture.
+- Core sequence: choose one safe object or sensory detail -> zoom into its edge/texture/distance -> add one more sense if helpful -> hold the narrowed field briefly -> return to the next small choice.
+- Product note: a grounded action may follow the practice, but the method itself is sensory narrowing / 意识窄化, not generic task planning.
+- Evidence tier: product-safe attentional grounding. Do not market as spiritual attainment or treatment.
 
 ### 11. 稳定法
 
-- Mechanism: private pattern reflection without diagnostic labeling.
-- Best for: noticing repeated contexts, methods used, and what helped.
-- Stored fields: broad trigger category, activation before/after, chosen method, completion, result, optional user-authored note.
-- Raw trigger text stays local by default and is excluded from analytics.
-- Evidence tier: product hypothesis informed by self-monitoring research; validate retention and burden.
+- Mechanism: train attention stability by looking at a neutral visual object or simple pattern and letting perceived movement settle.
+- Best for: visual or mental "shaking," scattered attention, or moments when the user can safely practice eyes-open steadiness.
+- Alternative: if a visual pattern feels dizzying or uncomfortable, use a stable sound, a plain object, or wide-gaze practice instead.
+- Core sequence: choose a safe visual object or simple pattern -> soften the eyes -> invite the image to feel still -> notice movement without forcing -> return to ordinary sight.
+- Product note: local history and reflection are useful support layers, but they are not the method itself.
+- Evidence tier: experimental product exercise for attention stability. Keep claims modest and include stop controls.
 
 ### 12. 意识抽离法
 
-- Mechanism: contextual cues and implementation intentions.
-- Best for: moving practice from reactive use to daily availability.
-- Examples: after unlocking the phone, before opening chat, after a meeting, before sleep.
-- Reminders must be user-initiated, quiet, and easy to disable. No shame, streak loss, or urgency copy.
-- Evidence tier: supported behavior-change pattern; notification frequency requires experimentation.
+- Mechanism: pull perspective outward from the immediate scene into a wider time or scale, then return gently.
+- Best for: being stuck inside one incident, one sentence, or one self-story that feels too close.
+- Safety: this is temporary perspective shifting, not dissociation. If the user feels spaced out, return to the room, feet, hands, and one ordinary action.
+- Core sequence: view the near scene -> widen to the day/week/life timeline -> optionally imagine a high or distant vantage point -> return to the room -> choose one grounded next step.
+- Product note: reminders and anchors may help users remember this method, but notification design is a behavior layer, not the definition of 意识抽离法.
+- Evidence tier: product-safe perspective shifting. Avoid metaphysical claims as product promises.
 
 ## Deterministic Routing Rules
 
