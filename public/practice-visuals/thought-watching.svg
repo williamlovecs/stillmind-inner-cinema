@@ -1,0 +1,10 @@
+<svg width="720" height="520" viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="520" fill="#06101f"/>
+  <circle cx="360" cy="260" r="160" stroke="#ddd6fe" stroke-opacity=".14" stroke-width="2"/>
+  <circle cx="360" cy="260" r="92" fill="url(#center)" stroke="#c4b5fd" stroke-opacity=".24"/>
+  <rect x="116" y="148" width="150" height="48" rx="24" fill="#1e1b4b" stroke="#c4b5fd" stroke-opacity=".22"/>
+  <rect x="470" y="186" width="130" height="44" rx="22" fill="#172554" stroke="#93c5fd" stroke-opacity=".2"/>
+  <rect x="132" y="330" width="170" height="46" rx="23" fill="#2e1065" stroke="#d8b4fe" stroke-opacity=".2"/>
+  <rect x="438" y="330" width="160" height="46" rx="23" fill="#1e293b" stroke="#fbbf24" stroke-opacity=".16"/>
+  <defs><radialGradient id="center" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(360 260) rotate(90) scale(92)"><stop stop-color="#f5f3ff"/><stop offset=".42" stop-color="#8b5cf6" stop-opacity=".42"/><stop offset="1" stop-color="#020617" stop-opacity=".9"/></radialGradient></defs>
+</svg>

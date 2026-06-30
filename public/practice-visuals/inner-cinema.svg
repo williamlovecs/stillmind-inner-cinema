@@ -1,0 +1,15 @@
+<svg width="720" height="520" viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="520" fill="#06101f"/>
+  <rect x="80" y="54" width="560" height="300" rx="34" fill="url(#screen)" stroke="rgba(221,214,254,.26)" stroke-width="2"/>
+  <path d="M120 306C206 238 267 226 360 246C453 266 508 218 600 150V354H120V306Z" fill="url(#horizon)" opacity=".82"/>
+  <circle cx="480" cy="135" r="62" fill="url(#sunset)" opacity=".86"/>
+  <path d="M0 520C132 420 255 376 360 376C465 376 588 420 720 520H0Z" fill="url(#seats)"/>
+  <path d="M348 350C348 323 372 323 372 350V386H348V350Z" fill="#050914"/>
+  <ellipse cx="360" cy="392" rx="46" ry="12" fill="#020617" opacity=".72"/>
+  <defs>
+    <linearGradient id="screen" x1="80" x2="640" y1="54" y2="354"><stop stop-color="#231954"/><stop offset=".52" stop-color="#2f4f88"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".28"/></linearGradient>
+    <linearGradient id="horizon" x1="120" x2="600" y1="150" y2="354"><stop stop-color="#0f172a"/><stop offset=".52" stop-color="#5b21b6"/><stop offset="1" stop-color="#fbbf24"/></linearGradient>
+    <radialGradient id="sunset" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(480 135) rotate(90) scale(62)"><stop stop-color="#fff7ed"/><stop offset=".46" stop-color="#f0abfc"/><stop offset="1" stop-color="#f59e0b" stop-opacity="0"/></radialGradient>
+    <linearGradient id="seats" x1="0" x2="720" y1="376" y2="520"><stop stop-color="#020617"/><stop offset=".5" stop-color="#111827"/><stop offset="1" stop-color="#020617"/></linearGradient>
+  </defs>
+</svg>

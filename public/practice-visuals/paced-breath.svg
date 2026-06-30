@@ -1,0 +1,12 @@
+<svg width="720" height="520" viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="520" fill="#06101f"/>
+  <path d="M126 322C210 254 311 231 430 254C510 270 560 249 618 206" stroke="#93c5fd" stroke-opacity=".22" stroke-width="2"/>
+  <circle cx="360" cy="230" r="116" fill="url(#aura)"/>
+  <path d="M360 125C398 178 424 220 424 260C424 297 397 326 360 326C323 326 296 297 296 260C296 220 322 178 360 125Z" fill="url(#drop)" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+  <circle cx="330" cy="222" r="18" fill="white" opacity=".52"/>
+  <path d="M240 364C290 392 431 394 486 362" stroke="#bae6fd" stroke-opacity=".22" stroke-width="10" stroke-linecap="round"/>
+  <defs>
+    <radialGradient id="aura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(360 230) rotate(90) scale(116)"><stop stop-color="#e0f2fe" stop-opacity=".42"/><stop offset=".5" stop-color="#60a5fa" stop-opacity=".24"/><stop offset="1" stop-color="#0f172a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="drop" x1="296" x2="424" y1="125" y2="326"><stop stop-color="#ffffff"/><stop offset=".44" stop-color="#7dd3fc"/><stop offset="1" stop-color="#2563eb" stop-opacity=".58"/></linearGradient>
+  </defs>
+</svg>

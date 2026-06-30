@@ -601,6 +601,21 @@ function HomePanel({
           写下或说出刚才发生了什么。StillMind 会带你做一次短练习，先从情绪里的角色退出来。
         </p>
 
+        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs text-stone-400">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.045] px-2 py-3">
+            <span className="block text-sm font-semibold text-stone-100">角色里</span>
+            <span className="mt-1 block">正在入戏</span>
+          </div>
+          <div className="rounded-2xl border border-violet-200/18 bg-violet-200/[0.075] px-2 py-3">
+            <span className="block text-sm font-semibold text-violet-50">观众席</span>
+            <span className="mt-1 block">先看见它</span>
+          </div>
+          <div className="rounded-2xl border border-amber-200/18 bg-amber-100/[0.065] px-2 py-3">
+            <span className="block text-sm font-semibold text-amber-50">回当下</span>
+            <span className="mt-1 block">再做选择</span>
+          </div>
+        </div>
+
         <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/25 p-4 shadow-inner shadow-black/25">
           <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3">
             <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AmbientToggle } from "@/components/AmbientToggle";
 import { WorkflowNav } from "@/components/WorkflowNav";
@@ -143,6 +144,57 @@ const METHOD_GUIDANCE: Record<MethodId, MethodGuidance> = {
     anchor: "从近景拉到高空",
     mechanism: "把视角从眼前小事拉到更大时间线，角色会变小，空间会变大。",
     reminder: "拉远后要回来，选择一个现实里的小动作。",
+  },
+};
+
+const METHOD_VISUALS: Record<MethodId, { src: string; alt: string }> = {
+  "inner-cinema": {
+    src: "/practice-visuals/inner-cinema.svg",
+    alt: "一个人坐在影院里，看着银幕上的夕光画面",
+  },
+  "paced-breath": {
+    src: "/practice-visuals/paced-breath.svg",
+    alt: "一颗安静的水珠，用来跟随呼气数数",
+  },
+  "thought-watching": {
+    src: "/practice-visuals/thought-watching.svg",
+    alt: "念头像字幕气泡一样围绕中心升起又落下",
+  },
+  "wide-gaze": {
+    src: "/practice-visuals/wide-gaze.svg",
+    alt: "一束安静烛光，用来做凝视练习",
+  },
+  "body-scan": {
+    src: "/practice-visuals/body-scan.svg",
+    alt: "身体轮廓上的几个感受落点",
+  },
+  "person-shift": {
+    src: "/practice-visuals/person-shift.svg",
+    alt: "两个观察位置之间的视角切换",
+  },
+  "logout-pause": {
+    src: "/practice-visuals/logout-pause.svg",
+    alt: "从解释和参与中暂时登出的界面",
+  },
+  release: {
+    src: "/practice-visuals/release.svg",
+    alt: "情绪波纹向外扩散又慢慢变柔",
+  },
+  "open-awareness": {
+    src: "/practice-visuals/open-awareness.svg",
+    alt: "开放空间里的发光中心和环形场域",
+  },
+  "grounded-action": {
+    src: "/practice-visuals/grounded-action.svg",
+    alt: "把注意力聚焦到杯沿这样的具体细节",
+  },
+  "trigger-journal": {
+    src: "/practice-visuals/trigger-journal.svg",
+    alt: "几条波动线被稳定在安静的视觉框里",
+  },
+  anchors: {
+    src: "/practice-visuals/anchors.svg",
+    alt: "从高空看向地球的宏观视角",
   },
 };
 
@@ -551,82 +603,20 @@ function ChoosePractice({ method, practice }: { method: MethodDefinition; practi
 }
 
 function MethodAnchorVisual({ methodId, label }: { methodId: MethodId; label: string }) {
-  const base = "relative min-h-44 overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/60 p-4 shadow-inner shadow-black/30";
-
-  if (methodId === "wide-gaze") {
-    return (
-      <div className={base}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_34%,rgba(251,191,36,0.22),transparent_30%),radial-gradient(circle_at_50%_72%,rgba(168,85,247,0.18),transparent_46%)]" />
-        <div className="relative mx-auto mt-4 h-28 w-20">
-          <span className="absolute left-1/2 top-0 h-14 w-9 -translate-x-1/2 rounded-[50%_50%_45%_45%] bg-gradient-to-b from-white via-amber-200 to-orange-500 shadow-[0_0_46px_rgba(251,191,36,0.62)]" />
-          <span className="absolute left-1/2 top-5 h-9 w-5 -translate-x-1/2 rounded-full bg-gradient-to-b from-violet-100 to-violet-500/60 blur-[0.2px]" />
-          <span className="absolute bottom-1 left-1/2 h-16 w-12 -translate-x-1/2 rounded-t-full bg-gradient-to-b from-slate-700 to-slate-950" />
-          <span className="absolute bottom-0 left-1/2 h-2 w-16 -translate-x-1/2 rounded-full bg-slate-900 shadow-[0_0_18px_rgba(251,191,36,0.18)]" />
-        </div>
-        <p className="relative mt-4 text-center text-sm font-medium text-stone-100">{label}</p>
-      </div>
-    );
-  }
-
-  if (methodId === "paced-breath") {
-    return (
-      <div className={base}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(96,165,250,0.24),transparent_44%)]" />
-        <div className="relative mx-auto mt-4 grid h-24 w-24 place-items-center rounded-full border border-sky-100/20 bg-sky-200/10 shadow-[0_0_50px_rgba(96,165,250,0.22)]">
-          <span className="text-4xl font-semibold text-sky-50">1</span>
-          <span className="absolute -right-2 top-5 h-6 w-4 rounded-full bg-gradient-to-b from-white to-sky-200 opacity-80" />
-        </div>
-        <p className="relative mt-4 text-center text-sm font-medium text-stone-100">{label}</p>
-      </div>
-    );
-  }
-
-  if (methodId === "trigger-journal") {
-    return (
-      <div className={base}>
-        <div className="absolute inset-4 rounded-[1.25rem] bg-[repeating-conic-gradient(from_12deg,rgba(167,243,208,0.22)_0deg_9deg,rgba(15,23,42,0.34)_9deg_18deg)] opacity-85" />
-        <div className="absolute inset-8 rounded-[1rem] border border-emerald-100/15 bg-[radial-gradient(circle_at_50%_50%,rgba(236,253,245,0.18),transparent_28%)]" />
-        <div className="absolute inset-12 rounded-full border border-emerald-100/35 bg-slate-950/72 backdrop-blur-[1.5px]" />
-        <p className="relative mt-28 text-center text-sm font-medium text-stone-100">{label}</p>
-      </div>
-    );
-  }
-
-  if (methodId === "anchors") {
-    return (
-      <div className={base}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(96,165,250,0.28),transparent_20%),radial-gradient(circle_at_50%_45%,rgba(168,85,247,0.16),transparent_44%)]" />
-        <div className="relative mx-auto mt-5 grid h-28 w-28 place-items-center rounded-full border border-sky-100/20 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.7),rgba(96,165,250,0.35)_24%,rgba(15,23,42,0.92)_70%)] shadow-[0_0_60px_rgba(96,165,250,0.24)]">
-          <span className="text-xs text-sky-50/80">高空</span>
-        </div>
-        <p className="relative mt-3 text-center text-sm font-medium text-stone-100">{label}</p>
-      </div>
-    );
-  }
-
-  if (methodId === "inner-cinema") {
-    return (
-      <div className={base}>
-        <div className="absolute inset-x-5 top-5 h-24 overflow-hidden rounded-[1.2rem] border border-amber-100/15 bg-[linear-gradient(180deg,rgba(88,28,135,0.36),rgba(251,191,36,0.16)_48%,rgba(2,6,23,0.92))] shadow-[0_0_40px_rgba(168,85,247,0.16)]">
-          <span className="absolute inset-x-0 top-7 h-px bg-amber-100/25" />
-          <span className="absolute bottom-0 left-0 h-9 w-full bg-[linear-gradient(90deg,rgba(15,23,42,0.5),rgba(245,158,11,0.18),rgba(15,23,42,0.5))]" />
-          <span className="absolute bottom-3 left-1/2 h-8 w-7 -translate-x-1/2 rounded-t-full bg-slate-950/90 shadow-[0_0_22px_rgba(245,158,11,0.24)]" />
-        </div>
-        <span className="absolute bottom-12 left-1/2 h-12 w-12 -translate-x-1/2 rounded-full bg-slate-900 shadow-[0_0_34px_rgba(168,85,247,0.24)]" />
-        <span className="absolute bottom-10 left-1/2 h-3 w-28 -translate-x-1/2 rounded-full bg-black/35" />
-        <p className="relative mt-32 text-center text-sm font-medium text-stone-100">{label}</p>
-      </div>
-    );
-  }
-
+  const visual = METHOD_VISUALS[methodId];
   return (
-    <div className={base}>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(216,180,254,0.22),transparent_38%),radial-gradient(circle_at_70%_72%,rgba(245,158,11,0.12),transparent_32%)]" />
-      <div className="relative mx-auto mt-8 grid h-20 w-20 place-items-center rounded-full border border-violet-100/20 bg-violet-200/10 shadow-[0_0_48px_rgba(168,85,247,0.24)]">
-        <span className="text-xl font-semibold text-violet-50">{METHOD_MARKS[methodId]}</span>
-      </div>
-      <p className="relative mt-5 text-center text-sm font-medium text-stone-100">{label}</p>
-    </div>
+    <figure className="relative min-h-44 overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/60 shadow-inner shadow-black/30">
+      <Image
+        src={visual.src}
+        alt={visual.alt}
+        width={720}
+        height={520}
+        className="h-44 w-full object-cover opacity-95"
+      />
+      <figcaption className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-slate-950/72 px-3 py-2 text-center text-sm font-medium text-stone-100 shadow-lg shadow-black/25 backdrop-blur-md">
+        {label}
+      </figcaption>
+    </figure>
   );
 }
 
