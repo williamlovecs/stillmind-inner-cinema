@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WorkflowNav } from "@/components/WorkflowNav";
 import { METHOD_CATALOG, PRACTICE_PATHS, type MethodDefinition, type PracticeFamily } from "@stillmind/domain";
 import { PRACTICES_BY_METHOD } from "@stillmind/content";
 
@@ -50,25 +51,29 @@ export default function MethodsPage() {
             href="/"
             className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-stone-300 transition hover:bg-white/[0.1]"
           >
-            返回观电影法
+            返回入口
           </Link>
         </header>
+
+        <div className="mt-5">
+          <WorkflowNav active="methods" />
+        </div>
 
         <section className="grid gap-8 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
             <p className="text-sm uppercase tracking-[0.28em] text-violet-200/70">StillMind method system</p>
             <h1 className="mt-4 max-w-3xl text-5xl font-semibold leading-tight text-stone-50 sm:text-6xl">
-              12 种方法，都是沉寂小我的入口。
+              做完一次 Reset，再选择适合你的方法。
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-300">
-              呼吸法、凝视法、登出法、宽恕法、内观法、觉察法、观电影法、意识聚焦法、稳定法、意识抽离法、人称替代法和合一法并列存在。你从当前状态选择一个方法，而不是被某一种方法定义。
+              方法库不是第一步。先用入口页说出发生了什么，完成一次 1 分钟 Reset；如果某个方法对你有效，再回来深入练。
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/reset"
                 className="rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-950/30"
               >
-                开始 Web 练习器
+                先做 1 分钟 Reset
               </Link>
               <a
                 href="#paths"

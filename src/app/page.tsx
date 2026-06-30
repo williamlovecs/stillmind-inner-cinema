@@ -1,11 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 import { containsHighRiskLanguage } from "@stillmind/domain";
+import { AmbientToggle } from "@/components/AmbientToggle";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { HistoryList } from "@/components/HistoryList";
+import { WorkflowNav } from "@/components/WorkflowNav";
+import {
+  PENDING_MODE_KEY,
+  PENDING_TRIGGER_KEY,
+  RESET_MODE_LABELS,
+  detectStateModeFromText,
+} from "@/lib/reset-routing";
 import {
   appendHistory,
   loadHistory,
@@ -17,6 +26,32 @@ import {
 type Step = "home" | "cinema" | "perspective" | "observer" | "return" | "support";
 type Cinema = CinemaPayload;
 type GenerationSource = "preset" | "stepfun";
+
+type SpeechRecognitionAlternativeLike = { transcript: string };
+type SpeechRecognitionResultLike = {
+  readonly isFinal: boolean;
+  readonly length: number;
+  [index: number]: SpeechRecognitionAlternativeLike;
+};
+type SpeechRecognitionEventLike = {
+  readonly resultIndex: number;
+  readonly results: ArrayLike<SpeechRecognitionResultLike>;
+};
+type SpeechRecognitionErrorEventLike = { readonly error?: string };
+type SpeechRecognitionLike = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
 
 const examples = [
   "我被批评了",
@@ -60,6 +95,31 @@ export default function Home() {
   const [distanceAfter, setDistanceAfter] = useState<DistanceAfter | null>(null);
   const [sessionHistoryId, setSessionHistoryId] = useState<string | null>(null);
   const [feedbackCopied, setFeedbackCopied] = useState(false);
+  const router = useRouter();
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState("点一下说话，发泄也可以。");
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const voiceBaseRef = useRef("");
+  const voiceFinalRef = useRef("");
+
+  const matchedMode = useMemo(() => detectStateModeFromText(trigger), [trigger]);
+  const matchedModeLabel = RESET_MODE_LABELS[matchedMode];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const timer = window.setTimeout(() => {
+      const speechWindow = window as Window & {
+        SpeechRecognition?: SpeechRecognitionConstructor;
+        webkitSpeechRecognition?: SpeechRecognitionConstructor;
+      };
+      setVoiceSupported(Boolean(speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition));
+    }, 0);
+    return () => {
+      window.clearTimeout(timer);
+      recognitionRef.current?.abort();
+    };
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- 一次性从 localStorage 加载历史
@@ -243,6 +303,90 @@ export default function Home() {
     }
   };
 
+  const toggleVoiceInput = () => {
+    if (!voiceSupported) {
+      setVoiceStatus("当前浏览器不支持语音输入，请直接打字。");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const speechWindow = window as Window & {
+      SpeechRecognition?: SpeechRecognitionConstructor;
+      webkitSpeechRecognition?: SpeechRecognitionConstructor;
+    };
+    const Recognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      setVoiceSupported(false);
+      setVoiceStatus("当前浏览器不支持语音输入，请直接打字。");
+      return;
+    }
+
+    const recognition = new Recognition();
+    recognition.lang = "zh-CN";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    voiceBaseRef.current = trigger.trim();
+    voiceFinalRef.current = "";
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setVoiceStatus("正在听。你可以直接说发生了什么。");
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      setVoiceStatus("语音已暂停，可以继续说，或直接匹配练习。");
+    };
+    recognition.onerror = () => {
+      setIsListening(false);
+      setVoiceStatus("语音没有接上，换打字也可以。");
+    };
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const transcript = result?.[0]?.transcript?.trim() ?? "";
+        if (!transcript) continue;
+        if (result.isFinal) {
+          voiceFinalRef.current = `${voiceFinalRef.current} ${transcript}`.trim();
+        } else {
+          interimTranscript = `${interimTranscript} ${transcript}`.trim();
+        }
+      }
+      const nextValue = [voiceBaseRef.current, voiceFinalRef.current, interimTranscript]
+        .filter(Boolean)
+        .join(" ")
+        .slice(0, 500);
+      setTrigger(nextValue);
+      setLiveCinema(null);
+      setGenerationSource("preset");
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch {
+      setIsListening(false);
+      setVoiceStatus("语音没有启动，换打字也可以。");
+    }
+  };
+
+  const matchResetPractice = () => {
+    const input = trigger.trim();
+    try {
+      window.sessionStorage.setItem(PENDING_TRIGGER_KEY, input.slice(0, 500));
+      window.sessionStorage.setItem(PENDING_MODE_KEY, matchedMode);
+    } catch {
+      // sessionStorage may be unavailable in private mode
+    }
+    router.push(`/reset?mode=${matchedMode}`);
+  };
+
   const startPitchDemo = () => {
     enterCinema(pitchDemoTrigger);
   };
@@ -273,6 +417,12 @@ export default function Home() {
               }}
               onEnter={() => enterCinema()}
               onPitchDemo={startPitchDemo}
+              voiceSupported={voiceSupported}
+              isListening={isListening}
+              voiceStatus={voiceStatus}
+              matchedModeLabel={matchedModeLabel}
+              onVoiceToggle={toggleVoiceInput}
+              onMatchPractice={matchResetPractice}
             />
           )}
 
@@ -377,28 +527,33 @@ function Header({ step }: { step: Step }) {
   const index = steps.indexOf(step);
 
   return (
-    <header className="flex items-center justify-between pt-2">
+    <header className="flex items-center justify-between gap-3 pt-2">
       <div className="flex items-center gap-3">
         <span className="brand-mark" aria-hidden="true" />
         <div>
-        <p className="text-xs uppercase tracking-[0.28em] text-stone-500">
-          StillMind
-        </p>
-        <p className="mt-1 text-sm text-stone-300">{step === "home" ? "沉寂小我" : "内在电影"}</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-stone-500">
+            StillMind
+          </p>
+          <p className="mt-1 text-sm text-stone-300">
+            {step === "home" ? "沉寂小我" : "内在电影"}
+          </p>
         </div>
       </div>
-      {step !== "home" ? (
-        <div className="flex gap-1.5" aria-label="Progress">
-          {steps.map((item, itemIndex) => (
-            <span
-              key={item}
-              className={`h-1.5 w-6 rounded-full transition-colors ${
-                itemIndex <= index ? "bg-stone-100" : "bg-white/15"
-              }`}
-            />
-          ))}
-        </div>
-      ) : null}
+      <div className="flex items-center gap-2">
+        {step === "home" ? <AmbientToggle /> : null}
+        {step !== "home" ? (
+          <div className="flex gap-1.5" aria-label="Progress">
+            {steps.map((item, itemIndex) => (
+              <span
+                key={item}
+                className={`h-1.5 w-6 rounded-full transition-colors ${
+                  itemIndex <= index ? "bg-stone-100" : "bg-white/15"
+                }`}
+              />
+            ))}
+          </div>
+        ) : null}
+      </div>
     </header>
   );
 }
@@ -409,57 +564,67 @@ function HomePanel({
   onExampleClick,
   onEnter,
   onPitchDemo,
+  voiceSupported,
+  isListening,
+  voiceStatus,
+  matchedModeLabel,
+  onVoiceToggle,
+  onMatchPractice,
 }: {
   trigger: string;
   onTriggerChange: (value: string) => void;
   onExampleClick: (value: string) => void;
   onEnter: () => void;
   onPitchDemo: () => void;
+  voiceSupported: boolean;
+  isListening: boolean;
+  voiceStatus: string;
+  matchedModeLabel: string;
+  onVoiceToggle: () => void;
+  onMatchPractice: () => void;
 }) {
   return (
     <div className="panel-enter w-full space-y-5">
+      <WorkflowNav active="home" />
       <section className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/78 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
         <p className="text-xs uppercase tracking-[0.28em] text-violet-200/65">StillMind 入口</p>
         <h1 className="mt-4 text-4xl font-semibold leading-tight text-stone-50">
-          先退出剧情，再决定下一步。
+          发生了什么？先说出来。
         </h1>
         <p className="mt-3 text-base leading-7 text-stone-300">
-          第一次体验，建议直接做 1 分钟 Reset。它会记录练习前后分数，帮我们验证是否真的更稳定。
+          口述或写下一段情绪，StillMind 会先匹配一个 1 分钟练习；想看电影化表达时，再进入 Inner Cinema。
         </p>
-        <div className="mt-5 grid gap-3">
-          <Link
-            href="/reset"
-            className="group rounded-[1.35rem] border border-violet-200/35 bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 p-[1px] shadow-lg shadow-violet-950/25"
-          >
-            <span className="block rounded-[1.28rem] bg-[#070d1b]/8 px-5 py-4 text-slate-950 transition group-hover:bg-white/10">
-              <span className="block text-lg font-semibold">开始 1 分钟 Reset</span>
-              <span className="mt-1 block text-sm font-medium opacity-80">选状态 → 推荐练习 → 前后评分</span>
-            </span>
-          </Link>
-          <button
-            type="button"
-            onClick={onPitchDemo}
-            className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] px-5 py-4 text-left transition hover:border-violet-200/35 hover:bg-white/[0.1]"
-          >
-            <span className="block text-base font-semibold text-white">看 Inner Cinema 样例</span>
-            <span className="mt-1 block text-sm leading-6 text-stone-400">把一次冲突拆成三幕电影，快速看见角色。</span>
-          </button>
-          <Link
-            href="/methods"
-            className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-5 py-4 text-left transition hover:border-violet-200/35 hover:bg-white/[0.08]"
-          >
-            <span className="block text-base font-semibold text-white">探索 12 种方法</span>
-            <span className="mt-1 block text-sm leading-6 text-stone-400">呼吸、凝视、登出、观电影、人称替代等。</span>
-          </Link>
-        </div>
       </section>
 
       <section className="rounded-[2rem] border border-white/10 bg-black/25 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl">
-        <div className="cinema-screen rounded-[1.4rem] border border-white/10 px-5 py-7 text-center">
-          <p className="text-xs tracking-[0.28em] text-stone-400">INNER CINEMA</p>
+        <div className="cinema-screen rounded-[1.4rem] border border-white/10 px-5 py-6 text-center">
+          <p className="text-xs tracking-[0.28em] text-stone-400">WHAT HAPPENED?</p>
           <p className="mt-3 text-sm leading-6 text-stone-300">
-            写一句触发，把它变成一段可以观看的内在电影。
+            不用整理成好文字。像语音备忘录一样，说出刚才那一幕。
           </p>
+        </div>
+
+        <div className="mt-4 rounded-[1.4rem] border border-violet-200/15 bg-violet-200/[0.055] p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-violet-200/65">Voice input</p>
+              <p className="mt-1 text-sm leading-6 text-stone-400">当前匹配：{matchedModeLabel}</p>
+            </div>
+            <button
+              type="button"
+              onClick={onVoiceToggle}
+              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                isListening
+                  ? "border-rose-200/60 bg-rose-200/15 text-rose-50 shadow-[0_0_22px_rgba(251,113,133,0.18)]"
+                  : voiceSupported
+                    ? "border-violet-200/35 bg-violet-200/12 text-violet-50 hover:bg-violet-200/18"
+                    : "border-white/10 bg-white/[0.04] text-stone-500"
+              }`}
+            >
+              {isListening ? "停止" : voiceSupported ? "开始说" : "语音不可用"}
+            </button>
+          </div>
+          <p className="mt-3 text-xs leading-5 text-stone-500">{voiceStatus}</p>
         </div>
 
         <textarea
@@ -484,16 +649,47 @@ function HomePanel({
 
         <button
           type="button"
-          onClick={onEnter}
-          className="mt-5 flex h-14 w-full items-center justify-center rounded-full border border-violet-200/25 bg-violet-200/10 text-base font-medium text-violet-50 shadow-lg shadow-violet-950/20 transition hover:bg-violet-200/15"
+          onClick={onMatchPractice}
+          className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 text-base font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]"
         >
-          进入内在电影
+          匹配 1 分钟练习 · {matchedModeLabel}
         </button>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={onEnter}
+            className="flex h-12 items-center justify-center rounded-full border border-violet-200/25 bg-violet-200/10 text-sm font-medium text-violet-50 shadow-lg shadow-violet-950/20 transition hover:bg-violet-200/15"
+          >
+            只看内在电影
+          </button>
+          <button
+            type="button"
+            onClick={onPitchDemo}
+            className="flex h-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.055] text-sm font-medium text-stone-300 transition hover:border-violet-200/35 hover:text-white"
+          >
+            演示样例
+          </button>
+        </div>
       </section>
+
+      <div className="grid grid-cols-2 gap-2 text-sm">
+        <Link
+          href="/methods"
+          className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-stone-300 transition hover:border-violet-200/35 hover:text-white"
+        >
+          探索 12 种方法
+        </Link>
+        <Link
+          href="/reset"
+          className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-stone-300 transition hover:border-violet-200/35 hover:text-white"
+        >
+          手动选择状态
+        </Link>
+      </div>
     </div>
   );
-}
-function CinemaPanel({
+}function CinemaPanel({
   cinema,
   source,
   isGenerating,

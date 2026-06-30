@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { WorkflowNav } from "@/components/WorkflowNav";
 import { notFound } from "next/navigation";
 import {
   METHOD_BY_ID,
@@ -74,9 +75,13 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
             href="/"
             className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-stone-300 transition hover:bg-white/[0.1]"
           >
-            观电影法
+            回到入口
           </Link>
         </header>
+
+        <div className="mt-5">
+          <WorkflowNav active="methods" />
+        </div>
 
         <section className="grid gap-8 py-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <aside className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/72 p-5 shadow-2xl shadow-violet-950/20 backdrop-blur-xl">
@@ -84,7 +89,20 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
             <h1 className="mt-4 text-5xl font-semibold leading-tight text-stone-50">{method.title}</h1>
             <p className="mt-4 text-2xl leading-tight text-stone-100">{method.subtitle}</p>
             <p className="mt-5 text-base leading-7 text-stone-300">{method.summary}</p>
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                href={`/reset?method=${method.id}`}
+                className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-950/25"
+              >
+                用这个方法开始练习
+              </Link>
+              <Link
+                href="/"
+                className="rounded-full border border-white/10 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-violet-200/35 hover:text-white"
+              >
+                回到“发生了什么”入口
+              </Link>
+            </div>            <div className="mt-6 flex flex-wrap gap-2">
               {method.durations.map((minutes) => (
                 <span key={minutes} className="rounded-full bg-violet-100/10 px-3 py-1.5 text-sm text-violet-100">
                   {minutes} 分钟

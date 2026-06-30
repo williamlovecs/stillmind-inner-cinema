@@ -2,6 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AmbientToggle } from "@/components/AmbientToggle";
+import { WorkflowNav } from "@/components/WorkflowNav";
+import {
+  PENDING_MODE_KEY,
+  PENDING_TRIGGER_KEY,
+  detectStateModeFromText,
+  isStateMode,
+} from "@/lib/reset-routing";
 import { getPracticeVariant, type PracticeVariant } from "@stillmind/content";
 import {
   METHOD_BY_ID,
@@ -130,10 +138,57 @@ export default function ResetPage() {
   const [showAdvancedMethods, setShowAdvancedMethods] = useState(false);
   const [showDurationOptions, setShowDurationOptions] = useState(false);
   const [showAllStates, setShowAllStates] = useState(false);
+  const [incomingTrigger, setIncomingTrigger] = useState("");
   const startedAt = useRef<string>(new Date().toISOString());
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSessions(loadSessions()), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const storedTrigger = window.sessionStorage.getItem(PENDING_TRIGGER_KEY) ?? "";
+        const storedMode = window.sessionStorage.getItem(PENDING_MODE_KEY);
+        const queryMode = params.get("mode");
+        const queryMethod = params.get("method") as MethodId | null;
+        const queryMethodDef = queryMethod ? METHOD_BY_ID.get(queryMethod) : undefined;
+        const nextMode = isStateMode(storedMode)
+          ? storedMode
+          : isStateMode(queryMode)
+            ? queryMode
+            : queryMethodDef?.modes[0]
+              ? queryMethodDef.modes[0]
+              : storedTrigger
+                ? detectStateModeFromText(storedTrigger)
+                : undefined;
+
+        if (storedTrigger) {
+          setIncomingTrigger(storedTrigger.slice(0, 220));
+        }
+        if (nextMode) {
+          setMode(nextMode);
+          const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
+          setIntensityBefore(Math.min(10, nextActivation * 2));
+          setIntensityAfter(Math.min(10, nextActivation * 2));
+          if (!queryMethodDef) {
+            setManualChoice(false);
+            setShowAdvancedMethods(false);
+          }
+        }
+        if (queryMethodDef) {
+          setSelectedMethodId(queryMethodDef.id);
+          setManualChoice(true);
+          setShowAdvancedMethods(true);
+          setDuration(queryMethodDef.durations.includes(1) ? 1 : queryMethodDef.durations[0]);
+        }
+        window.sessionStorage.removeItem(PENDING_TRIGGER_KEY);
+        window.sessionStorage.removeItem(PENDING_MODE_KEY);
+      } catch {
+        // keep default recommendation if storage or URL parsing is unavailable
+      }
+    }, 0);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -184,6 +239,7 @@ export default function ResetPage() {
     setPhase("choose");
     setManualChoice(false);
     setShowAdvancedMethods(false);
+    setIncomingTrigger("");
     setResult(undefined);
     const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
     setIntensityBefore(Math.min(10, nextActivation * 2));
@@ -278,10 +334,15 @@ export default function ResetPage() {
             <span><span className="block text-sm uppercase tracking-[0.34em] text-violet-100/70">StillMind</span><span className="block text-sm font-medium text-stone-200">沉寂小我练习器</span></span>
           </Link>
           <nav className="flex items-center gap-2 text-sm text-stone-300">
+            <AmbientToggle className="hidden sm:inline-flex" />
             <Link className="rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white" href="/methods">方法库</Link>
             <Link className="hidden rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white sm:inline-flex" href="/support/seed-test">参与测试</Link>
           </nav>
         </header>
+
+        <div className="mt-5">
+          <WorkflowNav active="reset" />
+        </div>
 
         <section className="grid w-full min-w-0 flex-1 gap-6 overflow-hidden py-8 lg:grid-cols-[0.9fr_1.25fr] lg:items-stretch">
           <aside className="w-full min-w-0 max-w-[350px] space-y-5 sm:max-w-full">
@@ -290,6 +351,12 @@ export default function ResetPage() {
               <h1 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">此刻，被什么带走了？</h1>
               <p className="mt-4 break-all text-base leading-7 text-stone-300">选一个当前状态，直接开始一次沉寂小我练习。</p>
               <div className="mt-4 break-all rounded-2xl border border-violet-200/20 bg-violet-200/[0.08] p-3 text-sm leading-6 text-violet-50">第一次体验：选当前状态，做 1 分钟推荐练习，完成后反馈是否更稳定。</div>
+              {incomingTrigger ? (
+                <div className="mt-4 rounded-2xl border border-amber-200/18 bg-amber-100/[0.06] p-3 text-sm leading-6 text-amber-50/90">
+                  <span className="block text-xs uppercase tracking-[0.18em] text-amber-100/55">刚才说的是</span>
+                  <span className="mt-1 block break-all text-stone-200">{incomingTrigger}</span>
+                </div>
+              ) : null}
               <p className="mt-3 text-xs leading-5 text-stone-500">请不要输入真实姓名、隐私事件、创伤细节、医疗或危机场景。本工具只是日常情绪 reset 和自我观察练习，不替代心理咨询或医疗帮助。</p>
             </div>
             <div className="w-full min-w-0 max-w-[350px] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] p-4 backdrop-blur-xl sm:max-w-full">
@@ -452,9 +519,3 @@ function IntensityScale({ label, value, onChange }: { label: string; value: numb
 function DoneView({ method, action, onAgain }: { method: MethodDefinition; action: string; onAgain: () => void }) {
   return <div className="grid h-full place-items-center text-center"><div className="max-w-xl"><p className="text-sm uppercase tracking-[0.26em] text-amber-100/70">Returned</p><h3 className="mt-4 text-4xl font-semibold leading-tight text-white">你没有消灭念头，只是多了一个观察位置。</h3><p className="mt-5 text-lg leading-8 text-stone-300">这次你练习了“{method.title}”。下一步：{action}。</p><button type="button" onClick={onAgain} className="mt-8 rounded-full border border-white/10 bg-white/[0.06] px-6 py-3 text-sm font-semibold text-white transition hover:border-violet-200/40">再练一次</button></div></div>;
 }
-
-
-
-
-
-
