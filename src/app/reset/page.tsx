@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AmbientToggle } from "@/components/AmbientToggle";
 import { WorkflowNav } from "@/components/WorkflowNav";
 import {
@@ -267,60 +267,59 @@ export default function ResetPage() {
     const timer = window.setTimeout(() => setSessions(loadSessions()), 0);
     return () => window.clearTimeout(timer);
   }, []);
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const storedTrigger = window.sessionStorage.getItem(PENDING_TRIGGER_KEY) ?? "";
-        const storedMode = window.sessionStorage.getItem(PENDING_MODE_KEY);
-        const storedIntensity = window.sessionStorage.getItem(PENDING_INTENSITY_KEY);
-        const parsedIntensity = storedIntensity === null ? NaN : Number(storedIntensity);
-        const queryMode = params.get("mode");
-        const queryMethod = params.get("method") as MethodId | null;
-        const queryMethodDef = queryMethod ? METHOD_BY_ID.get(queryMethod) : undefined;
-        const nextMode = isStateMode(storedMode)
-          ? storedMode
-          : isStateMode(queryMode)
-            ? queryMode
-            : queryMethodDef?.modes[0]
-              ? queryMethodDef.modes[0]
-              : storedTrigger
-                ? detectStateModeFromText(storedTrigger)
-                : undefined;
+  useLayoutEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const storedTrigger = window.sessionStorage.getItem(PENDING_TRIGGER_KEY) ?? "";
+      const storedMode = window.sessionStorage.getItem(PENDING_MODE_KEY);
+      const storedIntensity = window.sessionStorage.getItem(PENDING_INTENSITY_KEY);
+      const parsedIntensity = storedIntensity === null ? NaN : Number(storedIntensity);
+      const queryMode = params.get("mode");
+      const queryMethod = params.get("method") as MethodId | null;
+      const queryMethodDef = queryMethod ? METHOD_BY_ID.get(queryMethod) : undefined;
+      const nextMode = isStateMode(storedMode)
+        ? storedMode
+        : isStateMode(queryMode)
+          ? queryMode
+          : queryMethodDef?.modes[0]
+            ? queryMethodDef.modes[0]
+            : storedTrigger
+              ? detectStateModeFromText(storedTrigger)
+              : undefined;
 
-        if (storedTrigger) {
-          setIncomingTrigger(storedTrigger.slice(0, 220));
-        }
-        if (nextMode) {
-          setMode(nextMode);
-          const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
-          const nextIntensity = Number.isInteger(parsedIntensity)
-            ? Math.min(10, Math.max(0, parsedIntensity))
-            : Math.min(10, nextActivation * 2);
-          setIntensityBefore(nextIntensity);
-          setIntensityAfter(nextIntensity);
-          if (Number.isInteger(parsedIntensity)) {
-            setPhase("precheck");
-          }
-          if (!queryMethodDef) {
-            setManualChoice(false);
-            setShowAdvancedMethods(false);
-          }
-        }
-        if (queryMethodDef) {
-          setSelectedMethodId(queryMethodDef.id);
-          setManualChoice(true);
-          setShowAdvancedMethods(true);
-          setDuration(queryMethodDef.durations.includes(1) ? 1 : queryMethodDef.durations[0]);
-        }
-        window.sessionStorage.removeItem(PENDING_TRIGGER_KEY);
-        window.sessionStorage.removeItem(PENDING_MODE_KEY);
-        window.sessionStorage.removeItem(PENDING_INTENSITY_KEY);
-      } catch {
-        // keep default recommendation if storage or URL parsing is unavailable
+      /* eslint-disable react-hooks/set-state-in-effect -- 首帧前同步读取首页传来的状态，避免先显示完整 reset 页面再跳到专注模式。 */
+      if (storedTrigger) {
+        setIncomingTrigger(storedTrigger.slice(0, 220));
       }
-    }, 0);
-    return () => window.clearTimeout(timer);
+      if (nextMode) {
+        setMode(nextMode);
+        const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
+        const nextIntensity = Number.isInteger(parsedIntensity)
+          ? Math.min(10, Math.max(0, parsedIntensity))
+          : Math.min(10, nextActivation * 2);
+        setIntensityBefore(nextIntensity);
+        setIntensityAfter(nextIntensity);
+        if (Number.isInteger(parsedIntensity)) {
+          setPhase("precheck");
+        }
+        if (!queryMethodDef) {
+          setManualChoice(false);
+          setShowAdvancedMethods(false);
+        }
+      }
+      if (queryMethodDef) {
+        setSelectedMethodId(queryMethodDef.id);
+        setManualChoice(true);
+        setShowAdvancedMethods(true);
+        setDuration(queryMethodDef.durations.includes(1) ? 1 : queryMethodDef.durations[0]);
+      }
+      window.sessionStorage.removeItem(PENDING_TRIGGER_KEY);
+      window.sessionStorage.removeItem(PENDING_MODE_KEY);
+      window.sessionStorage.removeItem(PENDING_INTENSITY_KEY);
+      /* eslint-enable react-hooks/set-state-in-effect */
+    } catch {
+      // keep default recommendation if storage or URL parsing is unavailable
+    }
   }, []);
 
   const recommendation = useMemo(() => recommendMethods({
