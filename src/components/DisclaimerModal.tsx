@@ -42,29 +42,26 @@ export function DisclaimerModal() {
     >
       <div className="w-full max-w-md overflow-hidden rounded-3xl border border-violet-200/20 bg-[#08111f]/96 shadow-2xl shadow-violet-950/40">
         <div className="px-6 py-7">
-          <p className="text-xs uppercase tracking-[0.28em] text-violet-200/70">
-            使用边界
-          </p>
+          <p className="text-xs uppercase tracking-[0.28em] text-violet-200/70">使用边界</p>
           <h2
             id="disclaimer-title"
             className="mt-3 text-2xl font-semibold leading-tight text-stone-50"
           >
-            先确认：这不是治疗工具
+            先确认三件事
           </h2>
 
           <div className="mt-5 space-y-3 text-sm leading-6 text-stone-300">
-            <p>
-              StillMind 只用于日常情绪 reset 和自我观察，不做诊断、不做治疗，也不替代专业心理帮助。
-            </p>
-            <div className="rounded-2xl border border-amber-200/15 bg-amber-50/[0.05] p-4 text-amber-50/90">
-              如果你有自伤、伤人、医疗紧急或无法保证安全的情况，请立即联系当地急救、警方、危机热线或身边可信任的人。
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="font-semibold text-stone-100">StillMind 是日常 reset 工具。</p>
+              <p className="mt-1 text-stone-400">它不做诊断、治疗，也不替代专业心理帮助。</p>
             </div>
-            <p>
-              请不要输入真实姓名、隐私事件、创伤细节、医疗或危机场景。
-            </p>
-            <p>
-              如果启用第三方 AI，你输入的一句话可能会被发送给模型服务完成生成。
-            </p>
+            <div className="rounded-2xl border border-amber-200/15 bg-amber-50/[0.05] p-4 text-amber-50/90">
+              如果涉及自伤、伤人、医疗紧急或无法保证安全，请立刻联系当地急救、警方、危机热线或身边可信任的人。
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="font-semibold text-stone-100">不要输入隐私细节。</p>
+              <p className="mt-1 text-stone-400">避免真实姓名、隐私事件、创伤细节、医疗或危机场景。</p>
+            </div>
             <p className="text-xs text-stone-500">
               完整说明：{" "}
               <Link
