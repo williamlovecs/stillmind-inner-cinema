@@ -822,37 +822,96 @@ function DistanceShift({ instruction }: { instruction: string }) {
 
 function BodyScan({ instruction }: { instruction: string }) {
   const zones = ["脚底", "手掌", "胸口", "肩颈"];
+  const qualities = ["紧", "松", "热", "麻", "空", "稳"];
   const [zone, setZone] = useState(zones[0]);
-  return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-cyan-200/15 bg-[radial-gradient(circle_at_50%_20%,rgba(34,211,238,0.12),transparent_45%),rgba(2,6,23,0.72)] p-6"><div className="mx-auto grid h-64 w-40 place-items-center rounded-full border border-cyan-100/15 bg-cyan-200/[0.035]"><div className="grid gap-3">{zones.map((item) => <button key={item} type="button" onClick={() => setZone(item)} className={`rounded-full border px-4 py-2 text-sm transition ${zone === item ? "border-cyan-100/60 bg-cyan-100/16 text-white shadow-[0_0_28px_rgba(34,211,238,0.16)]" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}</div></div><p className="text-center text-sm text-cyan-100/80">当前落点：{zone}</p><p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p></div>;
+  const [quality, setQuality] = useState(qualities[0]);
+  return (
+    <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-cyan-200/15 bg-[radial-gradient(circle_at_50%_20%,rgba(34,211,238,0.12),transparent_45%),rgba(2,6,23,0.72)] p-6">
+      <div className="mx-auto grid h-64 w-40 place-items-center rounded-full border border-cyan-100/15 bg-cyan-200/[0.035]">
+        <div className="grid gap-3">
+          {zones.map((item) => <button key={item} type="button" onClick={() => setZone(item)} className={`rounded-full border px-4 py-2 text-sm transition ${zone === item ? "border-cyan-100/60 bg-cyan-100/16 text-white shadow-[0_0_28px_rgba(34,211,238,0.16)]" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}
+        </div>
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        {qualities.map((item) => <button key={item} type="button" onClick={() => setQuality(item)} className={`rounded-full border px-3 py-2 text-sm transition ${quality === item ? "border-cyan-100/55 bg-cyan-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-cyan-100/35"}`}>{item}</button>)}
+      </div>
+      <p className="text-center text-sm text-cyan-100/80">当前落点：{zone} · 只是标记为“{quality}”</p>
+      <p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p>
+    </div>
+  );
 }
 
 function PersonShift({ instruction }: { instruction: string }) {
   const [name, setName] = useState("Will");
   const [sentence, setSentence] = useState("我现在很想证明自己没错。");
+  const [distance, setDistance] = useState<"name" | "person">("name");
   const shifted = sentence.replaceAll("我", name || "这个人");
-  return <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-5"><p className="text-base leading-7 text-stone-300">{instruction}</p><input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" placeholder="你的名字" /><textarea value={sentence} onChange={(event) => setSentence(event.target.value)} className="min-h-28 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" /><div className="rounded-3xl border border-violet-200/20 bg-violet-200/10 p-4"><p className="text-xs uppercase tracking-[0.22em] text-violet-200/70">替换后</p><p className="mt-2 text-xl font-semibold leading-8 text-white">{shifted}</p></div></div>;
+  const further = `一个人正在经历：${shifted.replaceAll(name || "这个人", "").trim() || sentence.replaceAll("我", "")}`;
+  return (
+    <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-5">
+      <p className="text-base leading-7 text-stone-300">{instruction}</p>
+      <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" placeholder="你的名字" />
+      <textarea value={sentence} onChange={(event) => setSentence(event.target.value)} className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" />
+      <div className="grid gap-2 sm:grid-cols-2">
+        <button type="button" onClick={() => setDistance("name")} className={`rounded-2xl border p-3 text-left transition ${distance === "name" ? "border-violet-100/55 bg-violet-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>
+          <span className="block text-xs uppercase tracking-[0.2em] opacity-70">名字视角</span>
+          <span className="mt-2 block text-sm leading-6">{shifted}</span>
+        </button>
+        <button type="button" onClick={() => setDistance("person")} className={`rounded-2xl border p-3 text-left transition ${distance === "person" ? "border-amber-100/55 bg-amber-100/12 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>
+          <span className="block text-xs uppercase tracking-[0.2em] opacity-70">再退一步</span>
+          <span className="mt-2 block text-sm leading-6">{further}</span>
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function ReleasePractice({ instruction }: { instruction: string }) {
   const [choice, setChoice] = useState("允许出现");
+  const [boundary, setBoundary] = useState("保持距离");
   const options = ["允许出现", "保持边界", "少重播一次"];
-  return <div className="grid flex-1 place-items-center rounded-[2rem] border border-rose-200/15 bg-[radial-gradient(circle_at_50%_16%,rgba(251,113,133,0.12),transparent_42%),rgba(2,6,23,0.72)] p-6 text-center"><div className="flex flex-wrap justify-center gap-2">{options.map((item) => <button key={item} type="button" onClick={() => setChoice(item)} className={`rounded-full border px-4 py-2 text-sm transition ${choice === item ? "border-rose-100/60 bg-rose-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}</div><div className="my-8 h-24 w-full max-w-md overflow-hidden rounded-full border border-rose-100/10 bg-white/[0.035]"><div className="h-full w-2/3 rounded-full bg-gradient-to-r from-rose-300/0 via-rose-200/20 to-amber-200/30 blur-sm" /></div><p className="text-xs uppercase tracking-[0.24em] text-rose-100/60">{choice}</p><p className="mt-3 max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p></div>;
+  const boundaries = ["保持距离", "晚点再说", "找人支持"];
+  return (
+    <div className="grid flex-1 place-items-center rounded-[2rem] border border-rose-200/15 bg-[radial-gradient(circle_at_50%_16%,rgba(251,113,133,0.12),transparent_42%),rgba(2,6,23,0.72)] p-6 text-center">
+      <div className="flex flex-wrap justify-center gap-2">{options.map((item) => <button key={item} type="button" onClick={() => setChoice(item)} className={`rounded-full border px-4 py-2 text-sm transition ${choice === item ? "border-rose-100/60 bg-rose-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}</div>
+      <div className="my-7 h-24 w-full max-w-md overflow-hidden rounded-full border border-rose-100/10 bg-white/[0.035]"><div className="h-full w-2/3 rounded-full bg-gradient-to-r from-rose-300/0 via-rose-200/20 to-amber-200/30 blur-sm" /></div>
+      <p className="text-xs uppercase tracking-[0.24em] text-rose-100/60">{choice}</p>
+      <p className="mt-3 max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
+      <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+        <p className="text-xs text-stone-500">宽恕不等于取消边界。此刻先选一个保护动作：</p>
+        <div className="mt-2 flex flex-wrap justify-center gap-2">{boundaries.map((item) => <button key={item} type="button" onClick={() => setBoundary(item)} className={`rounded-full border px-3 py-2 text-xs transition ${boundary === item ? "border-rose-100/55 bg-rose-100/14 text-white" : "border-white/10 bg-white/[0.035] text-stone-400"}`}>{item}</button>)}</div>
+      </div>
+    </div>
+  );
 }
 
 function OpenAwareness({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
   const fields = ["声音", "身体", "念头"];
-  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10" style={{ width: 120 + index * 90, height: 120 + index * 90, opacity: 0.75 - index * 0.16 }} />)}<div className="relative grid gap-3">{fields.map((field, index) => <span key={field} className={`rounded-full border px-5 py-3 text-sm transition ${index <= stepIndex % 3 ? "border-violet-100/45 bg-violet-100/13 text-violet-50" : "border-white/10 bg-white/[0.04] text-stone-500"}`}>{field}</span>)}</div><p className="absolute bottom-8 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p></div>;
+  const [included, setIncluded] = useState<string[]>(["声音"]);
+  function toggleField(field: string) {
+    setIncluded((items) => items.includes(field) ? items.filter((item) => item !== field) : [...items, field]);
+  }
+
+  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10" style={{ width: 120 + index * 90, height: 120 + index * 90, opacity: 0.75 - index * 0.16 }} />)}<div className="relative grid gap-3">{fields.map((field, index) => <button key={field} type="button" onClick={() => toggleField(field)} className={`rounded-full border px-5 py-3 text-sm transition ${included.includes(field) || index <= stepIndex % 3 ? "border-violet-100/45 bg-violet-100/13 text-violet-50" : "border-white/10 bg-white/[0.04] text-stone-500 hover:border-violet-200/35"}`}>{field}</button>)}</div><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">已纳入 {included.length} 个经验，不选中心。</p></div>;
 }
 
 function GroundedAction({ instruction }: { instruction: string }) {
   const [focus, setFocus] = useState("杯沿");
+  const [sense, setSense] = useState("视觉");
   const objects = ["杯沿", "脚底", "光线", "一个声音"];
-  return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-amber-200/15 bg-[radial-gradient(circle_at_50%_22%,rgba(245,158,11,0.12),transparent_46%),rgba(2,6,23,0.72)] p-6 text-center"><div className="mx-auto grid h-44 w-44 place-items-center rounded-full border border-amber-100/20 bg-amber-200/10 shadow-[0_0_60px_rgba(245,158,11,0.18)]"><span className="text-2xl font-semibold text-amber-50">{focus}</span></div><div className="flex flex-wrap justify-center gap-2">{objects.map((item) => <button key={item} type="button" onClick={() => setFocus(item)} className={`rounded-full border px-4 py-2 text-sm transition ${focus === item ? "border-amber-100/60 bg-amber-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}</div><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p></div>;
+  const senses = ["视觉", "触觉", "听觉", "嗅觉"];
+  return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-amber-200/15 bg-[radial-gradient(circle_at_50%_22%,rgba(245,158,11,0.12),transparent_46%),rgba(2,6,23,0.72)] p-6 text-center"><div className="mx-auto grid h-44 w-44 place-items-center rounded-full border border-amber-100/20 bg-amber-200/10 shadow-[0_0_60px_rgba(245,158,11,0.18)]"><span className="text-2xl font-semibold text-amber-50">{focus}</span><span className="text-xs text-amber-100/65">{sense}</span></div><div className="flex flex-wrap justify-center gap-2">{objects.map((item) => <button key={item} type="button" onClick={() => setFocus(item)} className={`rounded-full border px-4 py-2 text-sm transition ${focus === item ? "border-amber-100/60 bg-amber-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}</div><div className="flex flex-wrap justify-center gap-2">{senses.map((item) => <button key={item} type="button" onClick={() => setSense(item)} className={`rounded-full border px-3 py-2 text-xs transition ${sense === item ? "border-amber-100/55 bg-amber-100/12 text-white" : "border-white/10 bg-white/[0.035] text-stone-500"}`}>{item}</button>)}</div><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p></div>;
 }
 
 function StabilityPractice({ instruction, secondsLeft }: { instruction: string; secondsLeft: number }) {
   const [steady, setSteady] = useState(false);
-  return <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-slate-950/70 p-6 text-center"><div className={`mx-auto grid h-56 w-56 place-items-center rounded-[2rem] border border-emerald-100/15 bg-[repeating-conic-gradient(from_0deg,rgba(167,243,208,0.12)_0deg_12deg,rgba(15,23,42,0.2)_12deg_24deg)] transition duration-700 ${steady ? "scale-95 opacity-70 blur-[0.2px]" : "scale-100 opacity-100"}`}><span className="rounded-full bg-slate-950/70 px-4 py-2 text-sm text-emerald-50">{steady ? "画面已放慢" : "画面在牵引注意"}</span></div><button type="button" onClick={() => setSteady((value) => !value)} className="mx-auto rounded-full border border-emerald-100/30 bg-emerald-100/10 px-5 py-3 text-sm font-semibold text-emerald-50">{steady ? "允许波动" : "尝试稳定"}</button><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">剩余 {secondsLeft} 秒</p></div>;
+  const [attempts, setAttempts] = useState(0);
+  function toggleSteady() {
+    setSteady((value) => !value);
+    setAttempts((value) => value + 1);
+  }
+
+  return <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-slate-950/70 p-6 text-center"><div className={`mx-auto grid h-56 w-56 place-items-center rounded-[2rem] border border-emerald-100/15 bg-[repeating-conic-gradient(from_0deg,rgba(167,243,208,0.12)_0deg_12deg,rgba(15,23,42,0.2)_12deg_24deg)] transition duration-700 ${steady ? "scale-95 opacity-70 blur-[0.2px]" : "scale-100 opacity-100"}`}><span className="rounded-full bg-slate-950/70 px-4 py-2 text-sm text-emerald-50">{steady ? "画面已放慢" : "画面在牵引注意"}</span></div><button type="button" onClick={toggleSteady} className="mx-auto rounded-full border border-emerald-100/30 bg-emerald-100/10 px-5 py-3 text-sm font-semibold text-emerald-50">{steady ? "允许波动" : "尝试稳定"}</button><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">尝试 {attempts} 次 · 剩余 {secondsLeft} 秒</p></div>;
 }
 
 function CheckView({
