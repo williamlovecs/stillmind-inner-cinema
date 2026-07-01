@@ -261,6 +261,7 @@ export default function ResetPage() {
   const [showDurationOptions, setShowDurationOptions] = useState(false);
   const [showAllStates, setShowAllStates] = useState(false);
   const [incomingTrigger, setIncomingTrigger] = useState("");
+  const [lockedBeforeScore, setLockedBeforeScore] = useState(false);
   const startedAt = useRef<string>(new Date().toISOString());
 
   useEffect(() => {
@@ -300,6 +301,7 @@ export default function ResetPage() {
         setIntensityBefore(nextIntensity);
         setIntensityAfter(nextIntensity);
         if (Number.isInteger(parsedIntensity)) {
+          setLockedBeforeScore(true);
           setPhase("precheck");
         }
         if (!queryMethodDef) {
@@ -375,6 +377,7 @@ export default function ResetPage() {
     setManualChoice(false);
     setShowAdvancedMethods(false);
     setIncomingTrigger("");
+    setLockedBeforeScore(false);
     setResult(undefined);
     const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
     setIntensityBefore(Math.min(10, nextActivation * 2));
@@ -395,6 +398,7 @@ export default function ResetPage() {
     setFeedbackNote("");
     setReuseIntent("不确定");
     setIntensityAfter(intensityBefore);
+    setLockedBeforeScore(false);
     setPhase("precheck");
   }
 
@@ -456,6 +460,7 @@ export default function ResetPage() {
     setStepIndex(0);
     setSecondsLeft(0);
     setResult(undefined);
+    setLockedBeforeScore(false);
   }
 
   return (
@@ -528,7 +533,7 @@ export default function ResetPage() {
             <div className="grid min-w-0 gap-4">
               <div className={practiceShellClass}>
                 {phase === "choose" && practice ? <ChoosePractice method={method} practice={practice} /> : null}
-                {phase === "precheck" && practice ? <PrePracticeCheck method={method} practice={practice} intensityBefore={intensityBefore} onIntensityBefore={setIntensityBefore} onStart={startPractice} /> : null}
+                {phase === "precheck" && practice ? <PrePracticeCheck method={method} practice={practice} intensityBefore={intensityBefore} lockedBeforeScore={lockedBeforeScore} onIntensityBefore={setIntensityBefore} onStart={startPractice} /> : null}
                 {phase === "practice" && practice && currentStep ? <PracticePlayer method={method} practice={practice} stepIndex={stepIndex} secondsLeft={secondsLeft} progress={progress} paused={paused} onPause={() => setPaused((value) => !value)} onStop={stopPractice} /> : null}
                 {phase === "check" ? <CheckView intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} onIntensityAfter={setIntensityAfter} onReuseIntent={setReuseIntent} onFeedbackNote={setFeedbackNote} onComplete={completeSession} /> : null}
                 {phase === "done" ? <DoneView method={method} action={action} intensityBefore={intensityBefore} intensityAfter={intensityAfter} onAgain={resetAgain} /> : null}
@@ -620,8 +625,52 @@ function MethodAnchorVisual({ methodId, label }: { methodId: MethodId; label: st
   );
 }
 
-function PrePracticeCheck({ method, practice, intensityBefore, onIntensityBefore, onStart }: { method: MethodDefinition; practice: PracticeVariant; intensityBefore: number; onIntensityBefore: (value: number) => void; onStart: () => void }) {
-  return <div className="flex h-full flex-col justify-center gap-6"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">练习前</p><h3 className="mt-3 text-3xl font-semibold text-white">先标记一下此刻的强度。</h3><p className="mt-3 text-base leading-7 text-stone-400">你现在被脑内剧情带走的程度？0 = 很稳定，10 = 完全被带走。</p></div><IntensityScale label="被脑内剧情带走的程度" value={intensityBefore} onChange={onIntensityBefore} /><div className="rounded-3xl border border-violet-200/15 bg-violet-200/[0.06] p-4"><p className="text-sm text-stone-400">接下来练习</p><p className="mt-2 text-xl font-semibold text-white">{practice.minutes} 分钟 · {method.title}</p><p className="mt-2 text-sm leading-6 text-stone-500">练完后会自动记录练习后分数、复用意愿和一句话反馈。</p></div><button type="button" onClick={onStart} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950 shadow-xl shadow-violet-950/30 transition hover:scale-[1.01]">开始 {practice.minutes} 分钟练习</button></div>;
+function PrePracticeCheck({
+  method,
+  practice,
+  intensityBefore,
+  lockedBeforeScore,
+  onIntensityBefore,
+  onStart,
+}: {
+  method: MethodDefinition;
+  practice: PracticeVariant;
+  intensityBefore: number;
+  lockedBeforeScore: boolean;
+  onIntensityBefore: (value: number) => void;
+  onStart: () => void;
+}) {
+  return (
+    <div className="flex h-full flex-col justify-center gap-6">
+      <div>
+        <p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">练习前</p>
+        <h3 className="mt-3 text-3xl font-semibold text-white">{lockedBeforeScore ? "练习前分数已记录。" : "先标记一下此刻的强度。"}</h3>
+        <p className="mt-3 text-base leading-7 text-stone-400">
+          {lockedBeforeScore ? "首页已经记录了你被脑内剧情带走的程度，不需要重复选择。" : "你现在被脑内剧情带走的程度？0 = 很稳定，10 = 完全被带走。"}
+        </p>
+      </div>
+
+      {lockedBeforeScore ? (
+        <div className="rounded-3xl border border-amber-200/20 bg-amber-100/[0.07] p-4">
+          <p className="text-sm text-stone-400">练习前被带走程度</p>
+          <p className="mt-2 text-4xl font-semibold text-amber-100">{intensityBefore}/10</p>
+          <p className="mt-2 text-sm leading-6 text-stone-500">练完后只需要再选一次练习后分数，用来看有没有下降。</p>
+        </div>
+      ) : (
+        <IntensityScale label="被带走程度" value={intensityBefore} onChange={onIntensityBefore} />
+      )}
+
+      <div className="rounded-3xl border border-violet-200/15 bg-violet-200/[0.06] p-4">
+        <p className="text-sm text-stone-400">接下来练习</p>
+        <p className="mt-2 text-xl font-semibold text-white">{practice.minutes} 分钟 · {method.title}</p>
+        <p className="mt-2 text-sm leading-6 text-stone-500">练完后会自动进入反馈，只问练后分数、下次是否愿意再用和一句话感受。</p>
+      </div>
+
+      <button type="button" onClick={onStart} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950 shadow-xl shadow-violet-950/30 transition hover:scale-[1.01]">
+        开始 {practice.minutes} 分钟练习
+      </button>
+    </div>
+  );
 }
 
 function PracticePlayer({ method, practice, stepIndex, secondsLeft, progress, paused, onPause, onStop }: { method: MethodDefinition; practice: PracticeVariant; stepIndex: number; secondsLeft: number; progress: number; paused: boolean; onPause: () => void; onStop: () => void }) {
@@ -632,23 +681,143 @@ function PracticePlayer({ method, practice, stepIndex, secondsLeft, progress, pa
 function MethodExperience({ methodId, instruction, secondsLeft, stepIndex }: { methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
   const breathIn = Math.floor(secondsLeft / 3) % 2 === 0;
   const thoughts = ["我必须回应", "是不是我不够好", "他们不理解我", "我不能输"];
-  if (methodId === "paced-breath") return <div className="grid flex-1 place-items-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_58%)] p-6 text-center"><div className={`grid h-48 w-48 place-items-center rounded-full border border-violet-100/20 bg-[radial-gradient(circle_at_38%_32%,rgba(255,255,255,0.84),rgba(221,214,254,0.46)_18%,rgba(76,29,149,0.28)_42%,rgba(2,6,23,0.96)_72%)] shadow-[0_0_52px_rgba(168,85,247,0.35),0_0_100px_rgba(245,158,11,0.16)] transition duration-1000 ${breathIn ? "scale-105" : "scale-95"}`}><span className="text-xl font-semibold tracking-[0.28em] text-white">{breathIn ? "吸 气" : "呼 气"}</span></div><p className="mt-6 max-w-md text-base leading-8 text-stone-300">{instruction}</p></div>;
-  if (methodId === "inner-cinema") return <div className="flex flex-1 flex-col justify-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.14),transparent_45%),#050914] p-6 text-center"><p className="text-xs uppercase tracking-[0.28em] text-violet-200/55">Scene {String(stepIndex + 1).padStart(2, "0")}</p><p className="mx-auto mt-8 max-w-2xl text-3xl font-semibold leading-tight text-white">{instruction}</p><div className="mx-auto mt-8 grid max-w-xl grid-cols-3 gap-2 text-xs text-stone-400"><span className="rounded-full bg-white/[0.06] px-3 py-2">角色</span><span className="rounded-full bg-violet-200/12 px-3 py-2 text-violet-100">观众</span><span className="rounded-full bg-amber-200/12 px-3 py-2 text-amber-100">见证</span></div></div>;
-  if (methodId === "wide-gaze") return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-sky-200/15 bg-slate-950/62 p-6 text-center"><div className="absolute inset-8 rounded-full border border-sky-200/10" /><div className="absolute left-12 top-16 h-3 w-3 rounded-full bg-sky-200/35" /><div className="absolute right-14 top-24 h-2 w-2 rounded-full bg-violet-200/40" /><div className="absolute bottom-20 left-20 h-2 w-2 rounded-full bg-amber-200/40" /><div className="grid h-24 w-24 place-items-center rounded-full border border-sky-100/25 bg-sky-200/10 shadow-[0_0_50px_rgba(96,165,250,0.2)]"><span className="h-3 w-3 rounded-full bg-sky-100" /></div><p className="mt-64 max-w-md text-base leading-8 text-stone-300">{instruction}</p></div>;
+  if (methodId === "paced-breath") return <PacedBreath instruction={instruction} breathIn={breathIn} />;
+  if (methodId === "inner-cinema") return <InnerCinemaPractice instruction={instruction} stepIndex={stepIndex} />;
+  if (methodId === "wide-gaze") return <WideGazePractice instruction={instruction} />;
   if (methodId === "thought-watching") return <ThoughtWatching instruction={instruction} stepIndex={stepIndex} thoughts={thoughts} />;
   if (methodId === "body-scan") return <BodyScan instruction={instruction} />;
   if (methodId === "person-shift") return <PersonShift instruction={instruction} />;
-  if (methodId === "logout-pause") return <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6"><div className="grid grid-cols-3 gap-2 text-center text-sm"><span className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-stone-500">解释</span><span className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-stone-500">参与</span><span className="rounded-2xl border border-amber-200/35 bg-amber-200/12 p-4 text-amber-100">登出</span></div><p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p></div>;
+  if (methodId === "logout-pause") return <LogoutPause instruction={instruction} />;
   if (methodId === "release") return <ReleasePractice instruction={instruction} />;
   if (methodId === "open-awareness") return <OpenAwareness instruction={instruction} stepIndex={stepIndex} />;
   if (methodId === "grounded-action") return <GroundedAction instruction={instruction} />;
   if (methodId === "trigger-journal") return <StabilityPractice instruction={instruction} secondsLeft={secondsLeft} />;
-  if (methodId === "anchors") return <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-slate-950/62 p-6 text-center"><div className="relative grid h-64 w-64 place-items-center"><span className="absolute h-24 w-24 rounded-full border border-violet-200/30" /><span className="absolute h-40 w-40 rounded-full border border-sky-200/20" /><span className="absolute h-60 w-60 rounded-full border border-amber-200/15" /><span className="text-sm text-stone-300">房间 → 城市 → 天空</span></div><p className="max-w-md text-base leading-8 text-stone-300">{instruction}</p></div>;
+  if (methodId === "anchors") return <DistanceShift instruction={instruction} />;
   return <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_34%,rgba(139,92,246,0.14),transparent_45%),rgba(2,6,23,0.72)] p-6 text-center"><div>{thoughts.map((thought, index) => <span key={thought} className="m-1 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-stone-300" style={{ opacity: Math.max(0.25, 1 - (stepIndex + index) * 0.14) }}>{thought}</span>)}<p className="mx-auto mt-8 max-w-xl text-2xl font-semibold leading-10 text-white">{instruction}</p></div></div>;
 }
 
+function PacedBreath({ instruction, breathIn }: { instruction: string; breathIn: boolean }) {
+  const [exhaleCount, setExhaleCount] = useState(0);
+  return (
+    <div className="grid flex-1 place-items-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_58%)] p-6 text-center">
+      <div className={`grid h-48 w-48 place-items-center rounded-full border border-violet-100/20 bg-[radial-gradient(circle_at_38%_32%,rgba(255,255,255,0.84),rgba(221,214,254,0.46)_18%,rgba(76,29,149,0.28)_42%,rgba(2,6,23,0.96)_72%)] shadow-[0_0_52px_rgba(168,85,247,0.35),0_0_100px_rgba(245,158,11,0.16)] transition duration-1000 ${breathIn ? "scale-105" : "scale-95"}`}>
+        <span className="text-xl font-semibold tracking-[0.28em] text-white">{breathIn ? "吸 气" : "呼 气"}</span>
+      </div>
+      <p className="mt-6 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
+      <button type="button" onClick={() => setExhaleCount((value) => value + 1)} className="mt-5 rounded-full border border-violet-100/30 bg-violet-100/10 px-5 py-3 text-sm font-semibold text-violet-50 transition hover:border-violet-100/55">
+        呼气时点一下 · {exhaleCount}
+      </button>
+    </div>
+  );
+}
+
+function InnerCinemaPractice({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
+  const lenses = [
+    { id: "role", label: "角色里", body: "我正在被剧情拉走" },
+    { id: "audience", label: "观众席", body: "我正在看见这一幕" },
+    { id: "witness", label: "见证位", body: "念头经过，不必进入" },
+  ] as const;
+  const [lens, setLens] = useState<(typeof lenses)[number]["id"]>("audience");
+  const [noticed, setNoticed] = useState(false);
+
+  return (
+    <div className="flex flex-1 flex-col justify-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.14),transparent_45%),#050914] p-6 text-center">
+      <p className="text-xs uppercase tracking-[0.28em] text-violet-200/55">Scene {String(stepIndex + 1).padStart(2, "0")}</p>
+      <p className="mx-auto mt-7 max-w-2xl text-3xl font-semibold leading-tight text-white">{instruction}</p>
+      <div className="mx-auto mt-8 grid max-w-2xl gap-2 sm:grid-cols-3">
+        {lenses.map((item) => (
+          <button key={item.id} type="button" onClick={() => setLens(item.id)} className={`rounded-2xl border p-3 text-left transition ${lens === item.id ? "border-violet-100/60 bg-violet-100/14 text-white shadow-[0_0_28px_rgba(168,85,247,0.16)]" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-violet-200/35"}`}>
+            <span className="block text-sm font-semibold">{item.label}</span>
+            <span className="mt-1 block text-xs leading-5 opacity-75">{item.body}</span>
+          </button>
+        ))}
+      </div>
+      <button type="button" onClick={() => setNoticed((value) => !value)} className="mx-auto mt-5 rounded-full border border-amber-100/30 bg-amber-100/10 px-5 py-3 text-sm font-semibold text-amber-50 transition hover:border-amber-100/55">
+        {noticed ? "已经看见了这一幕" : "我看见这一幕了"}
+      </button>
+      {noticed ? <p className="mt-3 text-sm text-amber-100/70">不急着进入剧情，先坐在观众席。</p> : null}
+    </div>
+  );
+}
+
+function WideGazePractice({ instruction }: { instruction: string }) {
+  const [returns, setReturns] = useState(0);
+  return (
+    <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-sky-200/15 bg-slate-950/62 p-6 text-center">
+      <div className="absolute inset-8 rounded-full border border-sky-200/10" />
+      <div className="absolute left-12 top-16 h-3 w-3 rounded-full bg-sky-200/35" />
+      <div className="absolute right-14 top-24 h-2 w-2 rounded-full bg-violet-200/40" />
+      <div className="absolute bottom-20 left-20 h-2 w-2 rounded-full bg-amber-200/40" />
+      <div className="grid h-24 w-24 place-items-center rounded-full border border-sky-100/25 bg-sky-200/10 shadow-[0_0_50px_rgba(96,165,250,0.2)]"><span className="h-3 w-3 rounded-full bg-sky-100" /></div>
+      <p className="mt-64 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
+      <button type="button" onClick={() => setReturns((value) => value + 1)} className="mt-4 rounded-full border border-sky-100/30 bg-sky-100/10 px-5 py-3 text-sm font-semibold text-sky-50 transition hover:border-sky-100/55">
+        走神了，回来 · {returns}
+      </button>
+    </div>
+  );
+}
+
 function ThoughtWatching({ instruction, stepIndex, thoughts }: { instruction: string; stepIndex: number; thoughts: string[] }) {
-  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.16),transparent_55%),rgba(2,6,23,0.72)] p-6 text-center"><div className="absolute inset-10 rounded-full border border-violet-200/10" /><div className="absolute inset-20 rounded-full border border-amber-200/10" />{thoughts.map((thought, index) => <span key={thought} className="absolute rounded-full border border-white/10 bg-white/[0.055] px-3 py-2 text-xs text-stone-300 shadow-lg shadow-black/20" style={{ left: `${16 + (index % 2) * 55}%`, top: `${18 + index * 15}%`, opacity: Math.max(0.26, 0.88 - (stepIndex + index) * 0.16) }}>{thought}</span>)}<div className="relative grid h-36 w-36 place-items-center rounded-full border border-violet-100/20 bg-violet-200/10 shadow-[0_0_70px_rgba(168,85,247,0.22)]"><span className="text-sm font-semibold tracking-[0.26em] text-violet-100">看见</span></div><p className="relative max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p></div>;
+  const [seen, setSeen] = useState<string[]>([]);
+  function toggleSeen(thought: string) {
+    setSeen((items) => items.includes(thought) ? items.filter((item) => item !== thought) : [...items, thought]);
+  }
+
+  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.16),transparent_55%),rgba(2,6,23,0.72)] p-6 text-center"><div className="absolute inset-10 rounded-full border border-violet-200/10" /><div className="absolute inset-20 rounded-full border border-amber-200/10" />{thoughts.map((thought, index) => <button key={thought} type="button" onClick={() => toggleSeen(thought)} className={`absolute rounded-full border px-3 py-2 text-xs shadow-lg shadow-black/20 transition ${seen.includes(thought) ? "border-amber-100/45 bg-amber-100/12 text-amber-50 line-through opacity-60" : "border-white/10 bg-white/[0.055] text-stone-300 hover:border-violet-200/35"}`} style={{ left: `${16 + (index % 2) * 55}%`, top: `${18 + index * 15}%`, opacity: seen.includes(thought) ? 0.58 : Math.max(0.26, 0.88 - (stepIndex + index) * 0.16) }}>{thought}</button>)}<div className="relative grid h-36 w-36 place-items-center rounded-full border border-violet-100/20 bg-violet-200/10 shadow-[0_0_70px_rgba(168,85,247,0.22)]"><span className="text-sm font-semibold tracking-[0.26em] text-violet-100">看见 {seen.length}</span></div><p className="relative max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="relative text-xs text-stone-500">点一下念头，只表示“我看见它了”。</p></div>;
+}
+
+function LogoutPause({ instruction }: { instruction: string }) {
+  const options = [
+    { id: "explain", label: "解释", body: "我在给它编故事" },
+    { id: "join", label: "参与", body: "我想马上回应" },
+    { id: "logout", label: "登出", body: "先不解释，不参与" },
+  ] as const;
+  const [choice, setChoice] = useState<(typeof options)[number]["id"]>("logout");
+
+  return (
+    <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6">
+      <p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p>
+      <div className="grid grid-cols-3 gap-2 text-center text-sm">
+        {options.map((item) => (
+          <button key={item.id} type="button" onClick={() => setChoice(item.id)} className={`rounded-2xl border p-4 transition ${choice === item.id ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.04] text-stone-500 hover:border-violet-200/35"}`}>
+            <span className="block font-semibold">{item.label}</span>
+            <span className="mt-2 block text-xs leading-5 opacity-75">{item.body}</span>
+          </button>
+        ))}
+      </div>
+      <p className="text-center text-sm text-stone-500">{choice === "logout" ? "很好。先退出解释模式，一分钟后再决定。" : "先看见这一格，再轻轻切到“登出”。"}</p>
+    </div>
+  );
+}
+
+function DistanceShift({ instruction }: { instruction: string }) {
+  const levels = [
+    { id: "room", label: "房间" },
+    { id: "city", label: "城市" },
+    { id: "sky", label: "高空" },
+  ] as const;
+  const [level, setLevel] = useState<(typeof levels)[number]["id"]>("room");
+  const activeIndex = levels.findIndex((item) => item.id === level);
+
+  return (
+    <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-slate-950/62 p-6 text-center">
+      <div className="relative grid h-64 w-64 place-items-center">
+        {levels.map((item, index) => (
+          <span key={item.id} className={`absolute rounded-full border transition ${index <= activeIndex ? "border-violet-100/35 bg-violet-100/[0.045]" : "border-white/10"}`} style={{ width: 96 + index * 72, height: 96 + index * 72 }} />
+        ))}
+        <span className="relative text-sm font-semibold text-stone-300">{levels[activeIndex]?.label}</span>
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        {levels.map((item) => (
+          <button key={item.id} type="button" onClick={() => setLevel(item.id)} className={`rounded-full border px-4 py-2 text-sm transition ${level === item.id ? "border-violet-100/55 bg-violet-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-violet-200/35"}`}>
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <p className="max-w-md text-base leading-8 text-stone-300">{instruction}</p>
+      <p className="text-xs text-stone-500">点一圈，把视角从近处慢慢拉远。</p>
+    </div>
+  );
 }
 
 function BodyScan({ instruction }: { instruction: string }) {
