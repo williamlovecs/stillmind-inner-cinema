@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
@@ -12,7 +11,6 @@ import {
   PENDING_INTENSITY_KEY,
   PENDING_MODE_KEY,
   PENDING_TRIGGER_KEY,
-  RESET_MODE_LABELS,
   detectStateModeFromText,
 } from "@/lib/reset-routing";
 import {
@@ -105,7 +103,6 @@ export default function Home() {
   const voiceFinalRef = useRef("");
 
   const matchedMode = useMemo(() => detectStateModeFromText(trigger), [trigger]);
-  const matchedModeLabel = RESET_MODE_LABELS[matchedMode];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -421,7 +418,6 @@ export default function Home() {
               voiceSupported={voiceSupported}
               isListening={isListening}
               voiceStatus={voiceStatus}
-              matchedModeLabel={matchedModeLabel}
               replayIntensity={replayIntensity}
               onReplayIntensityChange={setReplayIntensity}
               onVoiceToggle={toggleVoiceInput}
@@ -569,7 +565,6 @@ function HomePanel({
   voiceSupported,
   isListening,
   voiceStatus,
-  matchedModeLabel,
   replayIntensity,
   onReplayIntensityChange,
   onVoiceToggle,
@@ -582,7 +577,6 @@ function HomePanel({
   voiceSupported: boolean;
   isListening: boolean;
   voiceStatus: string;
-  matchedModeLabel: string;
   replayIntensity: number;
   onReplayIntensityChange: (value: number) => void;
   onVoiceToggle: () => void;
@@ -594,32 +588,13 @@ function HomePanel({
     <div className="panel-enter w-full space-y-4">
       <section className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/82 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl">
         <h1 className="text-4xl font-semibold leading-tight text-stone-50">
-          脑子一直在重播？
-          <span className="block text-violet-100">先暂停 1 分钟。</span>
+          现在发生了什么？
         </h1>
-        <p className="mt-3 text-base leading-7 text-stone-300">
-          写下或说出刚才发生了什么。StillMind 会带你做一次短练习，先从情绪里的角色退出来。
-        </p>
-
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs text-stone-400">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.045] px-2 py-3">
-            <span className="block text-sm font-semibold text-stone-100">角色里</span>
-            <span className="mt-1 block">正在入戏</span>
-          </div>
-          <div className="rounded-2xl border border-violet-200/18 bg-violet-200/[0.075] px-2 py-3">
-            <span className="block text-sm font-semibold text-violet-50">观众席</span>
-            <span className="mt-1 block">先看见它</span>
-          </div>
-          <div className="rounded-2xl border border-amber-200/18 bg-amber-100/[0.065] px-2 py-3">
-            <span className="block text-sm font-semibold text-amber-50">回当下</span>
-            <span className="mt-1 block">再做选择</span>
-          </div>
-        </div>
 
         <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/25 p-4 shadow-inner shadow-black/25">
           <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-violet-200/15 bg-violet-200/[0.055] px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-stone-100">刚才发生了什么？</p>
+              <p className="text-sm font-medium text-stone-100">说一句，或者写一句。</p>
               {showVoiceHint ? <p className="mt-1 text-xs leading-5 text-stone-500">{voiceStatus}</p> : null}
             </div>
             <button
@@ -641,7 +616,7 @@ function HomePanel({
             value={trigger}
             onChange={(event) => onTriggerChange(event.target.value)}
             className="mt-4 min-h-32 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 outline-none placeholder:text-stone-500 focus:border-stone-300/60"
-            placeholder="比如：我刚被批评了，现在脑子里一直在反驳。"
+            placeholder="比如：我被批评了，现在很想反击。"
           />
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -681,7 +656,7 @@ function HomePanel({
                 </button>
               ))}
             </div>
-            <p className="mt-3 text-xs text-stone-500">当前推荐：{matchedModeLabel}</p>
+            <p className="mt-3 text-xs text-stone-500">点开始后，系统会自动匹配 1 分钟练习。</p>
           </div>
 
           <button
@@ -695,8 +670,6 @@ function HomePanel({
 
         <div className="mt-4 flex items-center justify-center gap-4 text-sm text-stone-400">
           <button type="button" onClick={onPitchDemo} className="transition hover:text-white">看个例子</button>
-          <span className="h-1 w-1 rounded-full bg-white/20" />
-          <Link href="/methods" className="transition hover:text-white">12 种方法</Link>
         </div>
       </section>
     </div>

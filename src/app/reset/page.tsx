@@ -347,6 +347,7 @@ export default function ResetPage() {
       ? recommendation.explanation
       : method.summary;
   const practiceShellClass = `flex min-w-0 flex-col rounded-[2rem] border border-white/10 bg-slate-950/55 p-5 shadow-inner shadow-black/30 ${phase === "practice" ? "min-h-[560px]" : "min-h-[360px]"}`;
+  const focusMode = phase !== "choose";
 
   useEffect(() => {
     if (phase !== "practice" || paused || !practice) return;
@@ -475,12 +476,12 @@ export default function ResetPage() {
           </nav>
         </header>
 
-        <div className="mt-5">
+        {!focusMode ? <div className="mt-5">
           <WorkflowNav active="reset" />
-        </div>
+        </div> : null}
 
-        <section className="grid w-full min-w-0 flex-1 gap-5 py-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-          <aside className="w-full min-w-0 space-y-4 lg:sticky lg:top-6">
+        <section className={`grid w-full min-w-0 flex-1 gap-5 py-6 lg:items-start ${focusMode ? "mx-auto max-w-2xl" : "lg:grid-cols-[0.78fr_1.22fr]"}`}>
+          {!focusMode ? <aside className="w-full min-w-0 space-y-4 lg:sticky lg:top-6">
             <div className="w-full min-w-0 overflow-hidden rounded-[2rem] border border-violet-200/15 bg-slate-950/55 p-5 shadow-2xl shadow-violet-950/25 backdrop-blur-xl sm:max-w-full">
               <p className="text-sm uppercase tracking-[0.26em] text-violet-200/65">先把声音放下来</p>
               <h1 className="mt-4 text-3xl font-semibold leading-tight text-white sm:text-4xl">脑子里那个停不下来的声音，先让它静一点。</h1>
@@ -501,28 +502,28 @@ export default function ResetPage() {
               </div>
               <button type="button" onClick={() => setShowAllStates((value) => !value)} className="mt-3 w-full rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-sm font-medium text-stone-300 transition hover:border-violet-200/35 hover:text-white">{showAllStates ? "收起状态" : "更多状态"}</button>
             </div>
-          </aside>
+          </aside> : null}
 
           <section className="grid w-full min-w-0 gap-5 rounded-[2rem] border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:p-5">
             <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
               <div>
                 <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">推荐练习</p>
                 <div className="mt-3 flex flex-wrap items-end gap-3"><h2 className="text-3xl font-semibold text-white sm:text-4xl">{method.title}</h2><span className="rounded-full border border-amber-200/25 bg-amber-100/10 px-3 py-1 text-sm text-amber-100">{practice?.minutes ?? duration} 分钟</span></div>
-                <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p>
-                <div className="mt-3 grid gap-2 text-xs text-stone-400 sm:grid-cols-3">
+                {!focusMode ? <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p> : <p className="mt-3 text-sm leading-6 text-stone-400">先标记强度，再跟着做一分钟。</p>}
+                {!focusMode ? <div className="mt-3 grid gap-2 text-xs text-stone-400 sm:grid-cols-3">
                   <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">先被看见</span>
                   <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">退回观众席</span>
                   <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">前后 0-10 评分</span>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-violet-100/70">先跟着这一分钟走完，不用先研究 12 种方法；完成后会看到前后变化。</p>{phase === "choose" ? <button type="button" onClick={requestStart} className="mt-4 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]">开始 {practice?.minutes ?? duration} 分钟练习</button> : null}
+                </div> : null}
+                {!focusMode ? <p className="mt-3 text-sm leading-6 text-violet-100/70">先跟着这一分钟走完，不用先研究 12 种方法；完成后会看到前后变化。</p> : null}{phase === "choose" ? <button type="button" onClick={requestStart} className="mt-4 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]">开始 {practice?.minutes ?? duration} 分钟练习</button> : null}
               </div>
-              <div className="flex flex-wrap gap-2 lg:justify-end">
+              {!focusMode ? <div className="flex flex-wrap gap-2 lg:justify-end">
                 {!showDurationOptions ? <button type="button" onClick={() => setShowDurationOptions(true)} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-300 transition hover:border-violet-200/35 hover:text-white">默认 1 分钟 · 调整</button> : [1, 3, 5, 10].map((value) => {
                   const minutes = value as DurationMinutes;
                   const available = method.durations.includes(minutes);
                   return <button key={value} type="button" disabled={!available} onClick={() => setDuration(minutes)} className={`rounded-full border px-3 py-2 text-sm transition ${duration === minutes ? "border-violet-200/70 bg-violet-200/16 text-white" : "border-white/10 bg-white/[0.04] text-stone-300 enabled:hover:border-violet-200/35 disabled:cursor-not-allowed disabled:opacity-35"}`}>{value}m</button>;
                 })}
-              </div>
+              </div> : null}
             </div>
 
             <div className="grid min-w-0 gap-4">
@@ -534,7 +535,7 @@ export default function ResetPage() {
                 {phase === "done" ? <DoneView method={method} action={action} intensityBefore={intensityBefore} intensityAfter={intensityAfter} onAgain={resetAgain} /> : null}
               </div>
 
-              <aside className="min-w-0 space-y-4">
+              {!focusMode ? <aside className="min-w-0 space-y-4">
                 <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-4">
                   <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">进阶方法库</p><button type="button" onClick={() => setShowAdvancedMethods((value) => !value)} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-stone-300 transition hover:border-violet-200/35 hover:text-white">{showAdvancedMethods ? "收起" : "展开"}</button></div>
                   <p className="mt-2 text-xs leading-5 text-stone-500">第一次不用手动选择方法，系统已根据当前状态推荐。</p>
@@ -549,7 +550,7 @@ export default function ResetPage() {
                     {sessions.slice(0, 3).map((session) => <div key={session.id} className="rounded-2xl border border-white/10 bg-slate-950/36 p-3"><p className="text-sm font-medium text-stone-100">{METHOD_BY_ID.get(session.methodId)?.title ?? session.methodId}</p><p className="mt-1 text-xs text-stone-500">{session.result ?? "completed"} · {new Date(session.startedAt).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p></div>)}
                   </div>
                 </div> : null}
-              </aside>
+              </aside> : null}
             </div>
           </section>
         </section>
