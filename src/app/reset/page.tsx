@@ -536,7 +536,7 @@ export default function ResetPage() {
                 {phase === "precheck" && practice ? <PrePracticeCheck method={method} practice={practice} intensityBefore={intensityBefore} lockedBeforeScore={lockedBeforeScore} onIntensityBefore={setIntensityBefore} onStart={startPractice} /> : null}
                 {phase === "practice" && practice && currentStep ? <PracticePlayer method={method} practice={practice} stepIndex={stepIndex} secondsLeft={secondsLeft} progress={progress} paused={paused} onPause={() => setPaused((value) => !value)} onStop={stopPractice} /> : null}
                 {phase === "check" ? <CheckView intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} onIntensityAfter={setIntensityAfter} onReuseIntent={setReuseIntent} onFeedbackNote={setFeedbackNote} onComplete={completeSession} /> : null}
-                {phase === "done" ? <DoneView method={method} action={action} intensityBefore={intensityBefore} intensityAfter={intensityAfter} onAgain={resetAgain} /> : null}
+                {phase === "done" ? <DoneView method={method} action={action} intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} onAgain={resetAgain} /> : null}
               </div>
 
               {!focusMode ? <aside className="min-w-0 space-y-4">
@@ -942,13 +942,52 @@ function IntensityScale({ label, value, onChange }: { label: string; value: numb
   return <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">{label}</p><span className="text-sm font-semibold text-amber-100">{value}/10</span></div><div className="mt-3 flex flex-wrap gap-1.5">{Array.from({ length: 11 }, (_, index) => <button key={index} type="button" onClick={() => onChange(index)} className={`grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold transition ${value === index ? "border-amber-200/75 bg-amber-200/18 text-white" : "border-white/10 bg-slate-950/36 text-stone-500 hover:border-violet-200/35 hover:text-stone-200"}`}>{index}</button>)}</div></div>;
 }
 
-function DoneView({ method, action, intensityBefore, intensityAfter, onAgain }: { method: MethodDefinition; action: string; intensityBefore: number; intensityAfter: number; onAgain: () => void }) {
+function DoneView({
+  method,
+  action,
+  intensityBefore,
+  intensityAfter,
+  reuseIntent,
+  feedbackNote,
+  onAgain,
+}: {
+  method: MethodDefinition;
+  action: string;
+  intensityBefore: number;
+  intensityAfter: number;
+  reuseIntent: ReuseIntent;
+  feedbackNote: string;
+  onAgain: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
   const change = intensityBefore - intensityAfter;
   const changeCopy = change > 0 ? `下降了 ${change} 分` : change < 0 ? `上升了 ${Math.abs(change)} 分` : "暂时没有变化";
+  const feedbackLine = feedbackNote.trim() || "（未填写）";
+
+  async function copyFeedback() {
+    const text = [
+      "StillMind Web Reset 反馈",
+      `练习方法：${method.title}`,
+      `练习前：${intensityBefore}/10`,
+      `练习后：${intensityAfter}/10`,
+      `变化：${changeCopy}`,
+      `下次类似场景是否愿意再用：${reuseIntent}`,
+      `一句话反馈：${feedbackLine}`,
+      `下一步行动：${action}`,
+    ].join("\n");
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2200);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   return (
     <div className="grid h-full place-items-center text-center">
-      <div className="max-w-xl">
+      <div className="max-w-2xl">
         <p className="text-sm uppercase tracking-[0.26em] text-amber-100/70">回到观众席</p>
         <h3 className="mt-4 text-4xl font-semibold leading-tight text-white">你没有消灭念头，只是多了一个观察位置。</h3>
         <div className="mx-auto mt-6 grid max-w-md grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-3xl border border-amber-200/15 bg-amber-100/[0.055] p-4">
@@ -964,7 +1003,29 @@ function DoneView({ method, action, intensityBefore, intensityAfter, onAgain }: 
           <p className="col-span-3 text-sm text-stone-300">被带走程度{changeCopy}。这就是一次小样本，不是考试。</p>
         </div>
         <p className="mt-5 text-lg leading-8 text-stone-300">这次你练习了“{method.title}”。下一步：{action}。</p>
-        <button type="button" onClick={onAgain} className="mt-8 rounded-full border border-white/10 bg-white/[0.06] px-6 py-3 text-sm font-semibold text-white transition hover:border-violet-200/40">再练一次</button>
+
+        <div className="mt-6 rounded-3xl border border-violet-200/15 bg-violet-200/[0.06] p-4 text-left">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-violet-100/55">种子测试反馈</p>
+              <p className="mt-2 text-sm leading-6 text-stone-300">如果你愿意帮我验证产品，把这段反馈复制发给我就够了。它不会自动上传。</p>
+            </div>
+            <button type="button" onClick={copyFeedback} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_18px_45px_rgba(139,92,246,0.28)] transition hover:scale-[1.01]">
+              {copied ? "已复制" : "复制反馈"}
+            </button>
+          </div>
+          <div className="mt-4 grid gap-2 text-sm text-stone-400 sm:grid-cols-2">
+            <p>下次还用：<span className="text-stone-100">{reuseIntent}</span></p>
+            <p>一句话反馈：<span className="text-stone-100">{feedbackLine}</span></p>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <Link href="/support/seed-test" className="rounded-full border border-amber-200/20 bg-amber-100/[0.08] px-5 py-3 text-sm font-semibold text-amber-50 transition hover:border-amber-100/50">参与 7 天测试</Link>
+          <Link href="/methods" className="rounded-full border border-white/10 bg-white/[0.055] px-5 py-3 text-sm font-semibold text-white transition hover:border-violet-200/40">探索 12 种方法</Link>
+          <button type="button" onClick={onAgain} className="rounded-full border border-white/10 bg-white/[0.055] px-5 py-3 text-sm font-semibold text-white transition hover:border-violet-200/40">再练一次</button>
+          <Link href="/" className="rounded-full border border-white/10 bg-white/[0.035] px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-violet-200/35 hover:text-white">回到入口</Link>
+        </div>
       </div>
     </div>
   );

@@ -102,7 +102,8 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
               >
                 回到“发生了什么”入口
               </Link>
-            </div>            <div className="mt-6 flex flex-wrap gap-2">
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2">
               {method.durations.map((minutes) => (
                 <span key={minutes} className="rounded-full bg-violet-100/10 px-3 py-1.5 text-sm text-violet-100">
                   {minutes} 分钟
