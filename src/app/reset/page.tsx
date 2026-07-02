@@ -262,6 +262,8 @@ export default function ResetPage() {
   const [showAllStates, setShowAllStates] = useState(false);
   const [incomingTrigger, setIncomingTrigger] = useState("");
   const [lockedBeforeScore, setLockedBeforeScore] = useState(false);
+  const [directEntry, setDirectEntry] = useState(false);
+  const [autoStartPending, setAutoStartPending] = useState(false);
   const startedAt = useRef<string>(new Date().toISOString());
 
   useEffect(() => {
@@ -291,6 +293,7 @@ export default function ResetPage() {
       /* eslint-disable react-hooks/set-state-in-effect -- 首帧前同步读取首页传来的状态，避免先显示完整 reset 页面再跳到专注模式。 */
       if (storedTrigger) {
         setIncomingTrigger(storedTrigger.slice(0, 220));
+        setDirectEntry(true);
       }
       if (nextMode) {
         setMode(nextMode);
@@ -302,6 +305,7 @@ export default function ResetPage() {
         setIntensityAfter(nextIntensity);
         if (Number.isInteger(parsedIntensity)) {
           setLockedBeforeScore(true);
+          setAutoStartPending(true);
           setPhase("precheck");
         }
         if (!queryMethodDef) {
@@ -348,7 +352,23 @@ export default function ResetPage() {
       ? recommendation.explanation
       : method.summary;
   const practiceShellClass = `flex min-w-0 flex-col rounded-[2rem] border border-white/10 bg-slate-950/55 p-5 shadow-inner shadow-black/30 ${phase === "practice" ? "min-h-[560px]" : "min-h-[360px]"}`;
-  const focusMode = phase !== "choose";
+  const focusMode = directEntry || phase !== "choose";
+
+  useEffect(() => {
+    if (!autoStartPending || !practice) return;
+    const timer = window.setTimeout(() => {
+      startedAt.current = new Date().toISOString();
+      setStepIndex(0);
+      setSecondsLeft(practice.steps[0]?.seconds ?? 0);
+      setPaused(false);
+      setResult(undefined);
+      setFeedbackNote("");
+      setReuseIntent("不确定");
+      setAutoStartPending(false);
+      setPhase("practice");
+    }, 220);
+    return () => window.clearTimeout(timer);
+  }, [autoStartPending, practice]);
 
   useEffect(() => {
     if (phase !== "practice" || paused || !practice) return;
@@ -378,6 +398,8 @@ export default function ResetPage() {
     setShowAdvancedMethods(false);
     setIncomingTrigger("");
     setLockedBeforeScore(false);
+    setDirectEntry(false);
+    setAutoStartPending(false);
     setResult(undefined);
     const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
     setIntensityBefore(Math.min(10, nextActivation * 2));
@@ -399,6 +421,8 @@ export default function ResetPage() {
     setReuseIntent("不确定");
     setIntensityAfter(intensityBefore);
     setLockedBeforeScore(false);
+    setDirectEntry(false);
+    setAutoStartPending(false);
     setPhase("precheck");
   }
 
@@ -461,6 +485,8 @@ export default function ResetPage() {
     setSecondsLeft(0);
     setResult(undefined);
     setLockedBeforeScore(false);
+    setDirectEntry(false);
+    setAutoStartPending(false);
   }
 
   return (
@@ -475,8 +501,14 @@ export default function ResetPage() {
           </Link>
           <nav className="flex items-center gap-2 text-sm text-stone-300">
             <AmbientToggle className="hidden sm:inline-flex" />
-            <Link className="rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white" href="/methods">方法库</Link>
-            <Link className="hidden rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white sm:inline-flex" href="/support/seed-test">参与测试</Link>
+            {focusMode ? (
+              <Link className="rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white" href="/">回到入口</Link>
+            ) : (
+              <>
+                <Link className="rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white" href="/methods">方法库</Link>
+                <Link className="hidden rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white sm:inline-flex" href="/support/seed-test">参与测试</Link>
+              </>
+            )}
           </nav>
         </header>
 
@@ -511,9 +543,12 @@ export default function ResetPage() {
           <section className="grid w-full min-w-0 gap-5 rounded-[2rem] border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:p-5">
             <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">推荐练习</p>
+                <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">{directEntry ? "1 分钟 Reset" : "推荐练习"}</p>
                 <div className="mt-3 flex flex-wrap items-end gap-3"><h2 className="text-3xl font-semibold text-white sm:text-4xl">{method.title}</h2><span className="rounded-full border border-amber-200/25 bg-amber-100/10 px-3 py-1 text-sm text-amber-100">{practice?.minutes ?? duration} 分钟</span></div>
-                {!focusMode ? <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p> : <p className="mt-3 text-sm leading-6 text-stone-400">先标记强度，再跟着做一分钟。</p>}
+                {!focusMode ? <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p> : <p className="mt-3 text-sm leading-6 text-stone-400">{directEntry ? "已记录练习前分数，现在直接跟着做一分钟。" : "先标记强度，再跟着做一分钟。"}</p>}
+                {focusMode && incomingTrigger ? (
+                  <p className="mt-3 line-clamp-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm leading-6 text-stone-400">刚才发生了：{incomingTrigger}</p>
+                ) : null}
                 {!focusMode ? <div className="mt-3 grid gap-2 text-xs text-stone-400 sm:grid-cols-3">
                   <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">先被看见</span>
                   <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">退回观众席</span>
@@ -689,7 +724,7 @@ function MethodExperience({ methodId, instruction, secondsLeft, stepIndex }: { m
   if (methodId === "person-shift") return <PersonShift instruction={instruction} />;
   if (methodId === "logout-pause") return <LogoutPause instruction={instruction} />;
   if (methodId === "release") return <ReleasePractice instruction={instruction} />;
-  if (methodId === "open-awareness") return <OpenAwareness instruction={instruction} stepIndex={stepIndex} />;
+  if (methodId === "open-awareness") return <OpenAwareness instruction={instruction} />;
   if (methodId === "grounded-action") return <GroundedAction instruction={instruction} />;
   if (methodId === "trigger-journal") return <StabilityPractice instruction={instruction} secondsLeft={secondsLeft} />;
   if (methodId === "anchors") return <DistanceShift instruction={instruction} />;
@@ -698,15 +733,33 @@ function MethodExperience({ methodId, instruction, secondsLeft, stepIndex }: { m
 
 function PacedBreath({ instruction, breathIn }: { instruction: string; breathIn: boolean }) {
   const [exhaleCount, setExhaleCount] = useState(0);
+  const ripples = Array.from({ length: Math.min(4, exhaleCount) }, (_, index) => index);
+
   return (
-    <div className="grid flex-1 place-items-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.18),transparent_58%)] p-6 text-center">
-      <div className={`grid h-48 w-48 place-items-center rounded-full border border-violet-100/20 bg-[radial-gradient(circle_at_38%_32%,rgba(255,255,255,0.84),rgba(221,214,254,0.46)_18%,rgba(76,29,149,0.28)_42%,rgba(2,6,23,0.96)_72%)] shadow-[0_0_52px_rgba(168,85,247,0.35),0_0_100px_rgba(245,158,11,0.16)] transition duration-1000 ${breathIn ? "scale-105" : "scale-95"}`}>
-        <span className="text-xl font-semibold tracking-[0.28em] text-white">{breathIn ? "吸 气" : "呼 气"}</span>
+    <div className="grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.12),transparent_48%),radial-gradient(circle_at_50%_78%,rgba(139,92,246,0.2),transparent_56%),rgba(2,6,23,0.76)] p-6 text-center">
+      <div className="relative grid h-56 w-56 place-items-center">
+        {ripples.map((index) => (
+          <span
+            key={`${exhaleCount}-${index}`}
+            className="absolute rounded-full border border-sky-100/20"
+            style={{
+              width: 118 + index * 34,
+              height: 118 + index * 34,
+              opacity: Math.max(0.14, 0.42 - index * 0.08),
+              animation: `breathRipple ${2.6 + index * 0.35}s ease-out infinite`,
+              animationDelay: `${index * 0.28}s`,
+            }}
+          />
+        ))}
+        <div className={`relative grid h-44 w-44 place-items-center rounded-full border border-sky-100/25 bg-[radial-gradient(circle_at_36%_28%,rgba(255,255,255,0.92),rgba(186,230,253,0.58)_18%,rgba(59,130,246,0.28)_44%,rgba(15,23,42,0.96)_74%)] shadow-[0_0_46px_rgba(96,165,250,0.26),0_0_86px_rgba(168,85,247,0.2)] transition duration-1000 ${breathIn ? "scale-105" : "scale-[0.92]"}`}>
+          <span className="text-xl font-semibold tracking-[0.28em] text-white">{breathIn ? "吸 气" : "呼 气"}</span>
+        </div>
       </div>
       <p className="mt-6 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
       <button type="button" onClick={() => setExhaleCount((value) => value + 1)} className="mt-5 rounded-full border border-violet-100/30 bg-violet-100/10 px-5 py-3 text-sm font-semibold text-violet-50 transition hover:border-violet-100/55">
-        呼气时点一下 · {exhaleCount}
+        标记一次呼气 · {exhaleCount}
       </button>
+      <p className="mt-2 text-xs text-sky-100/55">每点一次，水纹会向外散开。重点是数呼气，不是用力控制呼吸。</p>
     </div>
   );
 }
@@ -742,17 +795,48 @@ function InnerCinemaPractice({ instruction, stepIndex }: { instruction: string; 
 
 function WideGazePractice({ instruction }: { instruction: string }) {
   const [returns, setReturns] = useState(0);
+  const targets = [
+    { id: "candle", label: "烛光", hint: "看火焰边缘" },
+    { id: "lake", label: "湖面", hint: "看波纹中央" },
+    { id: "light", label: "光点", hint: "看柔光中心" },
+  ] as const;
+  const [target, setTarget] = useState<(typeof targets)[number]["id"]>("candle");
+  const current = targets.find((item) => item.id === target) ?? targets[0];
+
   return (
-    <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-sky-200/15 bg-slate-950/62 p-6 text-center">
-      <div className="absolute inset-8 rounded-full border border-sky-200/10" />
-      <div className="absolute left-12 top-16 h-3 w-3 rounded-full bg-sky-200/35" />
-      <div className="absolute right-14 top-24 h-2 w-2 rounded-full bg-violet-200/40" />
-      <div className="absolute bottom-20 left-20 h-2 w-2 rounded-full bg-amber-200/40" />
-      <div className="grid h-24 w-24 place-items-center rounded-full border border-sky-100/25 bg-sky-200/10 shadow-[0_0_50px_rgba(96,165,250,0.2)]"><span className="h-3 w-3 rounded-full bg-sky-100" /></div>
-      <p className="mt-64 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
-      <button type="button" onClick={() => setReturns((value) => value + 1)} className="mt-4 rounded-full border border-sky-100/30 bg-sky-100/10 px-5 py-3 text-sm font-semibold text-sky-50 transition hover:border-sky-100/55">
-        走神了，回来 · {returns}
+    <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-sky-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(125,211,252,0.12),transparent_44%),rgba(2,6,23,0.76)] p-6 text-center">
+      <div className="relative grid h-64 w-full max-w-md place-items-center overflow-hidden rounded-[1.6rem] border border-sky-100/15 bg-slate-950/72">
+        {target === "candle" ? (
+          <div className="relative grid place-items-center">
+            <span className="absolute h-44 w-44 rounded-full bg-amber-200/10 blur-2xl" />
+            <span className="wide-flame relative h-28 w-16 rounded-[70%_70%_55%_55%] bg-[linear-gradient(180deg,#fff7ed,#fbbf24_48%,#fb7185)] shadow-[0_0_44px_rgba(251,191,36,0.38)]" />
+            <span className="mt-3 h-16 w-12 rounded-b-3xl rounded-t-xl bg-gradient-to-b from-stone-200 to-slate-500" />
+          </div>
+        ) : target === "lake" ? (
+          <div className="relative h-full w-full">
+            {[0, 1, 2, 3].map((index) => <span key={index} className="lake-wave absolute left-1/2 top-1/2 h-16 w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-sky-100/20" style={{ animationDelay: `${index * 0.6}s`, transform: `translate(-50%, -50%) scale(${0.7 + index * 0.18})` }} />)}
+            <span className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-100 shadow-[0_0_38px_rgba(186,230,253,0.6)]" />
+          </div>
+        ) : (
+          <div className="relative grid h-full w-full place-items-center">
+            <span className="h-6 w-6 rounded-full bg-violet-100 shadow-[0_0_70px_rgba(216,180,254,0.65)]" />
+            <span className="absolute h-40 w-40 rounded-full border border-violet-100/15" />
+            <span className="absolute h-64 w-64 rounded-full border border-sky-100/10" />
+          </div>
+        )}
+      </div>
+      <div className="mt-4 flex flex-wrap justify-center gap-2">
+        {targets.map((item) => (
+          <button key={item.id} type="button" onClick={() => setTarget(item.id)} className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${target === item.id ? "border-sky-100/55 bg-sky-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-sky-100/35"}`}>
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <p className="mt-4 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
+      <button type="button" onClick={() => setReturns((value) => value + 1)} className="mt-3 rounded-full border border-sky-100/30 bg-sky-100/10 px-5 py-3 text-sm font-semibold text-sky-50 transition hover:border-sky-100/55">
+        走神了，回到{current.label} · {returns}
       </button>
+      <p className="mt-2 text-xs text-sky-100/55">{current.hint}。按钮不是打卡，是帮你把注意力带回来。</p>
     </div>
   );
 }
@@ -792,20 +876,23 @@ function LogoutPause({ instruction }: { instruction: string }) {
 
 function DistanceShift({ instruction }: { instruction: string }) {
   const levels = [
-    { id: "room", label: "房间" },
-    { id: "city", label: "城市" },
-    { id: "sky", label: "高空" },
+    { id: "room", label: "房间", body: "看见此刻的身体和桌面" },
+    { id: "city", label: "城市", body: "看见这件事只是城市里的一小格" },
+    { id: "sky", label: "高空", body: "把视角拉到更大的时间线" },
   ] as const;
   const [level, setLevel] = useState<(typeof levels)[number]["id"]>("room");
   const activeIndex = levels.findIndex((item) => item.id === level);
+  const active = levels[activeIndex] ?? levels[0];
 
   return (
-    <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-slate-950/62 p-6 text-center">
-      <div className="relative grid h-64 w-64 place-items-center">
+    <div className="grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(96,165,250,0.16),transparent_44%),rgba(2,6,23,0.78)] p-6 text-center">
+      <div className="relative grid h-72 w-72 place-items-center">
+        <span className="absolute h-16 w-16 rounded-full bg-[radial-gradient(circle_at_35%_28%,#eff6ff,#60a5fa_32%,#1d4ed8_62%,#020617)] shadow-[0_0_44px_rgba(96,165,250,0.32)]" style={{ transform: `scale(${1 - activeIndex * 0.22})`, opacity: 0.95 - activeIndex * 0.18 }} />
+        {[0, 1, 2, 3, 4].map((index) => <span key={index} className="distance-star absolute h-1.5 w-1.5 rounded-full bg-white/70" style={{ left: `${18 + index * 15}%`, top: `${16 + (index % 3) * 22}%`, animationDelay: `${index * 0.4}s`, opacity: activeIndex >= 1 ? 0.75 : 0.22 }} />)}
         {levels.map((item, index) => (
           <span key={item.id} className={`absolute rounded-full border transition ${index <= activeIndex ? "border-violet-100/35 bg-violet-100/[0.045]" : "border-white/10"}`} style={{ width: 96 + index * 72, height: 96 + index * 72 }} />
         ))}
-        <span className="relative text-sm font-semibold text-stone-300">{levels[activeIndex]?.label}</span>
+        <span className="relative mt-28 rounded-full border border-white/10 bg-slate-950/70 px-4 py-2 text-sm font-semibold text-stone-200">{active.label}</span>
       </div>
       <div className="flex flex-wrap justify-center gap-2">
         {levels.map((item) => (
@@ -814,6 +901,7 @@ function DistanceShift({ instruction }: { instruction: string }) {
           </button>
         ))}
       </div>
+      <p className="max-w-md text-sm leading-6 text-sky-100/70">{active.body}</p>
       <p className="max-w-md text-base leading-8 text-stone-300">{instruction}</p>
       <p className="text-xs text-stone-500">点一圈，把视角从近处慢慢拉远。</p>
     </div>
@@ -880,19 +968,20 @@ function ReleasePractice({ instruction }: { instruction: string }) {
       <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
         <p className="text-xs text-stone-500">宽恕不等于取消边界。此刻先选一个保护动作：</p>
         <div className="mt-2 flex flex-wrap justify-center gap-2">{boundaries.map((item) => <button key={item} type="button" onClick={() => setBoundary(item)} className={`rounded-full border px-3 py-2 text-xs transition ${boundary === item ? "border-rose-100/55 bg-rose-100/14 text-white" : "border-white/10 bg-white/[0.035] text-stone-400"}`}>{item}</button>)}</div>
+        <p className="mt-2 text-xs text-rose-100/70">当前边界：{boundary}</p>
       </div>
     </div>
   );
 }
 
-function OpenAwareness({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
+function OpenAwareness({ instruction }: { instruction: string }) {
   const fields = ["声音", "身体", "念头"];
   const [included, setIncluded] = useState<string[]>(["声音"]);
   function toggleField(field: string) {
     setIncluded((items) => items.includes(field) ? items.filter((item) => item !== field) : [...items, field]);
   }
 
-  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10" style={{ width: 120 + index * 90, height: 120 + index * 90, opacity: 0.75 - index * 0.16 }} />)}<div className="relative grid gap-3">{fields.map((field, index) => <button key={field} type="button" onClick={() => toggleField(field)} className={`rounded-full border px-5 py-3 text-sm transition ${included.includes(field) || index <= stepIndex % 3 ? "border-violet-100/45 bg-violet-100/13 text-violet-50" : "border-white/10 bg-white/[0.04] text-stone-500 hover:border-violet-200/35"}`}>{field}</button>)}</div><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">已纳入 {included.length} 个经验，不选中心。</p></div>;
+  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10" style={{ width: 120 + index * 90, height: 120 + index * 90, opacity: 0.75 - index * 0.16 }} />)}<div className="relative grid gap-3">{fields.map((field) => <button key={field} type="button" onClick={() => toggleField(field)} className={`rounded-full border px-5 py-3 text-sm transition ${included.includes(field) ? "border-violet-100/45 bg-violet-100/13 text-violet-50" : "border-white/10 bg-white/[0.04] text-stone-500 hover:border-violet-200/35"}`}>{field}</button>)}</div><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">已纳入 {included.length} 个经验。点选只是在扩展注意范围，不是在选择答案。</p></div>;
 }
 
 function GroundedAction({ instruction }: { instruction: string }) {
@@ -911,7 +1000,7 @@ function StabilityPractice({ instruction, secondsLeft }: { instruction: string; 
     setAttempts((value) => value + 1);
   }
 
-  return <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-slate-950/70 p-6 text-center"><div className={`mx-auto grid h-56 w-56 place-items-center rounded-[2rem] border border-emerald-100/15 bg-[repeating-conic-gradient(from_0deg,rgba(167,243,208,0.12)_0deg_12deg,rgba(15,23,42,0.2)_12deg_24deg)] transition duration-700 ${steady ? "scale-95 opacity-70 blur-[0.2px]" : "scale-100 opacity-100"}`}><span className="rounded-full bg-slate-950/70 px-4 py-2 text-sm text-emerald-50">{steady ? "画面已放慢" : "画面在牵引注意"}</span></div><button type="button" onClick={toggleSteady} className="mx-auto rounded-full border border-emerald-100/30 bg-emerald-100/10 px-5 py-3 text-sm font-semibold text-emerald-50">{steady ? "允许波动" : "尝试稳定"}</button><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">尝试 {attempts} 次 · 剩余 {secondsLeft} 秒</p></div>;
+  return <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(16,185,129,0.14),transparent_46%),rgba(2,6,23,0.76)] p-6 text-center"><div className={`illusion-field mx-auto grid h-60 w-60 place-items-center rounded-[2rem] border border-emerald-100/15 transition duration-700 ${steady ? "illusion-steady scale-95 opacity-75" : "scale-100 opacity-100"}`}><span className="rounded-full bg-slate-950/75 px-4 py-2 text-sm text-emerald-50">{steady ? "画面被你放慢了" : "画面在牵引注意"}</span></div><button type="button" onClick={toggleSteady} className="mx-auto rounded-full border border-emerald-100/30 bg-emerald-100/10 px-5 py-3 text-sm font-semibold text-emerald-50 transition hover:border-emerald-100/55">{steady ? "允许它再动一下" : "让画面慢下来"}</button><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">稳定尝试 {attempts} 次 · 剩余 {secondsLeft} 秒。不是控制成功，而是看见注意如何被牵走。</p></div>;
 }
 
 function CheckView({

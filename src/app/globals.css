@@ -362,3 +362,88 @@ textarea {
     transform: translate3d(0, -10px, 0);
   }
 }
+
+@keyframes breathRipple {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.42;
+  }
+
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+@keyframes softFlame {
+  0%,
+  100% {
+    transform: scaleY(1) translateY(0);
+    filter: saturate(1);
+  }
+
+  50% {
+    transform: scaleY(1.08) translateY(-2px);
+    filter: saturate(1.18);
+  }
+}
+
+@keyframes lakeWave {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+
+  50% {
+    opacity: 0.58;
+  }
+}
+
+@keyframes illusionDrift {
+  0% {
+    background-position: 0 0;
+    transform: rotate(0deg);
+  }
+
+  100% {
+    background-position: 32px 32px;
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes distanceStar {
+  0%,
+  100% {
+    transform: scale(0.72);
+    opacity: 0.38;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 0.82;
+  }
+}
+
+.wide-flame {
+  animation: softFlame 2.8s ease-in-out infinite;
+}
+
+.lake-wave {
+  animation: lakeWave 3.2s ease-in-out infinite;
+}
+
+.illusion-field {
+  background:
+    radial-gradient(circle at center, rgba(167, 243, 208, 0.16), transparent 34%),
+    repeating-conic-gradient(from 0deg, rgba(167, 243, 208, 0.17) 0deg 10deg, rgba(15, 23, 42, 0.26) 10deg 22deg);
+  animation: illusionDrift 8s linear infinite;
+}
+
+.illusion-steady {
+  animation-play-state: paused;
+  filter: blur(0.2px) saturate(0.82);
+}
+
+.distance-star {
+  animation: distanceStar 3.6s ease-in-out infinite;
+}

@@ -645,6 +645,7 @@ function HomePanel({
                 <button
                   key={index}
                   type="button"
+                  aria-label={`选择脑内重播强度 ${index}`}
                   onClick={() => onReplayIntensityChange(index)}
                   className={`grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold transition ${
                     replayIntensity === index
