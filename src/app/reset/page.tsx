@@ -354,20 +354,19 @@ export default function ResetPage() {
   const practiceShellClass = `flex min-w-0 flex-col rounded-[2rem] border border-white/10 bg-slate-950/55 p-5 shadow-inner shadow-black/30 ${phase === "practice" ? "min-h-[560px]" : "min-h-[360px]"}`;
   const focusMode = directEntry || phase !== "choose";
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!autoStartPending || !practice) return;
-    const timer = window.setTimeout(() => {
-      startedAt.current = new Date().toISOString();
-      setStepIndex(0);
-      setSecondsLeft(practice.steps[0]?.seconds ?? 0);
-      setPaused(false);
-      setResult(undefined);
-      setFeedbackNote("");
-      setReuseIntent("不确定");
-      setAutoStartPending(false);
-      setPhase("practice");
-    }, 220);
-    return () => window.clearTimeout(timer);
+    startedAt.current = new Date().toISOString();
+    /* eslint-disable react-hooks/set-state-in-effect -- 首页点击开始后需要在首帧前直接进入练习，避免 precheck 中间态闪跳。 */
+    setStepIndex(0);
+    setSecondsLeft(practice.steps[0]?.seconds ?? 0);
+    setPaused(false);
+    setResult(undefined);
+    setFeedbackNote("");
+    setReuseIntent("不确定");
+    setAutoStartPending(false);
+    setPhase("practice");
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [autoStartPending, practice]);
 
   useEffect(() => {
@@ -784,7 +783,7 @@ function InnerCinemaPractice({ instruction, stepIndex }: { instruction: string; 
   return (
     <div className="flex flex-1 flex-col justify-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.14),transparent_45%),#050914] p-6 text-center">
       <p className="text-xs uppercase tracking-[0.28em] text-violet-200/55">Scene {String(stepIndex + 1).padStart(2, "0")}</p>
-      <p className="mx-auto mt-7 max-w-2xl text-3xl font-semibold leading-tight text-white">{instruction}</p>
+      <p className="mx-auto mt-7 max-w-2xl text-2xl font-semibold leading-snug text-white sm:text-3xl">{instruction}</p>
       <div className="mx-auto mt-6 w-full max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-3">
         <div className="flex items-center justify-between text-xs text-stone-500"><span>入戏</span><span>观众席</span></div>
         <div className="mt-2 h-2 rounded-full bg-white/10">
@@ -812,13 +811,6 @@ function WideGazePractice({ instruction, secondsLeft }: { instruction: string; s
   const [returns, setReturns] = useState(0);
   const [resetAt, setResetAt] = useState(secondsLeft);
   const steadySeconds = Math.max(0, resetAt - secondsLeft);
-  const targets = [
-    { id: "candle", label: "烛光", hint: "看火焰边缘" },
-    { id: "lake", label: "湖面", hint: "看波纹中央" },
-    { id: "light", label: "光点", hint: "看柔光中心" },
-  ] as const;
-  const [target, setTarget] = useState<(typeof targets)[number]["id"]>("candle");
-  const current = targets.find((item) => item.id === target) ?? targets[0];
 
   function markWandered() {
     setReturns((value) => value + 1);
@@ -828,32 +820,18 @@ function WideGazePractice({ instruction, secondsLeft }: { instruction: string; s
   return (
     <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-sky-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(125,211,252,0.12),transparent_44%),rgba(2,6,23,0.76)] p-6 text-center">
       <div className="relative grid h-64 w-full max-w-md place-items-center overflow-hidden rounded-[1.6rem] border border-sky-100/15 bg-slate-950/72">
-        {target === "candle" ? (
-          <div className="relative grid place-items-center">
-            <span className="absolute h-44 w-44 rounded-full bg-amber-200/10 blur-2xl" />
-            <span className="wide-flame relative h-28 w-16 rounded-[70%_70%_55%_55%] bg-[linear-gradient(180deg,#fff7ed,#fbbf24_48%,#fb7185)] shadow-[0_0_44px_rgba(251,191,36,0.38)]" />
-            <span className="mt-3 h-16 w-12 rounded-b-3xl rounded-t-xl bg-gradient-to-b from-stone-200 to-slate-500" />
-          </div>
-        ) : target === "lake" ? (
-          <div className="relative h-full w-full">
-            {[0, 1, 2, 3].map((index) => <span key={index} className="lake-wave absolute left-1/2 top-1/2 h-16 w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-sky-100/20" style={{ animationDelay: `${index * 0.6}s`, transform: `translate(-50%, -50%) scale(${0.7 + index * 0.18})` }} />)}
-            <span className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-100 shadow-[0_0_38px_rgba(186,230,253,0.6)]" />
-          </div>
-        ) : (
-          <div className="relative grid h-full w-full place-items-center">
-            <span className="h-6 w-6 rounded-full bg-violet-100 shadow-[0_0_70px_rgba(216,180,254,0.65)]" />
-            <span className="absolute h-40 w-40 rounded-full border border-violet-100/15" />
-            <span className="absolute h-64 w-64 rounded-full border border-sky-100/10" />
-          </div>
-        )}
+        <span className="absolute h-52 w-52 rounded-full bg-amber-200/10 blur-3xl" />
+        <Image
+          src="/practice-visuals/wide-gaze.svg"
+          alt="一束安静烛光，用来做凝视练习"
+          width={360}
+          height={260}
+          priority={false}
+          className="relative h-full w-full object-cover opacity-95"
+        />
+        <span className="wide-flame pointer-events-none absolute left-1/2 top-[31%] h-20 w-12 -translate-x-1/2 rounded-[70%_70%_55%_55%] bg-[linear-gradient(180deg,rgba(255,247,237,0.88),rgba(251,191,36,0.5)_48%,rgba(251,113,133,0.32))] blur-[1px]" />
       </div>
-      <div className="mt-4 flex flex-wrap justify-center gap-2">
-        {targets.map((item) => (
-          <button key={item.id} type="button" onClick={() => setTarget(item.id)} className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${target === item.id ? "border-sky-100/55 bg-sky-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-sky-100/35"}`}>
-            {item.label}
-          </button>
-        ))}
-      </div>
+      <p className="mt-4 rounded-full border border-amber-100/20 bg-amber-100/[0.08] px-4 py-2 text-xs font-semibold text-amber-50">凝视对象：烛光</p>
       <p className="mt-4 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
       <div className="mt-3 grid w-full max-w-md grid-cols-2 gap-2">
         <div className="rounded-2xl border border-sky-100/15 bg-sky-100/[0.07] p-3">
@@ -866,9 +844,9 @@ function WideGazePractice({ instruction, secondsLeft }: { instruction: string; s
         </div>
       </div>
       <button type="button" onClick={markWandered} className="mt-3 rounded-full border border-sky-100/30 bg-sky-100/10 px-5 py-3 text-sm font-semibold text-sky-50 transition hover:border-sky-100/55">
-        走神了，回到{current.label} · {returns}
+        走神了，回到烛光 · {returns}
       </button>
-      <p className="mt-2 text-xs text-sky-100/55">{current.hint}。按钮不是打卡，是帮你把注意力带回来。</p>
+      <p className="mt-2 text-xs text-sky-100/55">看火焰边缘。按钮不是打卡，是帮你把注意力带回来。</p>
     </div>
   );
 }
@@ -1176,18 +1154,18 @@ function DoneView({
         <p className="mt-5 text-lg leading-8 text-stone-300">这次你练习了“{method.title}”。下一步：{action}。</p>
 
         <div className="mt-6 rounded-3xl border border-violet-200/15 bg-violet-200/[0.06] p-4 text-left">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
+          <div className="grid grid-cols-[1fr_auto] items-start gap-3">
+            <div className="min-w-0">
               <p className="text-xs uppercase tracking-[0.22em] text-violet-100/55">种子测试反馈</p>
               <p className="mt-2 text-sm leading-6 text-stone-300">如果你愿意帮我验证产品，把这段反馈复制发给我就够了。它不会自动上传。</p>
             </div>
-            <button type="button" onClick={copyFeedback} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_18px_45px_rgba(139,92,246,0.28)] transition hover:scale-[1.01]">
+            <button type="button" onClick={copyFeedback} className="min-w-24 shrink-0 whitespace-nowrap rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-2.5 text-sm font-semibold leading-none text-slate-950 shadow-[0_18px_45px_rgba(139,92,246,0.28)] transition hover:scale-[1.01]">
               {copied ? "已复制" : "复制反馈"}
             </button>
           </div>
-          <div className="mt-4 grid gap-2 text-sm text-stone-400 sm:grid-cols-2">
-            <p>下次还用：<span className="text-stone-100">{reuseIntent}</span></p>
-            <p>一句话反馈：<span className="text-stone-100">{feedbackLine}</span></p>
+          <div className="mt-4 grid min-w-0 gap-2 text-sm text-stone-400 sm:grid-cols-2">
+            <p className="min-w-0">下次还用：<span className="text-stone-100">{reuseIntent}</span></p>
+            <p className="min-w-0 break-words">一句话反馈：<span className="text-stone-100">{feedbackLine}</span></p>
           </div>
         </div>
 

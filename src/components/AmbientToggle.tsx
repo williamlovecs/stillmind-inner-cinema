@@ -61,20 +61,20 @@ export function AmbientToggle({ className = "" }: { className?: string }) {
 
     const gain = context.createGain();
     gain.gain.setValueAtTime(0.0001, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.035, context.currentTime + 0.45);
+    gain.gain.exponentialRampToValueAtTime(0.018, context.currentTime + 0.65);
     gain.connect(context.destination);
 
-    const frequencies = [110, 146.83, 196];
+    const frequencies = [220, 277.18, 329.63];
     const oscillators = frequencies.map((frequency, index) => {
       const oscillator = context.createOscillator();
       const filter = context.createBiquadFilter();
       const localGain = context.createGain();
 
-      oscillator.type = index === 0 ? "sine" : "triangle";
+      oscillator.type = "sine";
       oscillator.frequency.value = frequency;
       filter.type = "lowpass";
-      filter.frequency.value = 520 + index * 80;
-      localGain.gain.value = index === 0 ? 0.34 : 0.16;
+      filter.frequency.value = 840 + index * 120;
+      localGain.gain.value = index === 0 ? 0.12 : 0.08;
 
       oscillator.connect(filter);
       filter.connect(localGain);
@@ -117,8 +117,7 @@ export function AmbientToggle({ className = "" }: { className?: string }) {
             : "border-white/10 bg-white/[0.045] text-stone-300 hover:border-violet-200/35 hover:text-white"
       } rounded-full border px-3 py-2 text-xs font-medium transition ${className}`}
     >
-      {enabled ? "环境音 开" : error ? "环境音不可用" : "环境音"}
+      {enabled ? "轻环境音 开" : error ? "环境音不可用" : "轻环境音"}
     </button>
   );
 }
-
