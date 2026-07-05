@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { AmbientToggle } from "@/components/AmbientToggle";
 import { WorkflowNav } from "@/components/WorkflowNav";
 import {
   PENDING_INTENSITY_KEY,
@@ -499,7 +498,6 @@ export default function ResetPage() {
             <span><span className="block text-sm uppercase tracking-[0.34em] text-violet-100/70">StillMind</span><span className="block text-sm font-medium text-stone-200">沉寂小我练习器</span></span>
           </Link>
           <nav className="flex items-center gap-2 text-sm text-stone-300">
-            <AmbientToggle className="hidden sm:inline-flex" />
             {focusMode ? (
               <Link className="rounded-full border border-white/10 px-4 py-2 transition hover:border-violet-200/40 hover:text-white" href="/">回到入口</Link>
             ) : (
@@ -715,24 +713,25 @@ function PracticePlayer({ method, practice, stepIndex, secondsLeft, progress, pa
 function MethodExperience({ methodId, instruction, secondsLeft, stepIndex }: { methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
   const breathIn = Math.floor(secondsLeft / 3) % 2 === 0;
   const thoughts = ["我必须回应", "是不是我不够好", "他们不理解我", "我不能输"];
-  if (methodId === "paced-breath") return <PacedBreath instruction={instruction} breathIn={breathIn} />;
+  if (methodId === "paced-breath") return <PacedBreath instruction={instruction} breathIn={breathIn} secondsLeft={secondsLeft} />;
   if (methodId === "inner-cinema") return <InnerCinemaPractice instruction={instruction} stepIndex={stepIndex} />;
   if (methodId === "wide-gaze") return <WideGazePractice instruction={instruction} secondsLeft={secondsLeft} />;
   if (methodId === "thought-watching") return <ThoughtWatching instruction={instruction} stepIndex={stepIndex} thoughts={thoughts} />;
-  if (methodId === "body-scan") return <BodyScan instruction={instruction} />;
+  if (methodId === "body-scan") return <BodyScan instruction={instruction} stepIndex={stepIndex} />;
   if (methodId === "person-shift") return <PersonShift instruction={instruction} />;
-  if (methodId === "logout-pause") return <LogoutPause instruction={instruction} />;
-  if (methodId === "release") return <ReleasePractice instruction={instruction} />;
-  if (methodId === "open-awareness") return <OpenAwareness instruction={instruction} />;
-  if (methodId === "grounded-action") return <GroundedAction instruction={instruction} />;
+  if (methodId === "logout-pause") return <LogoutPause instruction={instruction} stepIndex={stepIndex} />;
+  if (methodId === "release") return <ReleasePractice instruction={instruction} stepIndex={stepIndex} />;
+  if (methodId === "open-awareness") return <OpenAwareness instruction={instruction} stepIndex={stepIndex} />;
+  if (methodId === "grounded-action") return <GroundedAction instruction={instruction} stepIndex={stepIndex} />;
   if (methodId === "trigger-journal") return <StabilityPractice instruction={instruction} secondsLeft={secondsLeft} />;
-  if (methodId === "anchors") return <DistanceShift instruction={instruction} />;
+  if (methodId === "anchors") return <DistanceShift instruction={instruction} stepIndex={stepIndex} />;
   return <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_34%,rgba(139,92,246,0.14),transparent_45%),rgba(2,6,23,0.72)] p-6 text-center"><div>{thoughts.map((thought, index) => <span key={thought} className="m-1 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-stone-300" style={{ opacity: Math.max(0.25, 1 - (stepIndex + index) * 0.14) }}>{thought}</span>)}<p className="mx-auto mt-8 max-w-xl text-2xl font-semibold leading-10 text-white">{instruction}</p></div></div>;
 }
 
-function PacedBreath({ instruction, breathIn }: { instruction: string; breathIn: boolean }) {
-  const [exhaleCount, setExhaleCount] = useState(0);
-  const ripples = Array.from({ length: Math.min(4, exhaleCount) }, (_, index) => index);
+function PacedBreath({ instruction, breathIn, secondsLeft }: { instruction: string; breathIn: boolean; secondsLeft: number }) {
+  const elapsed = Math.max(0, 20 - secondsLeft);
+  const exhaleCount = Math.max(0, Math.floor(elapsed / 6));
+  const ripples = Array.from({ length: 4 }, (_, index) => index);
   const countTrail = Array.from({ length: Math.min(6, exhaleCount) }, (_, index) => exhaleCount - index).reverse();
 
   return (
@@ -740,12 +739,12 @@ function PacedBreath({ instruction, breathIn }: { instruction: string; breathIn:
       <div className="relative grid h-56 w-56 place-items-center">
         {ripples.map((index) => (
           <span
-            key={`${exhaleCount}-${index}`}
+            key={index}
             className="absolute rounded-full border border-sky-100/20"
             style={{
               width: 118 + index * 34,
               height: 118 + index * 34,
-              opacity: Math.max(0.14, 0.42 - index * 0.08),
+              opacity: Math.max(0.1, 0.38 - index * 0.07),
               animation: `breathRipple ${2.6 + index * 0.35}s ease-out infinite`,
               animationDelay: `${index * 0.28}s`,
             }}
@@ -756,29 +755,24 @@ function PacedBreath({ instruction, breathIn }: { instruction: string; breathIn:
         </div>
       </div>
       <p className="mt-6 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
-      <button type="button" onClick={() => setExhaleCount((value) => value + 1)} className="mt-5 rounded-full border border-violet-100/30 bg-violet-100/10 px-5 py-3 text-sm font-semibold text-violet-50 transition hover:border-violet-100/55">
-        标记一次呼气 · {exhaleCount}
-      </button>
+      <div className="mt-5 rounded-2xl border border-sky-100/15 bg-sky-100/[0.06] px-4 py-3">
+        <p className="text-xs text-sky-100/55">跟着光圈，不需要点击。</p>
+        <p className="mt-1 text-sm font-semibold text-sky-50">呼气数到：{exhaleCount}</p>
+      </div>
       {countTrail.length > 0 ? <div className="mt-3 flex flex-wrap justify-center gap-1.5">{countTrail.map((count) => <span key={count} className="grid h-7 w-7 place-items-center rounded-full border border-sky-100/15 bg-sky-100/[0.06] text-xs text-sky-50">{count}</span>)}</div> : null}
-      <p className="mt-2 text-xs text-sky-100/55">每点一次，水纹会向外散开。重点是数呼气，不是用力控制呼吸。</p>
+      <p className="mt-2 text-xs text-sky-100/55">重点是数呼气，不是用力控制呼吸。</p>
     </div>
   );
 }
 
 function InnerCinemaPractice({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
   const lenses = [
-    { id: "role", label: "角色里", body: "我正在被剧情拉走" },
-    { id: "audience", label: "观众席", body: "我正在看见这一幕" },
-    { id: "witness", label: "见证位", body: "念头经过，不必进入" },
+    { id: "role", label: "角色里", body: "我正在被剧情拉走", heat: 82 },
+    { id: "audience", label: "观众席", body: "我正在看见这一幕", heat: 46 },
+    { id: "witness", label: "见证位", body: "念头经过，不必进入", heat: 24 },
   ] as const;
-  const [lens, setLens] = useState<(typeof lenses)[number]["id"]>("audience");
-  const [noticed, setNoticed] = useState(false);
-  const [roleHeat, setRoleHeat] = useState(82);
-
-  function moveSeat(nextLens: (typeof lenses)[number]["id"]) {
-    setLens(nextLens);
-    setRoleHeat(nextLens === "role" ? 82 : nextLens === "audience" ? 46 : 24);
-  }
+  const activeIndex = Math.min(stepIndex, lenses.length - 1);
+  const active = lenses[activeIndex];
 
   return (
     <div className="flex flex-1 flex-col justify-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.14),transparent_45%),#050914] p-6 text-center">
@@ -787,22 +781,19 @@ function InnerCinemaPractice({ instruction, stepIndex }: { instruction: string; 
       <div className="mx-auto mt-6 w-full max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-3">
         <div className="flex items-center justify-between text-xs text-stone-500"><span>入戏</span><span>观众席</span></div>
         <div className="mt-2 h-2 rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-gradient-to-r from-rose-300 via-amber-200 to-violet-300 transition-all duration-500" style={{ width: `${roleHeat}%` }} />
+          <div className="h-full rounded-full bg-gradient-to-r from-rose-300 via-amber-200 to-violet-300 transition-all duration-700" style={{ width: `${active.heat}%` }} />
         </div>
-        <p className="mt-2 text-xs text-stone-400">当前入戏度：{roleHeat}% · 目标不是消灭剧情，是退到能观看的位置。</p>
+        <p className="mt-2 text-xs text-stone-400">当前位置：{active.label} · 入戏度 {active.heat}%</p>
       </div>
       <div className="mx-auto mt-8 grid max-w-2xl gap-2 sm:grid-cols-3">
-        {lenses.map((item) => (
-          <button key={item.id} type="button" onClick={() => moveSeat(item.id)} className={`rounded-2xl border p-3 text-left transition ${lens === item.id ? "border-violet-100/60 bg-violet-100/14 text-white shadow-[0_0_28px_rgba(168,85,247,0.16)]" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-violet-200/35"}`}>
+        {lenses.map((item, index) => (
+          <div key={item.id} className={`rounded-2xl border p-3 text-left transition ${index === activeIndex ? "border-violet-100/60 bg-violet-100/14 text-white shadow-[0_0_28px_rgba(168,85,247,0.16)]" : "border-white/10 bg-white/[0.035] text-stone-500"}`}>
             <span className="block text-sm font-semibold">{item.label}</span>
             <span className="mt-1 block text-xs leading-5 opacity-75">{item.body}</span>
-          </button>
+          </div>
         ))}
       </div>
-      <button type="button" onClick={() => setNoticed((value) => !value)} className="mx-auto mt-5 rounded-full border border-amber-100/30 bg-amber-100/10 px-5 py-3 text-sm font-semibold text-amber-50 transition hover:border-amber-100/55">
-        {noticed ? "已经看见了这一幕" : "我看见这一幕了"}
-      </button>
-      {noticed ? <p className="mt-3 text-sm text-amber-100/70">不急着进入剧情，先坐在观众席。</p> : null}
+      <p className="mt-5 text-sm text-amber-100/70">跟着三幕走：看见角色、坐回观众席、停在见证位。</p>
     </div>
   );
 }
@@ -819,7 +810,12 @@ function WideGazePractice({ instruction, secondsLeft }: { instruction: string; s
 
   return (
     <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-sky-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(125,211,252,0.12),transparent_44%),rgba(2,6,23,0.76)] p-6 text-center">
-      <div className="relative grid h-64 w-full max-w-md place-items-center overflow-hidden rounded-[1.6rem] border border-sky-100/15 bg-slate-950/72">
+      <button
+        type="button"
+        onClick={markWandered}
+        aria-label="走神了，回到烛光"
+        className="relative grid h-64 w-full max-w-md place-items-center overflow-hidden rounded-[1.6rem] border border-sky-100/15 bg-slate-950/72 text-left shadow-[0_24px_70px_rgba(0,0,0,0.28)] transition active:scale-[0.99]"
+      >
         <span className="absolute h-52 w-52 rounded-full bg-amber-200/10 blur-3xl" />
         <Image
           src="/practice-visuals/wide-gaze.svg"
@@ -830,7 +826,9 @@ function WideGazePractice({ instruction, secondsLeft }: { instruction: string; s
           className="relative h-full w-full object-cover opacity-95"
         />
         <span className="wide-flame pointer-events-none absolute left-1/2 top-[31%] h-20 w-12 -translate-x-1/2 rounded-[70%_70%_55%_55%] bg-[linear-gradient(180deg,rgba(255,247,237,0.88),rgba(251,191,36,0.5)_48%,rgba(251,113,133,0.32))] blur-[1px]" />
-      </div>
+        <span className="absolute bottom-4 left-4 rounded-full border border-amber-100/20 bg-slate-950/72 px-3 py-2 text-xs font-semibold text-amber-50 backdrop-blur-md">走神时点画面，回到烛光</span>
+        <span className="absolute right-4 top-4 rounded-full border border-sky-100/20 bg-slate-950/72 px-3 py-2 text-xs text-sky-50 backdrop-blur-md">回归 {returns}</span>
+      </button>
       <p className="mt-4 rounded-full border border-amber-100/20 bg-amber-100/[0.08] px-4 py-2 text-xs font-semibold text-amber-50">凝视对象：烛光</p>
       <p className="mt-4 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
       <div className="mt-3 grid w-full max-w-md grid-cols-2 gap-2">
@@ -843,10 +841,7 @@ function WideGazePractice({ instruction, secondsLeft }: { instruction: string; s
           <p className="mt-1 text-2xl font-semibold text-white">{returns}</p>
         </div>
       </div>
-      <button type="button" onClick={markWandered} className="mt-3 rounded-full border border-sky-100/30 bg-sky-100/10 px-5 py-3 text-sm font-semibold text-sky-50 transition hover:border-sky-100/55">
-        走神了，回到烛光 · {returns}
-      </button>
-      <p className="mt-2 text-xs text-sky-100/55">看火焰边缘。按钮不是打卡，是帮你把注意力带回来。</p>
+      <p className="mt-2 text-xs text-sky-100/55">不是打卡。每次发现走神，都把视线轻轻放回火焰边缘。</p>
     </div>
   );
 }
@@ -868,14 +863,14 @@ function ThoughtWatching({ instruction, stepIndex, thoughts }: { instruction: st
   return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.16),transparent_55%),rgba(2,6,23,0.72)] p-6 text-center"><div className="absolute inset-10 rounded-full border border-violet-200/10" /><div className="absolute inset-20 rounded-full border border-amber-200/10" />{thoughts.map((thought, index) => <button key={thought} type="button" onClick={() => toggleSeen(thought)} className={`absolute rounded-full border px-3 py-2 text-xs shadow-lg shadow-black/20 transition ${seen[thought] === "落下" ? "border-amber-100/35 bg-amber-100/10 text-amber-50 opacity-45" : seen[thought] ? "border-violet-100/45 bg-violet-100/12 text-violet-50" : "border-white/10 bg-white/[0.055] text-stone-300 hover:border-violet-200/35"}`} style={{ left: `${16 + (index % 2) * 55}%`, top: `${18 + index * 15}%`, opacity: seen[thought] === "落下" ? 0.45 : Math.max(0.26, 0.88 - (stepIndex + index) * 0.16) }}>{thought}{seen[thought] ? ` · ${seen[thought]}` : ""}</button>)}<div className="relative grid h-36 w-36 place-items-center rounded-full border border-violet-100/20 bg-violet-200/10 shadow-[0_0_70px_rgba(168,85,247,0.22)]"><span className="text-sm font-semibold tracking-[0.26em] text-violet-100">看见 {seenCount}</span></div><p className="relative max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="relative text-xs text-stone-500">点念头：升起 → 停留 → 落下。你只是在观察生灭。</p></div>;
 }
 
-function LogoutPause({ instruction }: { instruction: string }) {
+function LogoutPause({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
   const options = [
     { id: "explain", label: "看见解释", body: "我在给它编故事", quiet: 18 },
     { id: "join", label: "看见参与", body: "我想马上回应", quiet: 38 },
     { id: "logout", label: "登出一分钟", body: "先不解释，不参与", quiet: 76 },
   ] as const;
-  const [choice, setChoice] = useState<(typeof options)[number]["id"]>("logout");
-  const active = options.find((item) => item.id === choice) ?? options[2];
+  const activeIndex = Math.min(stepIndex, options.length - 1);
+  const active = options[activeIndex];
 
   return (
     <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6">
@@ -883,33 +878,32 @@ function LogoutPause({ instruction }: { instruction: string }) {
       <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
         <div className="flex items-center justify-between text-xs text-stone-500"><span>信息互动</span><span>只读模式</span></div>
         <div className="mt-2 h-2 rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-gradient-to-r from-amber-200 to-violet-300 transition-all duration-500" style={{ width: `${active.quiet}%` }} />
+          <div className="h-full rounded-full bg-gradient-to-r from-amber-200 to-violet-300 transition-all duration-700" style={{ width: `${active.quiet}%` }} />
         </div>
         <p className="mt-2 text-sm text-stone-300">{active.body}</p>
       </div>
       <div className="grid grid-cols-3 gap-2 text-center text-sm">
-        {options.map((item) => (
-          <button key={item.id} type="button" onClick={() => setChoice(item.id)} className={`rounded-2xl border p-4 transition ${choice === item.id ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.04] text-stone-500 hover:border-violet-200/35"}`}>
+        {options.map((item, index) => (
+          <div key={item.id} className={`rounded-2xl border p-4 transition ${index === activeIndex ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.035] text-stone-500"}`}>
             <span className="block font-semibold">{item.label}</span>
             <span className="mt-2 block text-xs leading-5 opacity-75">{item.body}</span>
-          </button>
+          </div>
         ))}
       </div>
-      <p className="text-center text-sm text-stone-500">{choice === "logout" ? "很好。先退出解释模式，一分钟后再决定。" : "先看见这一格，再轻轻切到“登出”。"}</p>
+      <p className="text-center text-sm text-stone-500">不用点选。练习会自动从“解释”退到“只读”。</p>
     </div>
   );
 }
 
-function DistanceShift({ instruction }: { instruction: string }) {
+function DistanceShift({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
   const levels = [
     { id: "room", label: "房间", body: "看见此刻的身体和桌面" },
     { id: "city", label: "城市", body: "看见这件事只是城市里的一小格" },
     { id: "earth", label: "地球", body: "这一天只是地球上的一束灯光" },
     { id: "sky", label: "宇宙", body: "把视角拉到更大的时间线" },
   ] as const;
-  const [level, setLevel] = useState<(typeof levels)[number]["id"]>("room");
-  const activeIndex = levels.findIndex((item) => item.id === level);
-  const active = levels[activeIndex] ?? levels[0];
+  const activeIndex = Math.min(stepIndex, levels.length - 1);
+  const active = levels[activeIndex];
 
   return (
     <div className="grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(96,165,250,0.16),transparent_44%),rgba(2,6,23,0.78)] p-6 text-center">
@@ -922,43 +916,68 @@ function DistanceShift({ instruction }: { instruction: string }) {
         <span className="relative mt-28 rounded-full border border-white/10 bg-slate-950/70 px-4 py-2 text-sm font-semibold text-stone-200">{active.label}</span>
       </div>
       <div className="flex flex-wrap justify-center gap-2">
-        {levels.map((item) => (
-          <button key={item.id} type="button" onClick={() => setLevel(item.id)} className={`rounded-full border px-4 py-2 text-sm transition ${level === item.id ? "border-violet-100/55 bg-violet-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-violet-200/35"}`}>
-            {item.label}
-          </button>
+        {levels.map((item, index) => (
+          <span key={item.id} className={`rounded-full border px-4 py-2 text-sm transition ${index === activeIndex ? "border-violet-100/55 bg-violet-100/14 text-white" : "border-white/10 bg-white/[0.035] text-stone-500"}`}>{item.label}</span>
         ))}
       </div>
       <p className="max-w-md text-sm leading-6 text-sky-100/70">{active.body}</p>
       <p className="max-w-md text-base leading-8 text-stone-300">{instruction}</p>
-      <p className="text-xs text-stone-500">按顺序点：房间 → 城市 → 地球 → 宇宙。拉远后，再回到一个现实小动作。</p>
+      <p className="text-xs text-stone-500">不用点选。镜头会从房间自动拉远到更大的时间线。</p>
     </div>
   );
 }
 
-function BodyScan({ instruction }: { instruction: string }) {
-  const zones = ["脚底", "手掌", "胸口", "肩颈"];
-  const qualities = ["紧", "松", "热", "麻", "空", "稳"];
-  const [zone, setZone] = useState(zones[0]);
-  const [quality, setQuality] = useState(qualities[0]);
+function BodyScan({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
+  const zones = [
+    { id: "feet", label: "脚底", x: "50%", y: "82%", quality: "稳" },
+    { id: "palms", label: "手掌", x: "28%", y: "54%", quality: "热" },
+    { id: "chest", label: "胸口", x: "50%", y: "40%", quality: "紧" },
+    { id: "shoulders", label: "肩颈", x: "50%", y: "28%", quality: "松" },
+  ] as const;
+  const [zoneId, setZoneId] = useState<(typeof zones)[number]["id"]>("feet");
+  const selected = zones.find((zone) => zone.id === zoneId) ?? zones[0];
   const [observations, setObservations] = useState<string[]>([]);
-  function recordObservation() {
-    const next = `${zone}：${quality}`;
-    setObservations((items) => [next, ...items.filter((item) => item !== next)].slice(0, 4));
+  const autoHint = zones[Math.min(stepIndex, zones.length - 1)];
+
+  function markZone(nextId: (typeof zones)[number]["id"]) {
+    const next = zones.find((zone) => zone.id === nextId) ?? zones[0];
+    setZoneId(next.id);
+    const label = `${next.label}：${next.quality}`;
+    setObservations((items) => [label, ...items.filter((item) => item !== label)].slice(0, 4));
   }
+
   return (
     <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-cyan-200/15 bg-[radial-gradient(circle_at_50%_20%,rgba(34,211,238,0.12),transparent_45%),rgba(2,6,23,0.72)] p-6">
-      <div className="mx-auto grid h-64 w-40 place-items-center rounded-full border border-cyan-100/15 bg-cyan-200/[0.035]">
-        <div className="grid gap-3">
-          {zones.map((item) => <button key={item} type="button" onClick={() => setZone(item)} className={`rounded-full border px-4 py-2 text-sm transition ${zone === item ? "border-cyan-100/60 bg-cyan-100/16 text-white shadow-[0_0_28px_rgba(34,211,238,0.16)]" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}
+      <div className="grid gap-5 sm:grid-cols-[0.78fr_1fr] sm:items-center">
+        <div className="relative mx-auto h-72 w-44 rounded-full border border-cyan-100/15 bg-[radial-gradient(ellipse_at_center,rgba(125,211,252,0.12),transparent_62%)]">
+          <span className="absolute left-1/2 top-5 h-14 w-14 -translate-x-1/2 rounded-full border border-cyan-100/20 bg-cyan-100/[0.04]" />
+          <span className="absolute left-1/2 top-20 h-28 w-20 -translate-x-1/2 rounded-[999px] border border-cyan-100/20 bg-cyan-100/[0.035]" />
+          <span className="absolute left-[23%] top-[38%] h-20 w-5 rotate-12 rounded-full border border-cyan-100/15 bg-cyan-100/[0.025]" />
+          <span className="absolute right-[23%] top-[38%] h-20 w-5 -rotate-12 rounded-full border border-cyan-100/15 bg-cyan-100/[0.025]" />
+          <span className="absolute left-[39%] bottom-5 h-24 w-5 rotate-3 rounded-full border border-cyan-100/15 bg-cyan-100/[0.025]" />
+          <span className="absolute right-[39%] bottom-5 h-24 w-5 -rotate-3 rounded-full border border-cyan-100/15 bg-cyan-100/[0.025]" />
+          {zones.map((zone) => (
+            <button
+              key={zone.id}
+              type="button"
+              onClick={() => markZone(zone.id)}
+              aria-label={`标记${zone.label}`}
+              className={`absolute grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border text-xs font-semibold transition ${zone.id === zoneId ? "border-cyan-100/70 bg-cyan-100/22 text-white shadow-[0_0_30px_rgba(34,211,238,0.24)]" : "border-cyan-100/20 bg-slate-950/72 text-cyan-100/70"}`}
+              style={{ left: zone.x, top: zone.y }}
+            >
+              {zone.label.slice(0, 1)}
+            </button>
+          ))}
+        </div>
+        <div className="space-y-3 text-center sm:text-left">
+          <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/50">身体落点</p>
+          <p className="text-3xl font-semibold text-white">{selected.label}</p>
+          <p className="text-sm leading-7 text-stone-300">只是标记为“{selected.quality}”。不解释原因，不判断好坏。</p>
+          <p className="rounded-2xl border border-cyan-100/15 bg-cyan-100/[0.06] p-3 text-sm leading-6 text-cyan-50/85">这一阶段可以试着把注意放到：{autoHint.label}</p>
+          <p className="text-xl font-semibold leading-9 text-white">{instruction}</p>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-2">
-        {qualities.map((item) => <button key={item} type="button" onClick={() => setQuality(item)} className={`rounded-full border px-3 py-2 text-sm transition ${quality === item ? "border-cyan-100/55 bg-cyan-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400 hover:border-cyan-100/35"}`}>{item}</button>)}
-      </div>
-      <p className="text-center text-sm text-cyan-100/80">当前落点：{zone} · 只是标记为“{quality}”</p>
-      <button type="button" onClick={recordObservation} className="mx-auto rounded-full border border-cyan-100/30 bg-cyan-100/10 px-5 py-3 text-sm font-semibold text-cyan-50 transition hover:border-cyan-100/55">记录这个感受</button>
       {observations.length > 0 ? <div className="flex flex-wrap justify-center gap-2">{observations.map((item) => <span key={item} className="rounded-full border border-cyan-100/15 bg-cyan-100/[0.07] px-3 py-2 text-xs text-cyan-50">{item}</span>)}</div> : null}
-      <p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p>
     </div>
   );
 }
@@ -966,101 +985,133 @@ function BodyScan({ instruction }: { instruction: string }) {
 function PersonShift({ instruction }: { instruction: string }) {
   const [name, setName] = useState("Will");
   const [sentence, setSentence] = useState("我现在很想证明自己没错。");
-  const [distance, setDistance] = useState<"name" | "person">("name");
   const shifted = sentence.replaceAll("我", name || "这个人");
   const further = `一个人正在经历：${shifted.replaceAll(name || "这个人", "").trim() || sentence.replaceAll("我", "")}`;
-  const currentDistance = distance === "name" ? 50 : 82;
+
   return (
     <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-5">
       <p className="text-base leading-7 text-stone-300">{instruction}</p>
-      <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" placeholder="你的名字" />
-      <textarea value={sentence} onChange={(event) => setSentence(event.target.value)} className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" />
+      <div className="grid gap-3 sm:grid-cols-[0.42fr_1fr]">
+        <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" placeholder="你的名字" />
+        <textarea value={sentence} onChange={(event) => setSentence(event.target.value)} className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none placeholder:text-stone-600 focus:border-violet-200/50" placeholder="写一句脑内正在说的话" />
+      </div>
       <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
         <div className="flex items-center justify-between text-xs text-stone-500"><span>入戏语言</span><span>旁观语言</span></div>
-        <div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-300 to-amber-100 transition-all" style={{ width: `${currentDistance}%` }} /></div>
+        <div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-300 to-amber-100 transition-all" style={{ width: "82%" }} /></div>
+        <p className="mt-2 text-xs text-stone-500">输入时自动转换，不需要再做选择。</p>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
-        <button type="button" onClick={() => setDistance("name")} className={`rounded-2xl border p-3 text-left transition ${distance === "name" ? "border-violet-100/55 bg-violet-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>
+        <div className="rounded-2xl border border-violet-100/35 bg-violet-100/10 p-3 text-left text-white">
           <span className="block text-xs uppercase tracking-[0.2em] opacity-70">名字视角</span>
           <span className="mt-2 block text-sm leading-6">{shifted}</span>
-        </button>
-        <button type="button" onClick={() => setDistance("person")} className={`rounded-2xl border p-3 text-left transition ${distance === "person" ? "border-amber-100/55 bg-amber-100/12 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>
+        </div>
+        <div className="rounded-2xl border border-amber-100/35 bg-amber-100/10 p-3 text-left text-white">
           <span className="block text-xs uppercase tracking-[0.2em] opacity-70">再退一步</span>
           <span className="mt-2 block text-sm leading-6">{further}</span>
-        </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function ReleasePractice({ instruction }: { instruction: string }) {
-  const [choice, setChoice] = useState("允许出现");
-  const [boundary, setBoundary] = useState("保持距离");
-  const [releaseLevel, setReleaseLevel] = useState(34);
-  const options = ["允许出现", "保持边界", "少重播一次"];
-  const boundaries = ["保持距离", "晚点再说", "找人支持"];
-  function softenReaction(nextChoice: string) {
-    setChoice(nextChoice);
-    setReleaseLevel((value) => Math.min(100, value + 16));
-  }
+function ReleasePractice({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
+  const phases = [
+    { label: "允许出现", boundary: "先承认这股反应在", level: 38 },
+    { label: "保持边界", boundary: "不把宽恕等同于纵容", level: 64 },
+    { label: "少重播一次", boundary: "把自己带回当下", level: 86 },
+  ] as const;
+  const activeIndex = Math.min(stepIndex, phases.length - 1);
+  const active = phases[activeIndex];
+
   return (
     <div className="grid flex-1 place-items-center rounded-[2rem] border border-rose-200/15 bg-[radial-gradient(circle_at_50%_16%,rgba(251,113,133,0.12),transparent_42%),rgba(2,6,23,0.72)] p-6 text-center">
-      <div className="flex flex-wrap justify-center gap-2">{options.map((item) => <button key={item} type="button" onClick={() => softenReaction(item)} className={`rounded-full border px-4 py-2 text-sm transition ${choice === item ? "border-rose-100/60 bg-rose-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}>{item}</button>)}</div>
-      <div className="my-7 h-24 w-full max-w-md overflow-hidden rounded-full border border-rose-100/10 bg-white/[0.035]"><div className="h-full rounded-full bg-gradient-to-r from-rose-300/0 via-rose-200/20 to-amber-200/30 blur-sm transition-all" style={{ width: `${releaseLevel}%` }} /></div>
-      <p className="text-xs uppercase tracking-[0.24em] text-rose-100/60">{choice}</p>
-      <p className="mt-3 max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
-      <p className="mt-2 text-sm text-rose-100/70">释放度 {releaseLevel}% · 不是替对方开脱，是让自己少重播一次。</p>
-      <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-        <p className="text-xs text-stone-500">宽恕不等于取消边界。此刻先选一个保护动作：</p>
-        <div className="mt-2 flex flex-wrap justify-center gap-2">{boundaries.map((item) => <button key={item} type="button" onClick={() => setBoundary(item)} className={`rounded-full border px-3 py-2 text-xs transition ${boundary === item ? "border-rose-100/55 bg-rose-100/14 text-white" : "border-white/10 bg-white/[0.035] text-stone-400"}`}>{item}</button>)}</div>
-        <p className="mt-2 text-xs text-rose-100/70">当前边界：{boundary}</p>
+      <div className="h-24 w-full max-w-md overflow-hidden rounded-full border border-rose-100/10 bg-white/[0.035]">
+        <div className="h-full rounded-full bg-gradient-to-r from-rose-300/0 via-rose-200/20 to-amber-200/34 blur-sm transition-all duration-700" style={{ width: `${active.level}%` }} />
       </div>
+      <p className="mt-5 text-xs uppercase tracking-[0.24em] text-rose-100/60">{active.label}</p>
+      <p className="mt-3 max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
+      <p className="mt-2 text-sm text-rose-100/70">释放度 {active.level}% · {active.boundary}</p>
+      <div className="mt-4 grid w-full max-w-2xl gap-2 sm:grid-cols-3">
+        {phases.map((item, index) => (
+          <div key={item.label} className={`rounded-2xl border p-3 text-left transition ${index === activeIndex ? "border-rose-100/55 bg-rose-100/14 text-white" : "border-white/10 bg-white/[0.035] text-stone-500"}`}>
+            <span className="block text-sm font-semibold">{item.label}</span>
+            <span className="mt-2 block text-xs leading-5 opacity-75">{item.boundary}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-xs text-stone-500">练习会自动经过三个阶段。宽恕不是取消边界，只是减少内在重播。</p>
     </div>
   );
 }
 
-function OpenAwareness({ instruction }: { instruction: string }) {
+function OpenAwareness({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
   const fields = ["声音", "身体", "念头", "空间"];
-  const [includedCount, setIncludedCount] = useState(1);
+  const includedCount = Math.min(fields.length, stepIndex + 1);
   const included = fields.slice(0, includedCount);
-  function includeMore() {
-    setIncludedCount((value) => Math.min(fields.length, value + 1));
-  }
-  function soften() {
-    setIncludedCount(1);
-  }
 
-  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2, 3].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10 transition-all" style={{ width: 110 + index * 74 + includedCount * 18, height: 110 + index * 74 + includedCount * 18, opacity: Math.max(0.12, 0.74 - index * 0.14) }} />)}<div className="relative grid gap-3 sm:grid-cols-4">{fields.map((field, index) => <span key={field} className={`rounded-full border px-5 py-3 text-sm transition ${index < includedCount ? "border-violet-100/45 bg-violet-100/13 text-violet-50 shadow-[0_0_22px_rgba(216,180,254,0.12)]" : "border-white/10 bg-white/[0.04] text-stone-500"}`}>{field}</span>)}</div><div className="relative mt-5 flex flex-wrap justify-center gap-2"><button type="button" onClick={includeMore} className="rounded-full border border-violet-100/35 bg-violet-100/10 px-5 py-3 text-sm font-semibold text-violet-50 transition hover:border-violet-100/55">再纳入一层</button><button type="button" onClick={soften} className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-violet-100/35">回到声音</button></div><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">已纳入：{included.join("、")}。这是扩展注意范围，不是在追求神秘体验。</p></div>;
+  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2, 3].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10 transition-all" style={{ width: 110 + index * 74 + includedCount * 18, height: 110 + index * 74 + includedCount * 18, opacity: Math.max(0.12, 0.74 - index * 0.14) }} />)}<div className="relative grid gap-3 sm:grid-cols-4">{fields.map((field, index) => <span key={field} className={`rounded-full border px-5 py-3 text-sm transition ${index < includedCount ? "border-violet-100/45 bg-violet-100/13 text-violet-50 shadow-[0_0_22px_rgba(216,180,254,0.12)]" : "border-white/10 bg-white/[0.04] text-stone-500"}`}>{field}</span>)}</div><p className="relative mt-5 text-xs text-violet-100/55">自动纳入：{included.join("、")}</p><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">这是扩展注意范围，不是在追求神秘体验。</p></div>;
 }
 
-function GroundedAction({ instruction }: { instruction: string }) {
+function GroundedAction({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
   const focusSteps = [
-    { label: "环境", value: "这个房间", hint: "先看见大范围" },
-    { label: "对象", value: "一个杯子", hint: "把镜头推近" },
-    { label: "细节", value: "杯沿高光", hint: "只看一个小点" },
-    { label: "触感", value: "脚底压力", hint: "加入身体感官" },
+    { label: "环境", value: "这个房间", hint: "先看见大范围", sense: "视觉" },
+    { label: "对象", value: "一个杯子", hint: "把镜头推近", sense: "视觉" },
+    { label: "细节", value: "杯沿高光", hint: "只看一个小点", sense: "视觉" },
+    { label: "触感", value: "脚底压力", hint: "加入身体感官", sense: "触觉" },
   ];
-  const [focusIndex, setFocusIndex] = useState(0);
-  const [sense, setSense] = useState("视觉");
-  const senses = ["视觉", "触觉", "听觉", "嗅觉"];
+  const focusIndex = Math.min(stepIndex, focusSteps.length - 1);
   const focus = focusSteps[focusIndex] ?? focusSteps[0];
-  return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-amber-200/15 bg-[radial-gradient(circle_at_50%_22%,rgba(245,158,11,0.12),transparent_46%),rgba(2,6,23,0.72)] p-6 text-center"><div className="mx-auto grid h-48 w-48 place-items-center rounded-full border border-amber-100/20 bg-amber-200/10 shadow-[0_0_60px_rgba(245,158,11,0.18)]" style={{ transform: `scale(${1 - focusIndex * 0.08})` }}><span className="text-xs uppercase tracking-[0.2em] text-amber-100/55">{focus.label}</span><span className="text-2xl font-semibold text-amber-50">{focus.value}</span><span className="text-xs text-amber-100/65">{sense}</span></div><div className="grid gap-2 sm:grid-cols-4">{focusSteps.map((item, index) => <button key={item.label} type="button" onClick={() => setFocusIndex(index)} className={`rounded-2xl border p-3 text-left transition ${focusIndex === index ? "border-amber-100/60 bg-amber-100/14 text-white" : "border-white/10 bg-white/[0.04] text-stone-400"}`}><span className="block text-xs opacity-60">Step {index + 1}</span><span className="mt-1 block text-sm font-semibold">{item.label}</span><span className="mt-1 block text-xs leading-5 opacity-70">{item.hint}</span></button>)}</div><div className="flex flex-wrap justify-center gap-2">{senses.map((item) => <button key={item} type="button" onClick={() => setSense(item)} className={`rounded-full border px-3 py-2 text-xs transition ${sense === item ? "border-amber-100/55 bg-amber-100/12 text-white" : "border-white/10 bg-white/[0.035] text-stone-500"}`}>{item}</button>)}</div><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">这是意识窄化：把镜头从大环境压缩到一个具体细节。</p></div>;
+  return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-amber-200/15 bg-[radial-gradient(circle_at_50%_22%,rgba(245,158,11,0.12),transparent_46%),rgba(2,6,23,0.72)] p-6 text-center"><div className="mx-auto grid h-48 w-48 place-items-center rounded-full border border-amber-100/20 bg-amber-200/10 shadow-[0_0_60px_rgba(245,158,11,0.18)]" style={{ transform: `scale(${1 - focusIndex * 0.08})` }}><span className="text-xs uppercase tracking-[0.2em] text-amber-100/55">{focus.label}</span><span className="text-2xl font-semibold text-amber-50">{focus.value}</span><span className="text-xs text-amber-100/65">{focus.sense}</span></div><div className="grid gap-2 sm:grid-cols-4">{focusSteps.map((item, index) => <div key={item.label} className={`rounded-2xl border p-3 text-left transition ${focusIndex === index ? "border-amber-100/60 bg-amber-100/14 text-white" : "border-white/10 bg-white/[0.035] text-stone-500"}`}><span className="block text-xs opacity-60">Step {index + 1}</span><span className="mt-1 block text-sm font-semibold">{item.label}</span><span className="mt-1 block text-xs leading-5 opacity-70">{item.hint}</span></div>)}</div><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">不用选择。镜头会自动从大环境收束到一个具体细节。</p></div>;
 }
 
 function StabilityPractice({ instruction, secondsLeft }: { instruction: string; secondsLeft: number }) {
-  const [stability, setStability] = useState(28);
+  const [stability, setStability] = useState(34);
   const [attempts, setAttempts] = useState(0);
+  const [holding, setHolding] = useState(false);
   const steady = stability >= 72;
-  function stabilize() {
-    setStability((value) => Math.min(100, value + 18));
-    setAttempts((value) => value + 1);
-  }
-  function release() {
-    setStability((value) => Math.max(18, value - 22));
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setStability((value) => {
+        const next = holding ? value + 5 : value - 1.4;
+        return Math.min(100, Math.max(22, next));
+      });
+    }, 320);
+    return () => window.clearInterval(timer);
+  }, [holding]);
+
+  function startHold() {
+    setHolding(true);
     setAttempts((value) => value + 1);
   }
 
-  return <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(16,185,129,0.14),transparent_46%),rgba(2,6,23,0.76)] p-6 text-center"><div className={`illusion-field mx-auto grid h-60 w-60 place-items-center rounded-[2rem] border border-emerald-100/15 transition duration-700 ${steady ? "illusion-steady scale-95 opacity-75" : "scale-100 opacity-100"}`} style={{ animationDuration: `${Math.max(2.4, 9 - stability / 14)}s` }}><span className="rounded-full bg-slate-950/75 px-4 py-2 text-sm text-emerald-50">{steady ? "画面被你稳定住了" : "画面在牵引注意"}</span></div><div className="mx-auto w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>晃动</span><span>稳定</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-amber-100 transition-all" style={{ width: `${stability}%` }} /></div><p className="mt-2 text-sm text-emerald-50">稳定度 {stability}%</p></div><div className="flex flex-wrap justify-center gap-2"><button type="button" onClick={stabilize} className="rounded-full border border-emerald-100/30 bg-emerald-100/10 px-5 py-3 text-sm font-semibold text-emerald-50 transition hover:border-emerald-100/55">让画面慢下来</button><button type="button" onClick={release} className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-emerald-100/35">观察它又动了</button></div><p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="text-xs text-stone-500">稳定尝试 {attempts} 次 · 剩余 {secondsLeft} 秒。不是控制成功，而是看见注意如何被牵走。</p></div>;
+  function stopHold() {
+    setHolding(false);
+  }
+
+  return (
+    <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(16,185,129,0.14),transparent_46%),rgba(2,6,23,0.76)] p-6 text-center">
+      <button
+        type="button"
+        onPointerDown={startHold}
+        onPointerUp={stopHold}
+        onPointerCancel={stopHold}
+        onPointerLeave={stopHold}
+        aria-label="按住画面让它慢下来"
+        className={`illusion-field mx-auto grid h-60 w-60 place-items-center rounded-[2rem] border border-emerald-100/15 transition duration-700 active:scale-[0.98] ${steady ? "illusion-steady scale-95 opacity-75" : "scale-100 opacity-100"}`}
+        style={{ animationDuration: `${Math.max(2.4, 9 - stability / 14)}s` }}
+      >
+        <span className="rounded-full bg-slate-950/75 px-4 py-2 text-sm text-emerald-50">{holding ? "正在稳定画面" : steady ? "画面慢下来了" : "按住画面"}</span>
+      </button>
+      <div className="mx-auto w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+        <div className="flex items-center justify-between text-xs text-stone-500"><span>晃动</span><span>稳定</span></div>
+        <div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-amber-100 transition-all" style={{ width: `${stability}%` }} /></div>
+        <p className="mt-2 text-sm text-emerald-50">稳定度 {Math.round(stability)}%</p>
+      </div>
+      <p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
+      <p className="text-xs text-stone-500">按住图案让它慢下来，松开后观察它恢复移动。尝试 {attempts} 次 · 剩余 {secondsLeft} 秒。</p>
+    </div>
+  );
 }
 
 function CheckView({

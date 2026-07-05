@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 import { containsHighRiskLanguage } from "@stillmind/domain";
-import { AmbientToggle } from "@/components/AmbientToggle";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { HistoryList } from "@/components/HistoryList";
 import {
@@ -539,7 +538,6 @@ function Header({ step }: { step: Step }) {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        {step === "home" ? <AmbientToggle /> : null}
         {step !== "home" ? (
           <div className="flex gap-1.5" aria-label="Progress">
             {steps.map((item, itemIndex) => (
