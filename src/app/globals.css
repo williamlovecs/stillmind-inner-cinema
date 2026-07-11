@@ -19,8 +19,16 @@ body {
 }
 
 button,
+input,
+select,
 textarea {
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid rgba(216, 180, 254, 0.9);
+  outline-offset: 3px;
 }
 
 .cinema-bg {
@@ -289,9 +297,13 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .breathing-circle,
-  .floating-word {
-    animation-duration: 12s;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
 

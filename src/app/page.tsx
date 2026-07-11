@@ -382,7 +382,7 @@ export default function Home() {
     } catch {
       // sessionStorage may be unavailable in private mode
     }
-    router.push(`/reset?mode=${matchedMode}`);
+    router.push(`/reset?mode=${matchedMode}&intensity=${replayIntensity}`);
   };
 
   const startPitchDemo = () => {
@@ -611,9 +611,12 @@ function HomePanel({
           </div>
 
           <textarea
+            aria-label="刚才发生了什么"
+            name="trigger"
+            autoComplete="off"
             value={trigger}
             onChange={(event) => onTriggerChange(event.target.value)}
-            className="mt-4 min-h-32 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 outline-none placeholder:text-stone-500 focus:border-stone-300/60"
+            className="mt-4 min-h-32 w-full resize-none scroll-mt-24 rounded-[1.4rem] border border-white/10 bg-black/30 p-4 text-base leading-7 text-stone-100 placeholder:text-stone-500 focus:border-stone-300/60"
             placeholder="比如：我被批评了，现在很想反击。"
           />
 
@@ -777,7 +780,7 @@ function CinemaPanel({
                     key={scene.label}
                     type="button"
                     onClick={() => setSceneIndex(index)}
-                    className={`h-2.5 rounded-full transition-all ${
+                    className={`h-2.5 rounded-full transition-[width,background-color,border-color] ${
                       index === sceneIndex
                         ? "w-9 bg-violet-200 shadow-[0_0_18px_rgba(196,181,253,0.45)]"
                         : "w-2.5 bg-white/18 hover:bg-white/35"
@@ -977,7 +980,7 @@ function ObserverPanel({
 
       <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/10">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-violet-400 via-fuchsia-200 to-amber-300 transition-all duration-700"
+          className="h-full rounded-full bg-gradient-to-r from-violet-400 via-fuchsia-200 to-amber-300 transition-[width] duration-700"
           style={{ width: `${progress}%` }}
         />
       </div>

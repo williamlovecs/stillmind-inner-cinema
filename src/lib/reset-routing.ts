@@ -24,6 +24,25 @@ export function isStateMode(value: string | null | undefined): value is StateMod
   );
 }
 
+function parseIntensity(value: string | null): number | undefined {
+  if (value === null || value.trim() === "") return undefined;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : undefined;
+}
+
+export function resolveResetIntensity(
+  storedValue: string | null,
+  queryValue: string | null,
+  fallback: number,
+): { value: number; supplied: boolean } {
+  const incoming = parseIntensity(storedValue) ?? parseIntensity(queryValue);
+  const value = incoming ?? fallback;
+  return {
+    value: Math.min(10, Math.max(0, value)),
+    supplied: incoming !== undefined,
+  };
+}
+
 export function detectStateModeFromText(input: string): StateMode {
   const text = input.trim().toLowerCase();
   if (!text) return "looping";

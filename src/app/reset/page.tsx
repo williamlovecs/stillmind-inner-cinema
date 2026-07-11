@@ -10,6 +10,7 @@ import {
   PENDING_TRIGGER_KEY,
   detectStateModeFromText,
   isStateMode,
+  resolveResetIntensity,
 } from "@/lib/reset-routing";
 import { getPracticeVariant, type PracticeVariant } from "@stillmind/content";
 import {
@@ -264,18 +265,20 @@ export default function ResetPage() {
   const [directEntry, setDirectEntry] = useState(false);
   const [autoStartPending, setAutoStartPending] = useState(false);
   const startedAt = useRef<string>(new Date().toISOString());
+  const didHydrateRouting = useRef(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSessions(loadSessions()), 0);
     return () => window.clearTimeout(timer);
   }, []);
   useLayoutEffect(() => {
+    if (didHydrateRouting.current) return;
+    didHydrateRouting.current = true;
     try {
       const params = new URLSearchParams(window.location.search);
       const storedTrigger = window.sessionStorage.getItem(PENDING_TRIGGER_KEY) ?? "";
       const storedMode = window.sessionStorage.getItem(PENDING_MODE_KEY);
       const storedIntensity = window.sessionStorage.getItem(PENDING_INTENSITY_KEY);
-      const parsedIntensity = storedIntensity === null ? NaN : Number(storedIntensity);
       const queryMode = params.get("mode");
       const queryMethod = params.get("method") as MethodId | null;
       const queryMethodDef = queryMethod ? METHOD_BY_ID.get(queryMethod) : undefined;
@@ -297,12 +300,14 @@ export default function ResetPage() {
       if (nextMode) {
         setMode(nextMode);
         const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
-        const nextIntensity = Number.isInteger(parsedIntensity)
-          ? Math.min(10, Math.max(0, parsedIntensity))
-          : Math.min(10, nextActivation * 2);
-        setIntensityBefore(nextIntensity);
-        setIntensityAfter(nextIntensity);
-        if (Number.isInteger(parsedIntensity)) {
+        const incomingIntensity = resolveResetIntensity(
+          storedIntensity,
+          params.get("intensity"),
+          Math.min(10, nextActivation * 2),
+        );
+        setIntensityBefore(incomingIntensity.value);
+        setIntensityAfter(incomingIntensity.value);
+        if (incomingIntensity.supplied) {
           setLockedBeforeScore(true);
           setAutoStartPending(true);
           setPhase("precheck");
@@ -352,6 +357,22 @@ export default function ResetPage() {
       : method.summary;
   const practiceShellClass = `flex min-w-0 flex-col rounded-[2rem] border border-white/10 bg-slate-950/55 p-5 shadow-inner shadow-black/30 ${phase === "practice" ? "min-h-[560px]" : "min-h-[360px]"}`;
   const focusMode = directEntry || phase !== "choose";
+  const focusEyebrow = phase === "practice"
+    ? "练习进行中"
+    : phase === "check"
+      ? "练后反馈"
+      : phase === "done"
+        ? "练习完成"
+        : directEntry
+          ? "1 分钟 Reset"
+          : "推荐练习";
+  const focusStatusCopy = phase === "practice"
+    ? `已记录练习前分数，现在跟着做 ${practice?.minutes ?? duration} 分钟。`
+    : phase === "check"
+      ? "练习完成，记录一下现在的状态。"
+      : phase === "done"
+        ? "这次练习已经完成。"
+        : `先标记强度，再跟着做 ${practice?.minutes ?? duration} 分钟。`;
 
   useLayoutEffect(() => {
     if (!autoStartPending || !practice) return;
@@ -537,12 +558,12 @@ export default function ResetPage() {
             </div>
           </aside> : null}
 
-          <section className="grid w-full min-w-0 gap-5 rounded-[2rem] border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:p-5">
+          <section className="grid w-full min-w-0 content-start gap-5 rounded-[2rem] border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:p-5">
             <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">{directEntry ? "1 分钟 Reset" : "推荐练习"}</p>
+                <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">{focusMode ? focusEyebrow : "推荐练习"}</p>
                 <div className="mt-3 flex flex-wrap items-end gap-3"><h2 className="text-3xl font-semibold text-white sm:text-4xl">{method.title}</h2><span className="rounded-full border border-amber-200/25 bg-amber-100/10 px-3 py-1 text-sm text-amber-100">{practice?.minutes ?? duration} 分钟</span></div>
-                {!focusMode ? <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p> : <p className="mt-3 text-sm leading-6 text-stone-400">{directEntry ? "已记录练习前分数，现在直接跟着做一分钟。" : "先标记强度，再跟着做一分钟。"}</p>}
+                {!focusMode ? <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p> : <p className="mt-3 text-sm leading-6 text-stone-400">{focusStatusCopy}</p>}
                 {focusMode && incomingTrigger ? (
                   <p className="mt-3 line-clamp-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm leading-6 text-stone-400">刚才发生了：{incomingTrigger}</p>
                 ) : null}
@@ -707,7 +728,7 @@ function PrePracticeCheck({
 
 function PracticePlayer({ method, practice, stepIndex, secondsLeft, progress, paused, onPause, onStop }: { method: MethodDefinition; practice: PracticeVariant; stepIndex: number; secondsLeft: number; progress: number; paused: boolean; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
-  return <div className="flex h-full flex-col gap-5"><div className="flex items-center justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">{method.title}</p><h3 className="mt-2 text-2xl font-semibold text-white">{step.title}</h3></div><div className="text-right"><p className="text-4xl font-semibold text-white">{secondsLeft}</p><p className="text-xs uppercase tracking-[0.22em] text-stone-500">秒</p></div></div><div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-200 to-amber-200 transition-all" style={{ width: `${progress}%` }} /></div><MethodExperience methodId={method.id} instruction={step.instruction} secondsLeft={secondsLeft} stepIndex={stepIndex} /><div className="mt-auto flex flex-wrap gap-3"><button type="button" onClick={onPause} className="rounded-full border border-white/12 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white transition hover:border-violet-200/35">{paused ? "继续" : "暂停"}</button><button type="button" onClick={onStop} className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-amber-200/35 hover:text-white">停止并反馈</button></div></div>;
+  return <div className="flex h-full flex-col gap-5"><div className="flex items-center justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">{method.title}</p><h3 className="mt-2 text-2xl font-semibold text-white">{step.title}</h3></div><div className="text-right"><p className="text-4xl font-semibold tabular-nums text-white">{secondsLeft}</p><p className="text-xs uppercase tracking-[0.22em] text-stone-500">秒</p></div></div><div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-200 to-amber-200 transition-[width]" style={{ width: `${progress}%` }} /></div><MethodExperience methodId={method.id} instruction={step.instruction} secondsLeft={secondsLeft} stepIndex={stepIndex} /><div className="mt-auto flex flex-wrap gap-3"><button type="button" onClick={onPause} className="rounded-full border border-white/12 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white transition hover:border-violet-200/35">{paused ? "继续" : "暂停"}</button><button type="button" onClick={onStop} className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-amber-200/35 hover:text-white">停止并反馈</button></div></div>;
 }
 
 function MethodExperience({ methodId, instruction, secondsLeft, stepIndex }: { methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
@@ -809,7 +830,7 @@ function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, brea
     return (
       <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(16,185,129,0.14),transparent_46%),rgba(2,6,23,0.76)] p-6 text-center">
         <button type="button" onPointerDown={() => setHolding(true)} onPointerUp={() => setHolding(false)} onPointerCancel={() => setHolding(false)} onPointerLeave={() => setHolding(false)} aria-label="按住画面让它慢下来" className={`illusion-field mx-auto grid h-60 w-60 place-items-center rounded-[2rem] border border-emerald-100/15 transition duration-700 active:scale-[0.98] ${steady ? "illusion-steady scale-95 opacity-75" : "scale-100 opacity-100"}`} style={{ animationDuration: `${Math.max(2.4, 9 - stability / 14)}s` }}><span className="rounded-full bg-slate-950/75 px-4 py-2 text-sm text-emerald-50">{holding ? "正在稳定画面" : steady ? "画面慢下来了" : "按住画面"}</span></button>
-        <div className="mx-auto w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>晃动</span><span>稳定</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-amber-100 transition-all" style={{ width: `${stability}%` }} /></div><p className="mt-2 text-sm text-emerald-50">稳定度 {Math.round(stability)}%</p></div>
+        <div className="mx-auto w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>晃动</span><span>稳定</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-amber-100 transition-[width]" style={{ width: `${stability}%` }} /></div><p className="mt-2 text-sm text-emerald-50">稳定度 {Math.round(stability)}%</p></div>
         <p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
         <p className="text-xs text-stone-500">按住图案让它慢下来，松开后观察它恢复移动。剩余 {secondsLeft} 秒。</p>
       </div>
@@ -857,8 +878,8 @@ function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts }: { m
     return (
       <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-5">
         <p className="text-base leading-7 text-stone-300">{instruction}</p>
-        <div className="grid gap-3 sm:grid-cols-[0.42fr_1fr]"><input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none focus:border-violet-200/50" placeholder="你的名字" /><textarea value={sentence} onChange={(event) => setSentence(event.target.value)} className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white outline-none placeholder:text-stone-600 focus:border-violet-200/50" placeholder="写一句脑内正在说的话" /></div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>入戏语言</span><span>旁观语言</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-300 to-amber-100 transition-all" style={{ width: "82%" }} /></div><p className="mt-2 text-xs text-stone-500">输入时自动转换，不需要再做选择。</p></div>
+        <div className="grid gap-3 sm:grid-cols-[0.42fr_1fr]"><input aria-label="用于人称替代的名字" name="observer-name" autoComplete="off" value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white focus:border-violet-200/50" placeholder="你的名字" /><textarea aria-label="需要转换为旁观语言的念头" name="observer-sentence" autoComplete="off" value={sentence} onChange={(event) => setSentence(event.target.value)} className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white placeholder:text-stone-600 focus:border-violet-200/50" placeholder="写一句脑内正在说的话" /></div>
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>入戏语言</span><span>旁观语言</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full w-[82%] rounded-full bg-gradient-to-r from-violet-300 to-amber-100" /></div><p className="mt-2 text-xs text-stone-500">输入时自动转换，不需要再做选择。</p></div>
         <div className="grid gap-2 sm:grid-cols-2"><div className="rounded-2xl border border-violet-100/35 bg-violet-100/10 p-3 text-left text-white"><span className="block text-xs uppercase tracking-[0.2em] opacity-70">名字视角</span><span className="mt-2 block text-sm leading-6">{shifted}</span></div><div className="rounded-2xl border border-amber-100/35 bg-amber-100/10 p-3 text-left text-white"><span className="block text-xs uppercase tracking-[0.2em] opacity-70">再退一步</span><span className="mt-2 block text-sm leading-6">{further}</span></div></div>
       </div>
     );
@@ -869,7 +890,7 @@ function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts }: { m
       <div className="flex flex-1 flex-col justify-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.14),transparent_45%),#050914] p-6 text-center">
         <p className="text-xs uppercase tracking-[0.28em] text-violet-200/55">Scene {String(stepIndex + 1).padStart(2, "0")}</p>
         <p className="mx-auto mt-7 max-w-2xl text-2xl font-semibold leading-snug text-white sm:text-3xl">{instruction}</p>
-        <div className="mx-auto mt-6 w-full max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>入戏</span><span>观众席</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-rose-300 via-amber-200 to-violet-300 transition-all duration-700" style={{ width: `${activeLens.heat}%` }} /></div><p className="mt-2 text-xs text-stone-400">当前位置：{activeLens.label} · 入戏度 {activeLens.heat}%</p></div>
+        <div className="mx-auto mt-6 w-full max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>入戏</span><span>观众席</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-rose-300 via-amber-200 to-violet-300 transition-[width] duration-700" style={{ width: `${activeLens.heat}%` }} /></div><p className="mt-2 text-xs text-stone-400">当前位置：{activeLens.label} · 入戏度 {activeLens.heat}%</p></div>
         <div className="mx-auto mt-8 grid max-w-2xl gap-2 sm:grid-cols-3">{lenses.map((item) => <div key={item.id} className={`rounded-2xl border p-3 text-left transition ${item.id === activeLens.id ? "border-violet-100/60 bg-violet-100/14 text-white shadow-[0_0_28px_rgba(168,85,247,0.16)]" : "border-white/10 bg-white/[0.035] text-stone-500"}`}><span className="block text-sm font-semibold">{item.label}</span><span className="mt-1 block text-xs leading-5 opacity-75">{item.body}</span></div>)}</div>
       </div>
     );
@@ -882,7 +903,7 @@ function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts }: { m
       { id: "logout", label: "只读", body: "先不解释，不参与", quiet: 76 },
     ] as const;
     const active = options[Math.min(stepIndex, options.length - 1)];
-    return <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6"><p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>信息互动</span><span>只读模式</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-amber-200 to-violet-300 transition-all duration-700" style={{ width: `${active.quiet}%` }} /></div><p className="mt-2 text-sm text-stone-300">{active.body}</p></div><div className="grid grid-cols-3 gap-2 text-center text-sm">{options.map((item) => <div key={item.id} className={`rounded-2xl border p-4 transition ${item.id === active.id ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.035] text-stone-500"}`}><span className="block font-semibold">{item.label}</span><span className="mt-2 block text-xs leading-5 opacity-75">{item.body}</span></div>)}</div></div>;
+    return <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6"><p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>信息互动</span><span>只读模式</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-amber-200 to-violet-300 transition-[width] duration-700" style={{ width: `${active.quiet}%` }} /></div><p className="mt-2 text-sm text-stone-300">{active.body}</p></div><div className="grid grid-cols-3 gap-2 text-center text-sm">{options.map((item) => <div key={item.id} className={`rounded-2xl border px-2 py-4 transition sm:p-4 ${item.id === active.id ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.035] text-stone-500"}`}><span className="block font-semibold">{item.label}</span><span className="mt-2 hidden text-xs leading-5 opacity-75 sm:block">{item.body}</span></div>)}</div></div>;
   }
 
   const seenCount = Object.keys(seen).length;
@@ -903,7 +924,7 @@ function BodySpaceEngine({ methodId, instruction, stepIndex }: { methodId: Metho
   const includedCount = Math.min(fields.length, stepIndex + 1);
 
   if (methodId === "open-awareness") {
-    return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2, 3].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10 transition-all" style={{ width: 110 + index * 74 + includedCount * 18, height: 110 + index * 74 + includedCount * 18, opacity: Math.max(0.12, 0.74 - index * 0.14) }} />)}<div className="relative grid gap-3 sm:grid-cols-4">{fields.map((field, index) => <span key={field} className={`rounded-full border px-5 py-3 text-sm transition ${index < includedCount ? "border-violet-100/45 bg-violet-100/13 text-violet-50 shadow-[0_0_22px_rgba(216,180,254,0.12)]" : "border-white/10 bg-white/[0.04] text-stone-500"}`}>{field}</span>)}</div><p className="relative mt-5 text-xs text-violet-100/55">自动纳入：{fields.slice(0, includedCount).join("、")}</p><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">这是扩展注意范围，不是在追求神秘体验。</p></div>;
+    return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2, 3].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10 transition-[width,height,opacity]" style={{ width: 110 + index * 74 + includedCount * 18, height: 110 + index * 74 + includedCount * 18, opacity: Math.max(0.12, 0.74 - index * 0.14) }} />)}<div className="relative grid gap-3 sm:grid-cols-4">{fields.map((field, index) => <span key={field} className={`rounded-full border px-5 py-3 text-sm transition ${index < includedCount ? "border-violet-100/45 bg-violet-100/13 text-violet-50 shadow-[0_0_22px_rgba(216,180,254,0.12)]" : "border-white/10 bg-white/[0.04] text-stone-500"}`}>{field}</span>)}</div><p className="relative mt-5 text-xs text-violet-100/55">自动纳入：{fields.slice(0, includedCount).join("、")}</p><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">这是扩展注意范围，不是在追求神秘体验。</p></div>;
   }
 
   if (methodId === "release") {
@@ -948,11 +969,11 @@ function CheckView({
 }) {
   const intents: ReuseIntent[] = ["会", "不确定", "不会"];
   const delta = intensityAfter - intensityBefore;
-  return <div className="flex h-full flex-col justify-center gap-5"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">练后反馈</p><h3 className="mt-3 text-3xl font-semibold text-white">练完后，现在是多少分？</h3><p className="mt-3 text-base leading-7 text-stone-400">只需要 20 秒。请不要写真实姓名、隐私事件、创伤细节或医疗危机场景。</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">练习前分数</p><span className="text-lg font-semibold text-amber-100">{intensityBefore}/10</span></div><p className="mt-2 text-xs leading-5 text-stone-500">已在开始前记录，用来和练习后状态对比。</p></div><IntensityScale label="练习后状态强度" value={intensityAfter} onChange={onIntensityAfter} /><div className="rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-4"><p className="text-sm font-medium text-stone-100">前后变化</p><p className="mt-2 text-sm leading-6 text-stone-400">{delta < 0 ? `下降 ${Math.abs(delta)} 分` : delta > 0 ? `上升 ${delta} 分` : "暂时没有变化"}</p></div><div><p className="mb-2 text-sm font-medium text-stone-100">下次类似场景是否愿意再用</p><div className="grid gap-2 sm:grid-cols-3">{intents.map((item) => <button key={item} type="button" onClick={() => onReuseIntent(item)} className={reuseIntent === item ? "rounded-2xl border border-violet-200/70 bg-violet-200/14 p-3 text-center text-sm font-semibold text-white transition" : "rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center text-sm font-semibold text-stone-300 transition hover:border-violet-200/35"}>{item}</button>)}</div></div><label className="block"><span className="mb-2 block text-sm font-medium text-stone-100">一句话反馈：哪里有用或哪里不舒服</span><textarea value={feedbackNote} onChange={(event) => onFeedbackNote(event.target.value)} maxLength={500} placeholder="例如：三步很清楚，但倒计时有点快。" className="min-h-24 w-full rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-stone-600 focus:border-violet-200/45" /></label><button type="button" onClick={onComplete} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950">保存反馈并完成</button></div>;
+  return <div className="flex h-full flex-col justify-center gap-5"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">练后反馈</p><h3 className="mt-3 text-3xl font-semibold text-white">练完后，现在是多少分？</h3><p className="mt-3 text-base leading-7 text-stone-400">只需要 20 秒。请不要写真实姓名、隐私事件、创伤细节或医疗危机场景。</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">练习前分数</p><span className="text-lg font-semibold tabular-nums text-amber-100">{intensityBefore}/10</span></div><p className="mt-2 text-xs leading-5 text-stone-500">已在开始前记录，用来和练习后状态对比。</p></div><IntensityScale label="练习后状态强度" value={intensityAfter} onChange={onIntensityAfter} /><div aria-live="polite" className="rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-4"><p className="text-sm font-medium text-stone-100">前后变化</p><p className="mt-2 text-sm leading-6 text-stone-400">{delta < 0 ? `下降 ${Math.abs(delta)} 分` : delta > 0 ? `上升 ${delta} 分` : "暂时没有变化"}</p></div><div><p className="mb-2 text-sm font-medium text-stone-100">下次类似场景是否愿意再用</p><div className="grid gap-2 sm:grid-cols-3">{intents.map((item) => <button key={item} type="button" onClick={() => onReuseIntent(item)} className={reuseIntent === item ? "rounded-2xl border border-violet-200/70 bg-violet-200/14 p-3 text-center text-sm font-semibold text-white transition" : "rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center text-sm font-semibold text-stone-300 transition hover:border-violet-200/35"}>{item}</button>)}</div></div><label className="block"><span className="mb-2 block text-sm font-medium text-stone-100">一句话反馈：哪里有用或哪里不舒服</span><textarea name="practice-feedback" autoComplete="off" value={feedbackNote} onChange={(event) => onFeedbackNote(event.target.value)} maxLength={500} placeholder="例如：三步很清楚，但倒计时有点快。" className="min-h-24 w-full rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-white placeholder:text-stone-600 focus:border-violet-200/45" /></label><button type="button" onClick={onComplete} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950">保存反馈并完成</button></div>;
 }
 
 function IntensityScale({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
-  return <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">{label}</p><span className="text-sm font-semibold text-amber-100">{value}/10</span></div><div className="mt-3 flex flex-wrap gap-1.5">{Array.from({ length: 11 }, (_, index) => <button key={index} type="button" onClick={() => onChange(index)} className={`grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold transition ${value === index ? "border-amber-200/75 bg-amber-200/18 text-white" : "border-white/10 bg-slate-950/36 text-stone-500 hover:border-violet-200/35 hover:text-stone-200"}`}>{index}</button>)}</div></div>;
+  return <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">{label}</p><span className="text-sm font-semibold tabular-nums text-amber-100">{value}/10</span></div><div className="mt-3 flex flex-wrap gap-1.5">{Array.from({ length: 11 }, (_, index) => <button key={index} type="button" aria-label={`${label} ${index}`} onClick={() => onChange(index)} className={`grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold transition ${value === index ? "border-amber-200/75 bg-amber-200/18 text-white" : "border-white/10 bg-slate-950/36 text-stone-500 hover:border-violet-200/35 hover:text-stone-200"}`}>{index}</button>)}</div></div>;
 }
 
 function DoneView({
