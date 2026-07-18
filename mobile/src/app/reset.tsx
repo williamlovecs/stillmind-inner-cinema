@@ -7,6 +7,7 @@ import { getPracticeVariant } from "@stillmind/content";
 import { containsHighRiskLanguage, METHOD_BY_ID, recommendMethods, type DesiredOutcome, type DurationMinutes, type MethodId, type SessionResult, type StateMode } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
 import { BreathingOrb } from "@/components/stillmind/BreathingOrb";
+import { MethodPracticeExperience } from "@/components/stillmind/MethodPracticeExperience";
 import { Chip, PrimaryButton, Screen, SecondaryButton, Surface, type } from "@/components/stillmind/ui";
 import { MethodCard } from "@/components/stillmind/MethodCard";
 import { useApp } from "@/state/AppProvider";
@@ -252,13 +253,12 @@ export default function ResetScreen() {
 
 function PracticePlayer({ methodTitle, practice, stepIndex, seconds, paused, onPause, onStop }: { methodTitle: string; practice: NonNullable<ReturnType<typeof getPracticeVariant>>; stepIndex: number; seconds: number; paused: boolean; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
-  const phase = step.kind === "breathe" ? (Math.floor(seconds / 3) % 2 === 0 ? "吸气" : "呼气") : undefined;
   return (
     <Screen scroll={false} contentStyle={styles.player}>
       <TopBar title={methodTitle} onClose={onStop} />
       <View style={styles.progressRow}>{practice.steps.map((item, index) => <View key={item.id} style={[styles.progressSegment, index <= stepIndex && styles.progressActive]} />)}</View>
       <View style={styles.playerCenter}>
-        {practice.methodId === "paced-breath" ? <BreathingOrb phase={phase} seconds={seconds} /> : <View style={styles.projection}><Text style={styles.stepCount}>{String(stepIndex + 1).padStart(2, "0")} / {String(practice.steps.length).padStart(2, "0")}</Text><Text style={styles.stepTitle}>{step.title}</Text><Text style={styles.instruction}>{step.instruction}</Text><Text style={styles.secondsSmall}>{seconds} 秒</Text></View>}
+        <MethodPracticeExperience methodId={practice.methodId} title={step.title} instruction={step.instruction} stepIndex={stepIndex} stepCount={practice.steps.length} seconds={seconds} />
         {step.alternative ? <Text style={styles.alternative}>{step.alternative}</Text> : null}
       </View>
       <View style={styles.controls}><SecondaryButton label={paused ? "继续" : "暂停"} icon={<Ionicons name={paused ? "play" : "pause"} size={18} color={colors.text} />} onPress={onPause} style={styles.control} /><SecondaryButton label="停止" onPress={onStop} style={styles.control} /></View>
@@ -289,7 +289,6 @@ const styles = StyleSheet.create({
   routeBlock: { gap: 12 }, row: { flexDirection: "row", flexWrap: "wrap", gap: 9 }, input: { minHeight: 92, borderWidth: 1, borderColor: colors.border, borderRadius: radii.medium, color: colors.text, backgroundColor: colors.surface, padding: 15, fontSize: 15, textAlignVertical: "top" },
   recommendBlock: { gap: 13 }, supportLink: { color: colors.textFaint, textAlign: "center", fontSize: 12, textDecorationLine: "underline" },
   player: { paddingBottom: 28 }, progressRow: { flexDirection: "row", gap: 6 }, progressSegment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.12)" }, progressActive: { backgroundColor: colors.lavender },
-  playerCenter: { flex: 1, justifyContent: "center", gap: spacing.md }, projection: { minHeight: 310, borderRadius: 28, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: "rgba(8,12,27,0.9)", alignItems: "center", justifyContent: "center", padding: 28, gap: 18, shadowColor: colors.violet, shadowOpacity: 0.24, shadowRadius: 34 },
-  stepCount: { color: colors.textFaint, fontSize: 12, letterSpacing: 2 }, stepTitle: { color: colors.lavender, fontSize: 16, fontWeight: "800", letterSpacing: 2 }, instruction: { color: colors.text, fontSize: 24, lineHeight: 36, fontWeight: "700", textAlign: "center" }, secondsSmall: { color: colors.textFaint, fontSize: 13 }, alternative: { color: colors.textMuted, fontSize: 13, lineHeight: 20, textAlign: "center" },
+  playerCenter: { flex: 1, justifyContent: "center", gap: spacing.md }, alternative: { color: colors.textMuted, fontSize: 13, lineHeight: 20, textAlign: "center" },
   controls: { flexDirection: "row", gap: 10 }, control: { flex: 1 }, centerCopy: { gap: 12, marginTop: spacing.xl }, stack: { gap: 10 }, adjustmentCard: { gap: 12 }, done: { flex: 1, justifyContent: "center", gap: 24 }, centerText: { textAlign: "center" }, actionCard: { gap: 10 }, supportCard: { gap: 10 },
 });
