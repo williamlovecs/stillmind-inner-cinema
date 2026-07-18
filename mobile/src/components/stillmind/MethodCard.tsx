@@ -12,19 +12,21 @@ const FAMILY_COLOR = {
   reflect: colors.mint,
 } as const;
 
-export function MethodCard({ method, favorite, onPress, onFavorite }: { method: MethodDefinition; favorite?: boolean; onPress: () => void; onFavorite?: () => void }) {
+export function MethodCard({ method, favorite, onPress, onFavorite }: { method: MethodDefinition; favorite?: boolean; onPress?: () => void; onFavorite?: () => void }) {
   const accent = FAMILY_COLOR[method.family];
-  return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]} accessibilityRole="button">
+  const content = (
+    <>
       <View style={[styles.accent, { backgroundColor: accent }]} />
       <View style={styles.content}>
         <View style={styles.titleRow}><Text style={styles.title}>{method.title}</Text>{method.premium ? <Text style={styles.plus}>PLUS</Text> : null}</View>
         <Text style={styles.subtitle}>{method.subtitle}</Text>
         <View style={styles.meta}><Text style={styles.metaText}>{method.durations.join(" / ")} 分钟</Text><Text style={styles.dot}>·</Text><Text style={styles.metaText}>{method.eyesOpen ? "可睁眼" : "可闭眼"}</Text></View>
       </View>
-      {onFavorite ? <Pressable accessibilityRole="button" accessibilityLabel={favorite ? "取消收藏" : "收藏"} hitSlop={12} onPress={(event) => { event.stopPropagation(); onFavorite(); }}><Ionicons name={favorite ? "bookmark" : "bookmark-outline"} size={21} color={favorite ? colors.lavender : colors.textFaint} /></Pressable> : <Ionicons name="chevron-forward" size={20} color={colors.textFaint} />}
-    </Pressable>
+      {onFavorite ? <Pressable accessibilityRole="button" accessibilityLabel={favorite ? "取消收藏" : "收藏"} hitSlop={12} onPress={(event) => { event.stopPropagation(); onFavorite(); }}><Ionicons name={favorite ? "bookmark" : "bookmark-outline"} size={21} color={favorite ? colors.lavender : colors.textFaint} /></Pressable> : onPress ? <Ionicons name="chevron-forward" size={20} color={colors.textFaint} /> : null}
+    </>
   );
+  if (!onPress) return <View style={styles.card}>{content}</View>;
+  return <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]} accessibilityRole="button">{content}</Pressable>;
 }
 
 const styles = StyleSheet.create({

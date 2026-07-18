@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, AppState, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, AppState, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -24,7 +24,7 @@ function parseActivation(value?: string): 1 | 2 | 3 | 4 | 5 { const n = Number(v
 
 export default function ResetScreen() {
   const params = useLocalSearchParams<{ mode?: StateMode; methodId?: MethodId; duration?: string; activation?: string; outcome?: DesiredOutcome; direct?: string }>();
-  const { preferences, sessions, addSession, updatePreferences } = useApp();
+  const { ready, preferences, sessions, addSession, updatePreferences } = useApp();
   const [phase, setPhase] = useState<Phase>("recommend");
   const [mode] = useState<StateMode>(params.mode ?? "looping");
   const [activationBefore, setActivationBefore] = useState(parseActivation(params.activation));
@@ -45,6 +45,9 @@ export default function ResetScreen() {
   const recommendedId = recommendation.kind === "practice" ? recommendation.primary.id : "grounded-action";
   const [methodId, setMethodId] = useState<MethodId>(params.methodId ?? recommendedId);
   const method = METHOD_BY_ID.get(methodId)!;
+  const recommendationCopy = recommendation.kind === "practice" && recommendation.primary.id !== methodId
+    ? `你选择了“${method.title}”。${method.summary}`
+    : recommendation.explanation;
   const methodHidden = preferences.hiddenMethodIds.includes(methodId);
   const basePractice = getPracticeVariant(methodId, duration);
   const practiceMinutes = basePractice?.minutes ?? duration;
@@ -100,8 +103,9 @@ export default function ResetScreen() {
   }, [paused, phase]);
 
   useEffect(() => {
-    if (params.direct !== "1" || !practice || directSessionTracked.current) return;
+    if (!ready || !preferences.onboardingComplete || params.direct !== "1" || !practice || directSessionTracked.current) return;
     directSessionTracked.current = true;
+    startedAt.current = new Date().toISOString();
     practiceStartedAtMs.current = Date.now();
     pauseStartedAtMs.current = undefined;
     pausedTotalMs.current = 0;
@@ -112,9 +116,10 @@ export default function ResetScreen() {
     setPhase("practice");
     track("reset_started", { mode, activation_bucket: activationBefore, duration_bucket: practice.minutes, method_id: methodId });
     track("practice_started", { method_id: methodId, duration_bucket: practice.minutes, source: "offline" });
-  }, [activationBefore, methodId, mode, params.direct, practice]);
+  }, [activationBefore, methodId, mode, params.direct, practice, preferences.onboardingComplete, ready]);
 
   const beginPractice = (selectedPractice: NonNullable<typeof practice>, source: "offline" | "preset" | "stepfun") => {
+    startedAt.current = new Date().toISOString();
     setStepIndex(0);
     setSeconds(selectedPractice.steps[0]?.seconds ?? 0);
     setPaused(false);
@@ -238,8 +243,8 @@ export default function ResetScreen() {
       ) : (
         <View style={styles.recommendBlock}>
           <Text style={type.label}>推荐这一种</Text>
-          <MethodCard method={METHOD_BY_ID.get(methodId) ?? recommendation.primary} onPress={() => undefined} />
-          <Text style={type.body}>{recommendation.explanation}</Text>
+          <MethodCard method={METHOD_BY_ID.get(methodId) ?? recommendation.primary} />
+          <Text style={type.body}>{recommendationCopy}</Text>
           {practiceMinutes !== duration ? <Text style={type.caption}>当前强度下先使用更短、可随时停止的 {practiceMinutes} 分钟版本。</Text> : null}
           <PrimaryButton label={generating ? "正在投影…" : `开始 ${practiceMinutes} 分钟`} disabled={generating} icon={<Ionicons name={generating ? "hourglass-outline" : "play"} size={18} color={colors.white} />} onPress={startPractice} />
           <Text style={type.label}>也可以换一种</Text>
@@ -253,9 +258,11 @@ export default function ResetScreen() {
 
 function PracticePlayer({ methodTitle, practice, stepIndex, seconds, paused, onPause, onStop }: { methodTitle: string; practice: NonNullable<ReturnType<typeof getPracticeVariant>>; stepIndex: number; seconds: number; paused: boolean; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
+  const { height } = useWindowDimensions();
+  const needsScroll = height < 760;
   return (
-    <Screen scroll={false} contentStyle={styles.player}>
-      <TopBar title={methodTitle} onClose={onStop} />
+    <Screen scroll={needsScroll} contentStyle={styles.player}>
+      <TopBar title={methodTitle} meta={`${seconds} 秒`} onClose={onStop} />
       <View style={styles.progressRow}>{practice.steps.map((item, index) => <View key={item.id} style={[styles.progressSegment, index <= stepIndex && styles.progressActive]} />)}</View>
       <View style={styles.playerCenter}>
         <MethodPracticeExperience methodId={practice.methodId} title={step.title} instruction={step.instruction} stepIndex={stepIndex} stepCount={practice.steps.length} seconds={seconds} />
@@ -282,10 +289,13 @@ function SupportView({ onBack }: { onBack: () => void }) {
   return <Screen><TopBar title="先保证现实中的安全" onClose={onBack} /><View style={styles.centerCopy}><Text style={type.display}>这不是一个人扛住的时刻。</Text><Text style={type.body}>如果你有即时危险、医疗紧急情况，或无法保证自己的安全，请立刻联系当地紧急服务、前往急诊，或让可信任的人陪在你身边。</Text></View><Surface style={styles.supportCard}><Text style={type.h2}>StillMind 能做什么</Text><Text style={type.body}>只提供一般性的短暂停顿与定向提示，不提供诊断、治疗或危机处置。</Text></Surface><PrimaryButton label="我会联系现实中的支持" onPress={onBack} /></Screen>;
 }
 
-function TopBar({ title, onClose }: { title: string; onClose: () => void }) { return <View style={styles.topBar}><Text style={styles.topTitle}>{title}</Text><Pressable accessibilityLabel="关闭" hitSlop={12} onPress={onClose}><Ionicons name="close" size={26} color={colors.textMuted} /></Pressable></View>; }
+function TopBar({ title, meta, onClose }: { title: string; meta?: string; onClose: () => void }) {
+  return <View style={styles.topBar}><Text style={styles.topTitle}>{title}</Text><View style={styles.topActions}>{meta ? <Text style={styles.topMeta}>{meta}</Text> : null}<Pressable accessibilityLabel="关闭" hitSlop={12} onPress={onClose}><Ionicons name="close" size={26} color={colors.textMuted} /></Pressable></View></View>;
+}
 
 const styles = StyleSheet.create({
   topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 50 }, topTitle: { color: colors.textMuted, fontSize: 14, fontWeight: "700" },
+  topActions: { flexDirection: "row", alignItems: "center", gap: 12 }, topMeta: { color: colors.lavender, fontSize: 12, fontWeight: "800", fontVariant: ["tabular-nums"] },
   routeBlock: { gap: 12 }, row: { flexDirection: "row", flexWrap: "wrap", gap: 9 }, input: { minHeight: 92, borderWidth: 1, borderColor: colors.border, borderRadius: radii.medium, color: colors.text, backgroundColor: colors.surface, padding: 15, fontSize: 15, textAlignVertical: "top" },
   recommendBlock: { gap: 13 }, supportLink: { color: colors.textFaint, textAlign: "center", fontSize: 12, textDecorationLine: "underline" },
   player: { paddingBottom: 28 }, progressRow: { flexDirection: "row", gap: 6 }, progressSegment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.12)" }, progressActive: { backgroundColor: colors.lavender },
