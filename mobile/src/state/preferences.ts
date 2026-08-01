@@ -1,10 +1,11 @@
 import { METHOD_IDS, type MethodId } from "@stillmind/domain";
 
 export type Preferences = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   onboardingComplete: boolean;
   historyEnabled: boolean;
   aiEnabled: boolean;
+  anonymousAnalyticsEnabled: boolean;
   eyesOpenPreferred: boolean;
   bodyFocusAllowed: boolean;
   breathChangeAllowed: boolean;
@@ -16,10 +17,11 @@ export type Preferences = {
 };
 
 export const DEFAULT_PREFERENCES: Preferences = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   onboardingComplete: false,
   historyEnabled: true,
   aiEnabled: false,
+  anonymousAnalyticsEnabled: false,
   eyesOpenPreferred: false,
   bodyFocusAllowed: true,
   breathChangeAllowed: true,
@@ -43,10 +45,11 @@ export function normalizePreferences(value: unknown): Preferences {
   const item = value as Record<string, unknown>;
   const boolean = (key: keyof Preferences) => typeof item[key] === "boolean" ? item[key] as boolean : DEFAULT_PREFERENCES[key] as boolean;
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     onboardingComplete: boolean("onboardingComplete"),
     historyEnabled: boolean("historyEnabled"),
     aiEnabled: boolean("aiEnabled"),
+    anonymousAnalyticsEnabled: boolean("anonymousAnalyticsEnabled"),
     eyesOpenPreferred: boolean("eyesOpenPreferred"),
     bodyFocusAllowed: boolean("bodyFocusAllowed"),
     breathChangeAllowed: boolean("breathChangeAllowed"),

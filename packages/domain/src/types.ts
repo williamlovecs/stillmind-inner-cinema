@@ -14,9 +14,11 @@ export const METHOD_IDS = [
 ] as const;
 
 export type MethodId = (typeof METHOD_IDS)[number];
+export type ActivationLevel = 1 | 2 | 3 | 4 | 5;
 export type StateMode = "looping" | "tense" | "impulsive" | "numb" | "hurt" | "curious";
 export type DesiredOutcome = "pause" | "settle" | "distance" | "release" | "choose" | "awareness";
 export type DurationMinutes = 1 | 3 | 5 | 10;
+export type RecommendationScope = "reset" | "library";
 export type EvidenceTier = "supported" | "informed" | "experimental";
 export type PracticeFamily = "distance" | "settle" | "observe" | "release" | "return" | "reflect";
 export type SessionResult = "better" | "same" | "worse" | "stopped";
@@ -92,10 +94,11 @@ export type MethodHistory = Partial<Record<MethodId, {
 }>>;
 
 export type RoutingInput = {
-  activation: 1 | 2 | 3 | 4 | 5;
+  activation: ActivationLevel;
   mode: StateMode;
   duration: DurationMinutes;
   outcome: DesiredOutcome;
+  scope?: RecommendationScope;
   eyesOpenPreferred?: boolean;
   bodyFocusAllowed?: boolean;
   breathChangeAllowed?: boolean;
@@ -126,9 +129,10 @@ export type PracticeSession = {
   context?: "work" | "relationship" | "family" | "self" | "waiting" | "other";
   methodId: MethodId;
   durationSeconds: number;
-  activationBefore?: 1 | 2 | 3 | 4 | 5;
-  activationAfter?: 1 | 2 | 3 | 4 | 5;
+  activationBefore?: ActivationLevel;
+  activationAfter?: ActivationLevel;
   result?: SessionResult;
+  reuseIntent?: "yes" | "unsure" | "no";
   groundedActionId?: string;
   rawTrigger?: string;
   privateNote?: string;

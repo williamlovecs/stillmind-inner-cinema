@@ -34,6 +34,7 @@ export function MethodPracticeExperience({
   stepIndex,
   stepCount,
   seconds,
+  trigger = "",
 }: {
   methodId: MethodId;
   title: string;
@@ -41,10 +42,11 @@ export function MethodPracticeExperience({
   stepIndex: number;
   stepCount: number;
   seconds: number;
+  trigger?: string;
 }) {
   const [thoughtStates, setThoughtStates] = useState<Record<string, ThoughtState>>({});
   const [observerName, setObserverName] = useState("Will");
-  const [observerSentence, setObserverSentence] = useState("我现在很想证明自己没错。");
+  const [observerSentence, setObserverSentence] = useState(trigger.trim() || "我现在很想证明自己没错。");
   const [manualLogoutMode, setManualLogoutMode] = useState<"解释" | "参与" | "只读">();
   const [bodyZone, setBodyZone] = useState<(typeof BODY_ZONES)[number]["id"]>("feet");
   const [boundary, setBoundary] = useState<"靠近" | "保持距离" | "暂不接触">("保持距离");
@@ -54,6 +56,8 @@ export function MethodPracticeExperience({
   const [holding, setHolding] = useState(false);
   const [stability, setStability] = useState(32);
   const [manualZoomLevel, setManualZoomLevel] = useState<number>();
+  const [exhaleTaps, setExhaleTaps] = useState(0);
+  const [manualCinemaLens, setManualCinemaLens] = useState<number>();
 
   useEffect(() => {
     if (methodId !== "trigger-journal") return;
@@ -71,11 +75,21 @@ export function MethodPracticeExperience({
   const shiftedSentence = observerSentence.replaceAll("我", observerName.trim() || "这个人");
   const thirdPersonSentence = `一个人正在经历：${observerSentence.replaceAll("我", "").trim()}`;
   const seenThoughts = Object.keys(thoughtStates).length;
-  const cinemaLens = [
+  const cinemaLenses = [
     { label: "角色里", copy: "事情正在发生在我身上" },
     { label: "观众席", copy: "我正在看见这段反应" },
     { label: "见证位", copy: "念头经过，不必跟随" },
-  ][Math.min(stepIndex, 2)];
+  ] as const;
+  const cinemaLensIndex = manualCinemaLens ?? Math.min(stepIndex, 2);
+  const cinemaLens = cinemaLenses[cinemaLensIndex];
+  const triggerExcerpt = trigger.trim().slice(0, 90);
+  const cinemaCopy = triggerExcerpt
+    ? [
+      `“${triggerExcerpt}”`,
+      `一个角色正在经历：${triggerExcerpt}`,
+      "这是一段正在经过的剧情，不是全部的你",
+    ][cinemaLensIndex]
+    : cinemaLens.copy;
 
   function cycleThought(thought: string) {
     setThoughtStates((current) => {
@@ -95,8 +109,11 @@ export function MethodPracticeExperience({
   if (methodId === "paced-breath") {
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <BreathingOrb phase={phase} seconds={seconds} />
-        <Text style={styles.helper}>跟着光圈。呼气时在心里加一个数字，不用控制呼吸。</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={phase === "呼气" ? "呼气时轻点记录一次" : "跟随吸气"} onPress={() => { if (phase === "呼气") setExhaleTaps((value) => value + 1); }} style={({ pressed }) => pressed && styles.pressed}>
+          <BreathingOrb phase={phase} seconds={seconds} />
+        </Pressable>
+        <Metric label="呼气锚点" value={exhaleTaps > 0 ? `${exhaleTaps} 次` : "呼气时可轻点"} />
+        <Text style={styles.helper}>跟着光圈。呼气时在心里数数；轻点只是可选的回到当下，不用控制呼吸。</Text>
       </ExperienceShell>
     );
   }
@@ -142,16 +159,17 @@ export function MethodPracticeExperience({
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
         <View style={styles.cinema}>
           <Text style={styles.sceneLabel}>SCENE {String(stepIndex + 1).padStart(2, "0")}</Text>
-          <Text style={styles.cinemaCopy}>{cinemaLens.copy}</Text>
+          <Text style={styles.cinemaCopy}>{cinemaCopy}</Text>
           <View style={styles.lensTrack}>
-            {["角色里", "观众席", "见证位"].map((label, index) => (
-              <View key={label} style={[styles.lensDot, index <= Math.min(stepIndex, 2) && styles.lensDotActive]}>
-                <Text style={[styles.lensText, index <= Math.min(stepIndex, 2) && styles.lensTextActive]}>{label}</Text>
-              </View>
+            {cinemaLenses.map((item, index) => (
+              <Pressable accessibilityRole="button" accessibilityState={{ selected: index === cinemaLensIndex }} onPress={() => setManualCinemaLens(index)} key={item.label} style={[styles.lensDot, index === cinemaLensIndex && styles.lensDotActive]}>
+                <Text style={[styles.lensText, index === cinemaLensIndex && styles.lensTextActive]}>{item.label}</Text>
+              </Pressable>
             ))}
           </View>
         </View>
         <Metric label="当前位置" value={cinemaLens.label} />
+        <Text style={styles.helper}>轻点三个视角，感受同一件事在不同观看位置里的变化。</Text>
       </ExperienceShell>
     );
   }

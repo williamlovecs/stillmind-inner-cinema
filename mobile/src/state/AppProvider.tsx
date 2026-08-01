@@ -1,12 +1,18 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { PropsWithChildren } from "react";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { MethodId, PracticeSession } from "@stillmind/domain";
 import { deleteAllSessions as clearStoredSessions, deleteSession as removeStoredSession, loadSessions, saveSession } from "@/storage/database";
 import { DEFAULT_PREFERENCES, normalizePreferences, type Preferences } from "@/state/preferences";
-import { track } from "@/lib/analytics";
+import { configureAnalytics, track } from "@/lib/analytics";
+import { clearAnonymousAnalyticsIdentity, sendAnonymousAnalytics } from "@/lib/analytics-sink";
 
 export type { Preferences } from "@/state/preferences";
+
+export type ResetDraft = {
+  trigger: string;
+  inputMethod: "typed" | "dictation" | "example" | "state-only";
+};
 
 const PREFS_KEY = "stillmind.preferences.v1";
 
@@ -14,6 +20,8 @@ type AppContextValue = {
   ready: boolean;
   preferences: Preferences;
   sessions: PracticeSession[];
+  pendingResetDraft?: ResetDraft;
+  setPendingResetDraft: (draft?: ResetDraft) => void;
   updatePreferences: (patch: Partial<Preferences>) => Promise<void>;
   addSession: (session: PracticeSession) => Promise<void>;
   deleteSession: (id: string) => Promise<void>;
@@ -26,14 +34,20 @@ const AppContext = createContext<AppContextValue | undefined>(undefined);
 export function AppProvider({ children }: PropsWithChildren) {
   const [ready, setReady] = useState(false);
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
+  const preferencesRef = useRef(DEFAULT_PREFERENCES);
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
+  const [pendingResetDraft, setPendingResetDraft] = useState<ResetDraft>();
 
   useEffect(() => {
     let active = true;
     Promise.all([AsyncStorage.getItem(PREFS_KEY), loadSessions()]).then(([rawPreferences, storedSessions]) => {
       if (!active) return;
       if (rawPreferences) {
-        try { setPreferences(normalizePreferences(JSON.parse(rawPreferences))); } catch { /* keep safe defaults */ }
+        try {
+          const normalized = normalizePreferences(JSON.parse(rawPreferences));
+          preferencesRef.current = normalized;
+          setPreferences(normalized);
+        } catch { /* keep safe defaults */ }
       }
       setSessions(storedSessions);
       setReady(true);
@@ -41,12 +55,19 @@ export function AppProvider({ children }: PropsWithChildren) {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    if (!ready || !preferences.anonymousAnalyticsEnabled) {
+      configureAnalytics(undefined);
+      return;
+    }
+    configureAnalytics(sendAnonymousAnalytics);
+    return () => configureAnalytics(undefined);
+  }, [preferences.anonymousAnalyticsEnabled, ready]);
+
   const updatePreferences = useCallback(async (patch: Partial<Preferences>) => {
-    let next = DEFAULT_PREFERENCES;
-    setPreferences((current) => {
-      next = { ...current, ...patch };
-      return next;
-    });
+    const next = { ...preferencesRef.current, ...patch };
+    preferencesRef.current = next;
+    setPreferences(next);
     await AsyncStorage.setItem(PREFS_KEY, JSON.stringify(next));
   }, []);
 
@@ -64,9 +85,9 @@ export function AppProvider({ children }: PropsWithChildren) {
 
   const deleteAllData = useCallback(async () => {
     setSessions([]);
+    preferencesRef.current = DEFAULT_PREFERENCES;
     setPreferences(DEFAULT_PREFERENCES);
-    await Promise.all([clearStoredSessions(), AsyncStorage.removeItem(PREFS_KEY)]);
-    track("data_deleted", { scope: "all" });
+    await Promise.all([clearStoredSessions(), AsyncStorage.removeItem(PREFS_KEY), clearAnonymousAnalyticsIdentity()]);
   }, []);
 
   const toggleFavorite = useCallback(async (id: MethodId) => {
@@ -77,7 +98,7 @@ export function AppProvider({ children }: PropsWithChildren) {
     track("method_preference_changed", { method_id: id, preference: "favorite", enabled: favorites.includes(id) });
   }, [preferences.favoriteMethodIds, updatePreferences]);
 
-  const value = useMemo(() => ({ ready, preferences, sessions, updatePreferences, addSession, deleteSession, deleteAllData, toggleFavorite }), [ready, preferences, sessions, updatePreferences, addSession, deleteSession, deleteAllData, toggleFavorite]);
+  const value = useMemo(() => ({ ready, preferences, sessions, pendingResetDraft, setPendingResetDraft, updatePreferences, addSession, deleteSession, deleteAllData, toggleFavorite }), [ready, preferences, sessions, pendingResetDraft, updatePreferences, addSession, deleteSession, deleteAllData, toggleFavorite]);
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 

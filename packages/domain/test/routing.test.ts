@@ -4,12 +4,15 @@ import {
   buildWeeklyReview,
   buildPracticePathProgress,
   containsHighRiskLanguage,
+  CORE_RESET_METHOD_IDS,
+  detectStateModeFromText,
   evaluateSafety,
   METHOD_BY_ID,
   METHOD_CATALOG,
   PRACTICE_PATHS,
   validPracticeSessions,
   recommendMethods,
+  legacyTenPointToActivation,
   type DurationMinutes,
   type PracticeSession,
   type StateMode,
@@ -27,6 +30,35 @@ test("high activation and impulsive mode prefer an acute eyes-open method", () =
   });
   assert.equal(result.kind, "practice");
   if (result.kind === "practice") assert.equal(result.primary.id, "logout-pause");
+});
+
+test("the first-use reset route only recommends the focused core set", () => {
+  const cases = [
+    { mode: "impulsive", outcome: "pause" },
+    { mode: "looping", outcome: "distance" },
+    { mode: "tense", outcome: "settle" },
+    { mode: "hurt", outcome: "release" },
+  ] as const;
+  for (const item of cases) {
+    const result = recommendMethods({ activation: 4, duration: 1, scope: "reset", ...item });
+    assert.equal(result.kind, "practice");
+    if (result.kind !== "practice") continue;
+    for (const method of [result.primary, ...result.alternatives]) {
+      assert.equal(CORE_RESET_METHOD_IDS.includes(method.id as (typeof CORE_RESET_METHOD_IDS)[number]), true, `${item.mode}/${method.id}`);
+    }
+    assert.equal(result.reasonCodes.includes("scope:reset"), true);
+  }
+});
+
+test("intake text maps the four golden moments without exposing raw text", () => {
+  assert.equal(detectStateModeFromText("我想立刻反击，证明自己没错"), "impulsive");
+  assert.equal(detectStateModeFromText("刚才那句话一直在脑子里重播"), "looping");
+  assert.equal(detectStateModeFromText("肩膀很紧，心跳也很快"), "tense");
+  assert.equal(detectStateModeFromText("被忽视之后真的很委屈"), "hurt");
+});
+
+test("legacy ten-point scores migrate deterministically to the shared five-point scale", () => {
+  assert.deepEqual([0, 2, 4, 6, 9].map((value) => legacyTenPointToActivation(value)), [1, 2, 3, 4, 5]);
 });
 
 test("safety gate always wins over favorites", () => {

@@ -96,7 +96,7 @@ check("seed tester handoff page exists", () => Boolean(seedTestPage));
 check("seed tester handoff protects private stories", () => hasAll(seedTestPage, ["不要提交私人故事", "不要写：具体人名", "医疗史", "危机细节"]));
 check("seed tester handoff defines core tasks and questions", () => hasAll(seedTestPage, ["测试任务", "完成后回答这 5 个问题", "Reflection", "Profile"]));
 check("support page links seed tester handoff", () => supportPage.includes("/support/seed-test"));
-check("mobile Profile links seed tester handoff", () => mobileProfile.includes("https://stillmind-inner-cinema.vercel.app/support/seed-test"));
+check("mobile Profile links seed tester handoff", () => mobileProfile.includes("EXPO_PUBLIC_STILLMIND_WEB_BASE_URL") && mobileProfile.includes("`${WEB_BASE_URL}/support/seed-test`"));
 
 check("payment protocol defines qualified sample", () => hasAll(paymentProtocol, ["Minimum before paid launch: 5 qualified interviews", "Qualified means"]));
 check("payment protocol protects private and medical data", () => hasAll(paymentProtocol, ["Do not collect medical history", "Raw trigger text", "Payment card details"]));

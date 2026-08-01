@@ -29,6 +29,15 @@ const modeLabels: Record<StateMode, string> = {
   curious: "安静探索",
 };
 
+const stepKindLabels = {
+  arrive: "进入",
+  notice: "留意",
+  breathe: "呼吸",
+  observe: "观察",
+  choose: "选择",
+  close: "收束",
+} as const;
+
 export function generateStaticParams() {
   return METHOD_CATALOG.map((method) => ({ id: method.id }));
 }
@@ -85,8 +94,8 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
 
         <section className="grid gap-8 py-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <aside className="rounded-[2rem] border border-violet-200/15 bg-[#091225]/72 p-5 shadow-2xl shadow-violet-950/20 backdrop-blur-xl">
-            <p className="text-sm uppercase tracking-[0.28em] text-violet-200/70">Method detail</p>
-            <h1 className="mt-4 text-5xl font-semibold leading-tight text-stone-50">{method.title}</h1>
+            <p className="text-sm tracking-[0.22em] text-violet-200/70">方法说明</p>
+            <h1 className="mt-4 text-4xl font-semibold leading-tight text-stone-50 sm:text-5xl">{method.title}</h1>
             <p className="mt-4 text-2xl leading-tight text-stone-100">{method.subtitle}</p>
             <p className="mt-5 text-base leading-7 text-stone-300">{method.summary}</p>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -136,7 +145,7 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
           <section className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 shadow-2xl shadow-black/20 backdrop-blur">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Practice script</p>
+                <p className="text-xs tracking-[0.2em] text-stone-500">练习脚本</p>
                 <h2 className="mt-2 text-2xl font-semibold text-stone-50">{primary.title}</h2>
                 <p className="mt-2 text-sm text-stone-400">{primary.subtitle}</p>
               </div>
@@ -152,9 +161,9 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
                 <article key={step.id} className="rounded-[1.4rem] border border-white/10 bg-[#091225]/68 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs uppercase tracking-[0.2em] text-violet-200/70">
-                      {String(index + 1).padStart(2, "0")} · {step.kind}
+                      {String(index + 1).padStart(2, "0")} · {stepKindLabels[step.kind]}
                     </p>
-                    <p className="text-xs text-stone-500">{step.seconds}s</p>
+                    <p className="text-xs text-stone-500">{step.seconds} 秒</p>
                   </div>
                   <h3 className="mt-3 text-lg font-semibold text-stone-50">{step.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-stone-300">{step.instruction}</p>
@@ -170,7 +179,7 @@ export default async function MethodDetailPage({ params }: { params: MethodPageP
 
         <section className="mt-8 grid gap-4 lg:grid-cols-[1fr_1fr]">
           <div className="rounded-[1.6rem] border border-white/10 bg-[#091225]/70 p-5">
-            <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Durations</p>
+            <p className="text-xs tracking-[0.2em] text-stone-500">可选时长</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {method.durations.map((minutes) => (
                 <DurationChip key={minutes} method={method} minutes={minutes} />

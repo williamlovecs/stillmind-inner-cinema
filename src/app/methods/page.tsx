@@ -59,21 +59,21 @@ export default function MethodsPage() {
           <WorkflowNav active="methods" />
         </div>
 
-        <section className="grid gap-8 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+        <section className="grid gap-7 py-9 sm:py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
-            <p className="text-sm uppercase tracking-[0.28em] text-violet-200/70">StillMind method system</p>
-            <h1 className="mt-4 max-w-3xl text-5xl font-semibold leading-tight text-stone-50 sm:text-6xl">
-              做完一次 Reset，再选择适合你的方法。
+            <p className="text-sm tracking-[0.22em] text-violet-200/70">12 种练习方法</p>
+            <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight text-stone-50 sm:text-5xl lg:text-6xl">
+              做完一次，再选择适合你的方法。
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-300">
-              方法库不是第一步。先用入口页说出发生了什么，完成一次 1 分钟 Reset；如果某个方法对你有效，再回来深入练。
+            <p className="mt-4 max-w-2xl text-base leading-7 text-stone-300 sm:mt-5 sm:text-lg sm:leading-8">
+              第一次不用选。先完成 1 分钟练习；觉得有用，再回来深入。
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/reset"
                 className="rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-fuchsia-300 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-950/30"
               >
-                先做 1 分钟 Reset
+                先做 1 分钟练习
               </Link>
               <a
                 href="#paths"
@@ -91,7 +91,7 @@ export default function MethodsPage() {
             <div className="mt-5 grid grid-cols-3 gap-2">
               <Stat label="方法" value="12" />
               <Stat label="路径" value="4" />
-              <Stat label="时长" value="1-10m" />
+              <Stat label="时长" value="1-10 分" />
             </div>
           </div>
         </section>
@@ -122,7 +122,7 @@ export default function MethodsPage() {
             <div key={family}>
               <div className="mb-4 flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Practice family</p>
+                  <p className="text-xs tracking-[0.2em] text-stone-500">练习方向</p>
                   <h2 className="mt-2 text-2xl font-semibold text-stone-50">{familyLabels[family]}</h2>
                 </div>
                 <p className="text-sm text-stone-500">{methods.length} 种方法</p>

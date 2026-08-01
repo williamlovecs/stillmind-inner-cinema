@@ -7,6 +7,8 @@ import { BrandHeader, Chip, Screen, SectionHeading, Surface, type } from "@/comp
 import { useApp, type Preferences } from "@/state/AppProvider";
 import { reminderHourBucket, track } from "@/lib/analytics";
 
+const WEB_BASE_URL = (process.env.EXPO_PUBLIC_STILLMIND_WEB_BASE_URL || "https://stillmind-inner-cinema.vercel.app").replace(/\/$/, "");
+
 export default function ProfileScreen() {
   const { preferences, sessions, updatePreferences, deleteAllData } = useApp();
   const toggle = (key: keyof Preferences) => updatePreferences({ [key]: !preferences[key] } as Partial<Preferences>);
@@ -67,6 +69,7 @@ export default function ProfileScreen() {
       <View style={styles.section}><SectionHeading title="数据" caption="默认本地优先" />
         <SettingRow title="保存本机历史" subtitle="关闭后新练习不会进入回看" value={preferences.historyEnabled} onValueChange={() => toggle("historyEnabled")} />
         <SettingRow title="可选 AI 生成" subtitle="开启后仅在你主动生成时发送输入" value={preferences.aiEnabled} onValueChange={() => toggle("aiEnabled")} />
+        <SettingRow title="匿名帮助改进" subtitle="默认关闭；只发送方法、前后变化和复用意愿，不发送你说的话或笔记" value={preferences.anonymousAnalyticsEnabled} onValueChange={() => toggle("anonymousAnalyticsEnabled")} />
         <ActionRow icon="share-outline" title="导出本机数据" onPress={exportData} />
         <ActionRow icon="trash-outline" title="清除所有本机数据" danger onPress={confirmDelete} />
       </View>
@@ -75,10 +78,10 @@ export default function ProfileScreen() {
         {preferences.reminderEnabled ? <View style={styles.reminderTimes}>{[8, 12, 18, 21].map((hour) => <Chip key={hour} label={`${String(hour).padStart(2, "0")}:00`} selected={preferences.reminderHour === hour} onPress={() => changeReminderHour(hour)} />)}</View> : null}
       </View>
       <View style={styles.section}><SectionHeading title="关于" />
-        <ActionRow icon="clipboard-outline" title="种子测试说明" onPress={() => Linking.openURL("https://stillmind-inner-cinema.vercel.app/support/seed-test")} />
-        <ActionRow icon="help-circle-outline" title="支持与反馈" onPress={() => Linking.openURL("https://stillmind-inner-cinema.vercel.app/support")} />
-        <ActionRow icon="shield-checkmark-outline" title="隐私政策" onPress={() => Linking.openURL("https://stillmind-inner-cinema.vercel.app/privacy")} />
-        <ActionRow icon="document-text-outline" title="服务条款" onPress={() => Linking.openURL("https://stillmind-inner-cinema.vercel.app/terms")} />
+        <ActionRow icon="clipboard-outline" title="种子测试说明" onPress={() => Linking.openURL(`${WEB_BASE_URL}/support/seed-test`)} />
+        <ActionRow icon="help-circle-outline" title="支持与反馈" onPress={() => Linking.openURL(`${WEB_BASE_URL}/support`)} />
+        <ActionRow icon="shield-checkmark-outline" title="隐私政策" onPress={() => Linking.openURL(`${WEB_BASE_URL}/privacy`)} />
+        <ActionRow icon="document-text-outline" title="服务条款" onPress={() => Linking.openURL(`${WEB_BASE_URL}/terms`)} />
         <Surface style={styles.boundary}><Text style={type.bodyStrong}>产品边界</Text><Text style={type.body}>StillMind 是一般觉察与状态切换工具，不提供诊断、治疗或紧急支持。如有即时危险，请联系当地紧急服务或可信任的人。</Text></Surface>
       </View>
     </Screen>

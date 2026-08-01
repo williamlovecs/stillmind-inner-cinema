@@ -5,6 +5,7 @@ const MODES = new Set<StateMode>(["looping", "tense", "impulsive", "numb", "hurt
 const RESULTS = new Set<SessionResult>(["better", "same", "worse", "stopped"]);
 const STATUSES = new Set<PracticeSession["status"]>(["completed", "stopped", "abandoned"]);
 const METHODS = new Set<string>(METHOD_IDS);
+const REUSE_INTENTS = new Set<NonNullable<PracticeSession["reuseIntent"]>>(["yes", "unsure", "no"]);
 
 function optionalRating(value: unknown): boolean {
   return value === undefined || (Number.isInteger(value) && Number(value) >= 1 && Number(value) <= 5);
@@ -30,6 +31,7 @@ export function isPracticeSession(value: unknown): value is PracticeSession {
     && optionalRating(item.activationBefore)
     && optionalRating(item.activationAfter)
     && (item.result === undefined || RESULTS.has(item.result))
+    && (item.reuseIntent === undefined || REUSE_INTENTS.has(item.reuseIntent))
     && typeof item.contentVersion === "string"
     && (item.rawTrigger === undefined || (typeof item.rawTrigger === "string" && item.rawTrigger.length <= 5000))
     && (item.privateNote === undefined || (typeof item.privateNote === "string" && item.privateNote.length <= 20000));

@@ -1,4 +1,5 @@
 import { METHOD_CATALOG } from "./catalog";
+import { isCoreResetMethod } from "./launch";
 import { evaluateSafety } from "./safety";
 import type { MethodDefinition, MethodId, Recommendation, RoutingInput } from "./types";
 
@@ -6,7 +7,7 @@ const MODE_LEADS: Record<RoutingInput["mode"], readonly MethodId[]> = {
   looping: ["inner-cinema", "thought-watching", "person-shift", "grounded-action"],
   tense: ["paced-breath", "wide-gaze", "body-scan", "logout-pause"],
   impulsive: ["logout-pause", "wide-gaze", "paced-breath", "grounded-action"],
-  numb: ["wide-gaze", "body-scan", "grounded-action"],
+  numb: ["grounded-action", "wide-gaze", "body-scan"],
   hurt: ["inner-cinema", "person-shift", "thought-watching", "release"],
   curious: ["open-awareness", "thought-watching", "body-scan", "anchors"],
 };
@@ -19,6 +20,7 @@ const SUPPORT_COPY: Record<Exclude<ReturnType<typeof evaluateSafety>["reason"], 
 };
 
 function methodAllowed(method: MethodDefinition, input: RoutingInput): boolean {
+  if (input.scope === "reset" && !isCoreResetMethod(method.id)) return false;
   if (input.hiddenMethodIds?.includes(method.id)) return false;
   if (!method.durations.includes(input.duration)) return false;
   if (input.bodyFocusAllowed === false && method.bodyFocus) return false;
@@ -46,6 +48,7 @@ function scoreMethod(method: MethodDefinition, input: RoutingInput): number {
 
 function explain(primary: MethodDefinition, input: RoutingInput): { explanation: string; reasonCodes: string[] } {
   const reasons: string[] = [`mode:${input.mode}`, `duration:${input.duration}`];
+  if (input.scope === "reset") reasons.push("scope:reset");
   if (input.activation >= 4) reasons.push("high-activation");
   if (input.eyesOpenPreferred) reasons.push("eyes-open");
   if (input.history?.[primary.id]?.favorite) reasons.push("favorite");

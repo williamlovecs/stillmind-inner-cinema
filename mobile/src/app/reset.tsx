@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { getPracticeVariant } from "@stillmind/content";
-import { containsHighRiskLanguage, METHOD_BY_ID, recommendMethods, type DesiredOutcome, type DurationMinutes, type MethodId, type SessionResult, type StateMode } from "@stillmind/domain";
+import { containsHighRiskLanguage, METHOD_BY_ID, recommendMethods, type ActivationLevel, type DesiredOutcome, type DurationMinutes, type MethodId, type SessionResult, type StateMode } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
 import { BreathingOrb } from "@/components/stillmind/BreathingOrb";
 import { MethodPracticeExperience } from "@/components/stillmind/MethodPracticeExperience";
@@ -16,26 +16,28 @@ import { cinemaToPractice, requestCinema } from "@/lib/cinema";
 import { track } from "@/lib/analytics";
 import { resolveTimelinePosition } from "@/lib/timeline";
 
-type Phase = "recommend" | "practice" | "check" | "action" | "done" | "support";
+type Phase = "preparing" | "recommend" | "practice" | "check" | "action" | "done" | "support";
+type ReuseIntent = "yes" | "unsure" | "no";
 const ACTIONS = ["喝水，走路 3 分钟", "回到当前任务 25 分钟", "先不回复，今天稍后再决定", "写下可观察事实", "联系可信任的人"];
 
 function parseDuration(value?: string): DurationMinutes { const n = Number(value); return n === 3 || n === 5 || n === 10 ? n : 1; }
-function parseActivation(value?: string): 1 | 2 | 3 | 4 | 5 { const n = Number(value); return n >= 1 && n <= 5 ? n as 1 | 2 | 3 | 4 | 5 : 3; }
+function parseActivation(value?: string): ActivationLevel { const n = Number(value); return n >= 1 && n <= 5 ? n as ActivationLevel : 3; }
 
 export default function ResetScreen() {
   const params = useLocalSearchParams<{ mode?: StateMode; methodId?: MethodId; duration?: string; activation?: string; outcome?: DesiredOutcome; direct?: string }>();
-  const { ready, preferences, sessions, addSession, updatePreferences } = useApp();
-  const [phase, setPhase] = useState<Phase>("recommend");
+  const { ready, preferences, sessions, pendingResetDraft, setPendingResetDraft, addSession, updatePreferences } = useApp();
+  const [phase, setPhase] = useState<Phase>(params.direct === "1" ? "preparing" : "recommend");
   const [mode] = useState<StateMode>(params.mode ?? "looping");
   const [activationBefore, setActivationBefore] = useState(parseActivation(params.activation));
   const [duration, setDuration] = useState<DurationMinutes>(parseDuration(params.duration));
-  const [trigger, setTrigger] = useState("");
+  const [trigger, setTrigger] = useState(pendingResetDraft?.trigger ?? "");
   const history = useMemo(() => buildMethodHistory(sessions, preferences.favoriteMethodIds), [sessions, preferences.favoriteMethodIds]);
   const recommendation = useMemo(() => recommendMethods({
     activation: activationBefore,
     mode,
     duration,
     outcome: params.outcome ?? "pause",
+    scope: "reset",
     eyesOpenPreferred: preferences.eyesOpenPreferred,
     bodyFocusAllowed: preferences.bodyFocusAllowed,
     breathChangeAllowed: preferences.breathChangeAllowed,
@@ -58,7 +60,8 @@ export default function ResetScreen() {
   const [seconds, setSeconds] = useState(practice?.steps[0]?.seconds ?? 0);
   const [paused, setPaused] = useState(false);
   const [result, setResult] = useState<SessionResult>();
-  const [activationAfter, setActivationAfter] = useState<1 | 2 | 3 | 4 | 5>(activationBefore);
+  const [activationAfter, setActivationAfter] = useState<ActivationLevel>(activationBefore);
+  const [reuseIntent, setReuseIntent] = useState<ReuseIntent>();
   const [action, setAction] = useState(ACTIONS[0]);
   const startedAt = useRef(new Date().toISOString());
   const practiceStartedAtMs = useRef(0);
@@ -103,20 +106,33 @@ export default function ResetScreen() {
   }, [paused, phase]);
 
   useEffect(() => {
-    if (!ready || !preferences.onboardingComplete || params.direct !== "1" || !practice || directSessionTracked.current) return;
-    directSessionTracked.current = true;
-    startedAt.current = new Date().toISOString();
-    practiceStartedAtMs.current = Date.now();
-    pauseStartedAtMs.current = undefined;
-    pausedTotalMs.current = 0;
-    completionRecorded.current = false;
-    setStepIndex(0);
-    setSeconds(practice.steps[0]?.seconds ?? 0);
-    setPaused(false);
-    setPhase("practice");
-    track("reset_started", { mode, activation_bucket: activationBefore, duration_bucket: practice.minutes, method_id: methodId });
-    track("practice_started", { method_id: methodId, duration_bucket: practice.minutes, source: "offline" });
-  }, [activationBefore, methodId, mode, params.direct, practice, preferences.onboardingComplete, ready]);
+    if (!ready || params.direct !== "1" || !practice || directSessionTracked.current) return;
+    const transitionTimer = setTimeout(() => {
+      if (!preferences.onboardingComplete) {
+        setPhase("recommend");
+        return;
+      }
+      if (trigger.trim() && containsHighRiskLanguage(trigger)) {
+        directSessionTracked.current = true;
+        track("safety_boundary_shown", { reason_code: "high-risk-language" });
+        setPhase("support");
+        return;
+      }
+      directSessionTracked.current = true;
+      startedAt.current = new Date().toISOString();
+      practiceStartedAtMs.current = Date.now();
+      pauseStartedAtMs.current = undefined;
+      pausedTotalMs.current = 0;
+      completionRecorded.current = false;
+      setStepIndex(0);
+      setSeconds(practice.steps[0]?.seconds ?? 0);
+      setPaused(false);
+      setPhase("practice");
+      track("reset_started", { mode, activation_bucket: activationBefore, duration_bucket: practice.minutes, method_id: methodId });
+      track("practice_started", { method_id: methodId, duration_bucket: practice.minutes, source: "offline" });
+    }, 0);
+    return () => clearTimeout(transitionTimer);
+  }, [activationBefore, methodId, mode, params.direct, practice, preferences.onboardingComplete, ready, trigger]);
 
   const beginPractice = (selectedPractice: NonNullable<typeof practice>, source: "offline" | "preset" | "stepfun") => {
     startedAt.current = new Date().toISOString();
@@ -169,6 +185,7 @@ export default function ResetScreen() {
       mode,
       duration: nextDuration,
       outcome: params.outcome ?? "pause",
+      scope: "reset",
       eyesOpenPreferred: preferences.eyesOpenPreferred,
       bodyFocusAllowed: preferences.bodyFocusAllowed,
       breathChangeAllowed: preferences.breathChangeAllowed,
@@ -203,8 +220,8 @@ export default function ResetScreen() {
       activationBefore,
       activationAfter,
       result: result ?? "same",
+      reuseIntent: reuseIntent ?? "unsure",
       groundedActionId: action,
-      rawTrigger: trigger.trim() || undefined,
       contentVersion: practice?.contentVersion ?? "1.0.0",
     });
     track("after_check_saved", {
@@ -212,7 +229,9 @@ export default function ResetScreen() {
       result: result ?? "same",
       activation_change_bucket: activationAfter < activationBefore ? "down" : activationAfter === activationBefore ? "same" : "up",
       grounded_action_id: action,
+      reuse_intent: reuseIntent ?? "unsure",
     });
+    setPendingResetDraft(undefined);
     setPhase("done");
   };
 
@@ -222,11 +241,12 @@ export default function ResetScreen() {
     track("method_preference_changed", { method_id: methodId, preference: "hidden", enabled: true });
   };
 
-  if (phase === "support") return <SupportView onBack={() => setPhase("recommend")} />;
-  if (phase === "practice" && practice) return <PracticePlayer methodTitle={method.title} practice={practice} stepIndex={stepIndex} seconds={seconds} paused={paused} onPause={togglePause} onStop={() => { track("practice_ended", { method_id: methodId, status: "stopped", elapsed_bucket: stepIndex === 0 ? "under_half" : "half_or_more" }); setResult("stopped"); setPhase("check"); }} />;
-  if (phase === "check") return <CheckView methodTitle={method.title} result={result} activation={activationAfter} onResult={setResult} onActivation={setActivationAfter} onNext={() => setPhase("action")} />;
+  if (phase === "preparing") return <PreparingView />;
+  if (phase === "support") return <SupportView onBack={() => { setPendingResetDraft(undefined); setPhase("recommend"); }} />;
+  if (phase === "practice" && practice) return <PracticePlayer methodTitle={method.title} practice={practice} stepIndex={stepIndex} seconds={seconds} paused={paused} trigger={trigger} onPause={togglePause} onStop={() => { track("practice_ended", { method_id: methodId, status: "stopped", elapsed_bucket: stepIndex === 0 ? "under_half" : "half_or_more" }); setResult("stopped"); setPhase("check"); }} />;
+  if (phase === "check") return <CheckView methodTitle={method.title} result={result} activationBefore={activationBefore} activation={activationAfter} reuseIntent={reuseIntent} onResult={setResult} onActivation={setActivationAfter} onReuseIntent={setReuseIntent} onNext={() => setPhase("action")} />;
   if (phase === "action") return <ActionView action={action} onAction={setAction} onComplete={complete} methodAdjustment={result === "worse" || result === "stopped" ? { methodTitle: method.title, hidden: methodHidden, onHideMethod: hideCurrentMethod } : undefined} />;
-  if (phase === "done") return <DoneView action={action} onReturn={() => router.replace("/(tabs)")} />;
+  if (phase === "done") return <DoneView action={action} activationBefore={activationBefore} activationAfter={activationAfter} onReturn={() => router.replace("/(tabs)")} />;
 
   return (
     <Screen>
@@ -256,7 +276,7 @@ export default function ResetScreen() {
   );
 }
 
-function PracticePlayer({ methodTitle, practice, stepIndex, seconds, paused, onPause, onStop }: { methodTitle: string; practice: NonNullable<ReturnType<typeof getPracticeVariant>>; stepIndex: number; seconds: number; paused: boolean; onPause: () => void; onStop: () => void }) {
+function PracticePlayer({ methodTitle, practice, stepIndex, seconds, paused, trigger, onPause, onStop }: { methodTitle: string; practice: NonNullable<ReturnType<typeof getPracticeVariant>>; stepIndex: number; seconds: number; paused: boolean; trigger: string; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
   const { height } = useWindowDimensions();
   const needsScroll = height < 760;
@@ -265,7 +285,7 @@ function PracticePlayer({ methodTitle, practice, stepIndex, seconds, paused, onP
       <TopBar title={methodTitle} meta={`${seconds} 秒`} onClose={onStop} />
       <View style={styles.progressRow}>{practice.steps.map((item, index) => <View key={item.id} style={[styles.progressSegment, index <= stepIndex && styles.progressActive]} />)}</View>
       <View style={styles.playerCenter}>
-        <MethodPracticeExperience methodId={practice.methodId} title={step.title} instruction={step.instruction} stepIndex={stepIndex} stepCount={practice.steps.length} seconds={seconds} />
+        <MethodPracticeExperience methodId={practice.methodId} title={step.title} instruction={step.instruction} stepIndex={stepIndex} stepCount={practice.steps.length} seconds={seconds} trigger={trigger} />
         {step.alternative ? <Text style={styles.alternative}>{step.alternative}</Text> : null}
       </View>
       <View style={styles.controls}><SecondaryButton label={paused ? "继续" : "暂停"} icon={<Ionicons name={paused ? "play" : "pause"} size={18} color={colors.text} />} onPress={onPause} style={styles.control} /><SecondaryButton label="停止" onPress={onStop} style={styles.control} /></View>
@@ -273,16 +293,21 @@ function PracticePlayer({ methodTitle, practice, stepIndex, seconds, paused, onP
   );
 }
 
-function CheckView({ methodTitle, result, activation, onResult, onActivation, onNext }: { methodTitle: string; result?: SessionResult; activation: 1 | 2 | 3 | 4 | 5; onResult: (value: SessionResult) => void; onActivation: (value: 1 | 2 | 3 | 4 | 5) => void; onNext: () => void }) {
-  return <Screen><TopBar title={methodTitle} onClose={() => router.back()} /><View style={styles.centerCopy}><Text style={type.display}>现在，和刚才相比呢？</Text><Text style={type.body}>没有正确答案。“更不舒服”也会帮助 StillMind 少推荐这种方法。</Text></View><View style={styles.stack}>{([['better','多了一点选择'],['same','差不多'],['worse','更不舒服'],['stopped','我停止了']] as [SessionResult,string][]).map(([value,label]) => <Chip key={value} label={label} selected={result === value} onPress={() => onResult(value)} />)}</View><Text style={type.label}>此刻强烈程度</Text><View style={styles.row}>{([1,2,3,4,5] as const).map((value) => <Chip key={value} label={String(value)} selected={activation === value} onPress={() => onActivation(value)} />)}</View><PrimaryButton label="回到现实行动" disabled={!result} onPress={onNext} /></Screen>;
+function CheckView({ methodTitle, result, activationBefore, activation, reuseIntent, onResult, onActivation, onReuseIntent, onNext }: { methodTitle: string; result?: SessionResult; activationBefore: ActivationLevel; activation: ActivationLevel; reuseIntent?: ReuseIntent; onResult: (value: SessionResult) => void; onActivation: (value: ActivationLevel) => void; onReuseIntent: (value: ReuseIntent) => void; onNext: () => void }) {
+  const delta = activationBefore - activation;
+  return <Screen><TopBar title={methodTitle} onClose={() => router.back()} /><View style={styles.centerCopy}><Text style={type.display}>现在，和刚才相比呢？</Text><Text style={type.body}>练习前是 {activationBefore}/5。现在只再选一次。</Text></View><Text style={type.label}>此刻被带走程度</Text><View style={styles.row}>{([1,2,3,4,5] as const).map((value) => <Chip key={value} label={String(value)} selected={activation === value} onPress={() => onActivation(value)} />)}</View><Surface style={styles.deltaCard}><Text style={type.bodyStrong}>{delta > 0 ? `下降了 ${delta} 级` : delta < 0 ? `上升了 ${Math.abs(delta)} 级` : "暂时没有变化"}</Text><Text style={type.caption}>这只是一次小样本，不是考试。</Text></Surface><Text style={type.label}>这次感觉</Text><View style={styles.stack}>{([['better','多了一点选择'],['same','差不多'],['worse','更不舒服'],['stopped','我停止了']] as [SessionResult,string][]).map(([value,label]) => <Chip key={value} label={label} selected={result === value} onPress={() => onResult(value)} />)}</View><Text style={type.label}>下次类似场景还会用吗？</Text><View style={styles.row}>{([['yes','会'],['unsure','不确定'],['no','不会']] as [ReuseIntent,string][]).map(([value,label]) => <Chip key={value} label={label} selected={reuseIntent === value} onPress={() => onReuseIntent(value)} />)}</View><PrimaryButton label="回到现实行动" disabled={!result || !reuseIntent} onPress={onNext} /></Screen>;
 }
 
 function ActionView({ action, onAction, onComplete, methodAdjustment }: { action: string; onAction: (value: string) => void; onComplete: () => void; methodAdjustment?: { methodTitle: string; hidden: boolean; onHideMethod: () => void } }) {
   return <Screen><TopBar title="回到行动" onClose={() => router.back()} /><View style={styles.centerCopy}><Text style={type.display}>只选下一件小事。</Text><Text style={type.body}>不是解决整件事，只是不让剧情继续替你决定。</Text></View><View style={styles.stack}>{ACTIONS.map((item) => <Chip key={item} label={item} selected={action === item} onPress={() => onAction(item)} />)}</View>{methodAdjustment ? <Surface style={styles.adjustmentCard}><Text style={type.label}>方法调整</Text><Text style={type.body}>如果“{methodAdjustment.methodTitle}”这次不适合你，可以减少它出现在推荐里的次数。你仍然可以在方法库里手动打开。</Text><SecondaryButton label={methodAdjustment.hidden ? "已减少推荐" : `减少推荐“${methodAdjustment.methodTitle}”`} disabled={methodAdjustment.hidden} onPress={methodAdjustment.onHideMethod} /></Surface> : null}<PrimaryButton label="保存并完成" onPress={onComplete} /></Screen>;
 }
 
-function DoneView({ action, onReturn }: { action: string; onReturn: () => void }) {
-  return <Screen><View style={styles.done}><BreathingOrb compact /><Text style={[type.display, styles.centerText]}>电影没有被抹掉。你回到了观众席。</Text><Surface warm style={styles.actionCard}><Text style={type.label}>下一步</Text><Text style={type.h2}>{action}</Text></Surface><Text style={[type.body, styles.centerText]}>StillMind 不告诉你“你是谁”。它帮助你看见：此刻有什么正在经过。</Text><PrimaryButton label="回到此刻" onPress={onReturn} /></View></Screen>;
+function DoneView({ action, activationBefore, activationAfter, onReturn }: { action: string; activationBefore: ActivationLevel; activationAfter: ActivationLevel; onReturn: () => void }) {
+  return <Screen><View style={styles.done}><BreathingOrb compact /><Text style={[type.display, styles.centerText]}>你没有抹掉情绪，只是多了一个选择。</Text><Surface style={styles.deltaCard}><Text style={type.label}>本次变化</Text><Text style={type.h2}>{activationBefore}/5 → {activationAfter}/5</Text><Text style={type.caption}>多次记录后，StillMind 才会逐渐知道哪种方法更适合你。</Text></Surface><Surface warm style={styles.actionCard}><Text style={type.label}>下一步</Text><Text style={type.h2}>{action}</Text></Surface><PrimaryButton label="回到此刻" onPress={onReturn} /></View></Screen>;
+}
+
+function PreparingView() {
+  return <Screen scroll={false} contentStyle={styles.preparing}><BreathingOrb compact /><Text style={type.h2}>正在准备这一分钟…</Text><Text style={[type.body, styles.centerText]}>不用再选择。跟着下一屏做就好。</Text></Screen>;
 }
 
 function SupportView({ onBack }: { onBack: () => void }) {
@@ -301,4 +326,5 @@ const styles = StyleSheet.create({
   player: { paddingBottom: 28 }, progressRow: { flexDirection: "row", gap: 6 }, progressSegment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.12)" }, progressActive: { backgroundColor: colors.lavender },
   playerCenter: { flex: 1, justifyContent: "center", gap: spacing.md }, alternative: { color: colors.textMuted, fontSize: 13, lineHeight: 20, textAlign: "center" },
   controls: { flexDirection: "row", gap: 10 }, control: { flex: 1 }, centerCopy: { gap: 12, marginTop: spacing.xl }, stack: { gap: 10 }, adjustmentCard: { gap: 12 }, done: { flex: 1, justifyContent: "center", gap: 24 }, centerText: { textAlign: "center" }, actionCard: { gap: 10 }, supportCard: { gap: 10 },
+  deltaCard: { gap: 7 }, preparing: { flex: 1, alignItems: "center", justifyContent: "center", gap: 18, paddingBottom: 20 },
 });

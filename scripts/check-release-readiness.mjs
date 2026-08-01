@@ -72,7 +72,7 @@ check("practice paths domain model exists", () => fileExists("packages/domain/sr
 check("practice paths are exported from domain", () => fileContains("packages/domain/src/index.ts", "PRACTICE_PATHS") && fileContains("packages/domain/src/index.ts", "buildPracticePathProgress"));
 check("practice path progress tests exist", () => fileContains("packages/domain/test/routing.test.ts", "practice path progress"));
 check("mobile method library renders practice paths", () => fileContains("mobile/src/app/(tabs)/practices.tsx", "PRACTICE_PATHS") && fileContains("mobile/src/app/(tabs)/practices.tsx", "buildPracticePathProgress"));
-check("practice path analytics event is allowlisted", () => fileContains("mobile/src/lib/analytics.ts", "practice_path_started") && fileContains("docs/analytics/MEASUREMENT_PLAN.md", "practice_path_started"));
+check("practice path analytics event is allowlisted", () => fileContains("packages/domain/src/analytics.ts", "practice_path_started") && fileContains("mobile/src/app/(tabs)/practices.tsx", "practice_path_started") && fileContains("docs/analytics/MEASUREMENT_PLAN.md", "practice_path_started"));
 check("method system documents practice paths", () => fileContains("docs/product/METHOD_SYSTEM.md", "## Practice Paths"));
 check("product spec includes practice paths", () => fileContains("docs/product/PRODUCT_SPEC.md", "Short practice paths"));
 
@@ -89,15 +89,16 @@ check("Expo notifications plugin is configured", () => arrayIncludes(app?.plugin
 
 check("iOS app icon exists", () => fileExists("mobile/assets/images/stillmind-icon.png"));
 check("iOS app icon is 1024x1024 PNG", () => pngSize("mobile/assets/images/stillmind-icon.png", 1024, 1024));
-check("mobile Profile links support URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/support"));
-check("mobile Profile links seed tester handoff", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/support/seed-test"));
-check("mobile Profile links privacy URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/privacy"));
-check("mobile Profile links terms URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app/terms"));
+check("mobile Profile uses configurable production Web base URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "EXPO_PUBLIC_STILLMIND_WEB_BASE_URL") && fileContains("mobile/src/app/(tabs)/profile.tsx", "https://stillmind-inner-cinema.vercel.app"));
+check("mobile Profile links support URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "`${WEB_BASE_URL}/support`"));
+check("mobile Profile links seed tester handoff", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "`${WEB_BASE_URL}/support/seed-test`"));
+check("mobile Profile links privacy URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "`${WEB_BASE_URL}/privacy`"));
+check("mobile Profile links terms URL", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "`${WEB_BASE_URL}/terms`"));
 check("mobile Profile exposes export", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "导出本机数据"));
 check("mobile Profile exposes delete all", () => fileContains("mobile/src/app/(tabs)/profile.tsx", "清除所有本机数据"));
 
 check("Web API has high-risk boundary", () => fileContains("src/app/api/cinema/route.ts", "containsHighRiskLanguage"));
-check("Web support boundary exists", () => fileContains("src/app/page.tsx", "SupportPanel"));
+check("Web support boundary exists", () => fileContains("src/app/page.tsx", "containsHighRiskLanguage") && fileContains("src/app/page.tsx", "href=\"/support\"") && fileContains("src/app/page.tsx", "即时危险"));
 check("public claim guard exists", () => fileExists("scripts/check-public-claims.mjs"));
 
 warnIfMissing("EAS login is external", "Run `npx eas-cli whoami` from mobile/ after Expo credentials are available.");

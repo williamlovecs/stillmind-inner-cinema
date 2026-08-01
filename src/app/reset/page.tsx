@@ -2,22 +2,28 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { WorkflowNav } from "@/components/WorkflowNav";
 import {
+  PENDING_ACTIVATION_KEY,
+  PENDING_INPUT_METHOD_KEY,
   PENDING_INTENSITY_KEY,
   PENDING_MODE_KEY,
   PENDING_TRIGGER_KEY,
   detectStateModeFromText,
   isStateMode,
-  resolveResetIntensity,
+  resolveResetActivation,
 } from "@/lib/reset-routing";
 import { getPracticeVariant, type PracticeVariant } from "@stillmind/content";
+import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
+import { sendAnonymousEvent } from "@/lib/analytics-client";
 import {
   METHOD_BY_ID,
   METHOD_CATALOG,
   recommendMethods,
   type DesiredOutcome,
+  type ActivationLevel,
   type DurationMinutes,
   type MethodDefinition,
   type MethodId,
@@ -41,6 +47,11 @@ const STATE_OPTIONS: Array<{ id: StateMode; label: string; body: string; outcome
 const ACTIONS = ["喝水 + 走路 3 分钟", "回到当前任务 25 分钟", "先不回复，稍后再决定", "写下一句事实，不写评价"];
 
 type ReuseIntent = "会" | "不确定" | "不会";
+type InputMethod = "typed" | "dictation" | "example" | "state-only";
+
+function analyticsReuseIntent(value: ReuseIntent): "yes" | "unsure" | "no" {
+  return value === "会" ? "yes" : value === "不会" ? "no" : "unsure";
+}
 
 type SeedFeedback = {
   id: string;
@@ -48,8 +59,8 @@ type SeedFeedback = {
   createdAt: string;
   mode: StateMode;
   methodId: MethodId;
-  intensityBefore: number;
-  intensityAfter: number;
+  intensityBefore: ActivationLevel;
+  intensityAfter: ActivationLevel;
   reuseIntent: ReuseIntent;
   note: string;
 };
@@ -224,14 +235,6 @@ function storeSeedFeedback(feedback: SeedFeedback) {
   }
 }
 
-function toActivationBucket(value: number): 1 | 2 | 3 | 4 | 5 {
-  if (value <= 1) return 1;
-  if (value <= 3) return 2;
-  if (value <= 5) return 3;
-  if (value <= 7) return 4;
-  return 5;
-}
-
 function practiceFor(methodId: MethodId, duration: DurationMinutes): PracticeVariant | undefined {
   const exact = getPracticeVariant(methodId, duration);
   if (exact) return exact;
@@ -241,29 +244,58 @@ function practiceFor(methodId: MethodId, duration: DurationMinutes): PracticeVar
 }
 
 export default function ResetPage() {
-  const [mode, setMode] = useState<StateMode>("looping");
+  return <Suspense fallback={<ResetRouteFallback />}><ResetExperience /></Suspense>;
+}
+
+function localCinemaFor(trigger: string): CinemaPayload {
+  const preset = getPreset(trigger);
+  const clean = trigger.replace(/\s+/g, " ").trim();
+  if (!clean) return preset;
+  const excerpt = clean.length > 34 ? `${clean.slice(0, 34)}…` : clean;
+  return {
+    ...preset,
+    scenes: preset.scenes.map((scene, index) => index === 0 ? { ...scene, line: `刚才的一幕：“${excerpt}”` } : scene),
+  };
+}
+
+function ResetRouteFallback() {
+  return <main className="grid min-h-dvh place-items-center bg-[#050914] px-6 text-stone-50"><div className="text-center"><span className="mx-auto block h-12 w-12 animate-pulse rounded-full bg-gradient-to-br from-violet-400 via-fuchsia-200 to-amber-200 shadow-[0_0_42px_rgba(168,85,247,0.28)]" /><p className="mt-5 text-sm text-stone-400">正在准备这一分钟…</p></div></main>;
+}
+
+function ResetExperience() {
+  const searchParams = useSearchParams();
+  const queryMode = searchParams.get("mode");
+  const initialMode = isStateMode(queryMode) ? queryMode : "looping";
+  const initialState = STATE_OPTIONS.find((item) => item.id === initialMode) ?? STATE_OPTIONS[0];
+  const initialActivation = resolveResetActivation(null, searchParams.get("activation"), null, searchParams.get("intensity"), initialState.activation).value;
+  const initialDirect = searchParams.get("direct") === "1";
+  const initialMethod = searchParams.get("method") as MethodId | null;
+  const initialMethodDef = initialMethod ? METHOD_BY_ID.get(initialMethod) : undefined;
+  const [mode, setMode] = useState<StateMode>(initialMode);
   const state = STATE_OPTIONS.find((item) => item.id === mode) ?? STATE_OPTIONS[0];
   const [duration, setDuration] = useState<DurationMinutes>(1);
-  const [selectedMethodId, setSelectedMethodId] = useState<MethodId | undefined>();
-  const [phase, setPhase] = useState<"choose" | "precheck" | "practice" | "check" | "done">("choose");
+  const [selectedMethodId, setSelectedMethodId] = useState<MethodId | undefined>(initialMethodDef?.id);
+  const [phase, setPhase] = useState<"choose" | "precheck" | "practice" | "check" | "done">(initialDirect ? "precheck" : "choose");
   const [stepIndex, setStepIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [paused, setPaused] = useState(false);
   const [result, setResult] = useState<SessionResult | undefined>();
-  const [intensityBefore, setIntensityBefore] = useState(Math.min(10, state.activation * 2));
-  const [intensityAfter, setIntensityAfter] = useState(Math.min(10, state.activation * 2));
+  const [intensityBefore, setIntensityBefore] = useState<ActivationLevel>(initialActivation);
+  const [intensityAfter, setIntensityAfter] = useState<ActivationLevel>(initialActivation);
   const [reuseIntent, setReuseIntent] = useState<ReuseIntent>("不确定");
   const [feedbackNote, setFeedbackNote] = useState("");
+  const [shareAnonymous, setShareAnonymous] = useState(false);
+  const [inputMethod, setInputMethod] = useState<InputMethod>("state-only");
   const action = ACTIONS[0];
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
-  const [manualChoice, setManualChoice] = useState(false);
-  const [showAdvancedMethods, setShowAdvancedMethods] = useState(false);
+  const [manualChoice, setManualChoice] = useState(Boolean(initialMethodDef));
+  const [showAdvancedMethods, setShowAdvancedMethods] = useState(Boolean(initialMethodDef));
   const [showDurationOptions, setShowDurationOptions] = useState(false);
   const [showAllStates, setShowAllStates] = useState(false);
   const [incomingTrigger, setIncomingTrigger] = useState("");
-  const [lockedBeforeScore, setLockedBeforeScore] = useState(false);
-  const [directEntry, setDirectEntry] = useState(false);
-  const [autoStartPending, setAutoStartPending] = useState(false);
+  const [lockedBeforeScore, setLockedBeforeScore] = useState(initialDirect);
+  const [directEntry, setDirectEntry] = useState(initialDirect);
+  const [autoStartPending, setAutoStartPending] = useState(initialDirect);
   const startedAt = useRef<string>(new Date().toISOString());
   const didHydrateRouting = useRef(false);
 
@@ -278,7 +310,9 @@ export default function ResetPage() {
       const params = new URLSearchParams(window.location.search);
       const storedTrigger = window.sessionStorage.getItem(PENDING_TRIGGER_KEY) ?? "";
       const storedMode = window.sessionStorage.getItem(PENDING_MODE_KEY);
-      const storedIntensity = window.sessionStorage.getItem(PENDING_INTENSITY_KEY);
+      const storedActivation = window.sessionStorage.getItem(PENDING_ACTIVATION_KEY);
+      const storedInputMethod = window.sessionStorage.getItem(PENDING_INPUT_METHOD_KEY);
+      const legacyStoredIntensity = window.sessionStorage.getItem(PENDING_INTENSITY_KEY);
       const queryMode = params.get("mode");
       const queryMethod = params.get("method") as MethodId | null;
       const queryMethodDef = queryMethod ? METHOD_BY_ID.get(queryMethod) : undefined;
@@ -297,13 +331,16 @@ export default function ResetPage() {
         setIncomingTrigger(storedTrigger.slice(0, 220));
         setDirectEntry(true);
       }
+      if (storedInputMethod === "typed" || storedInputMethod === "dictation" || storedInputMethod === "example" || storedInputMethod === "state-only") setInputMethod(storedInputMethod);
       if (nextMode) {
         setMode(nextMode);
         const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
-        const incomingIntensity = resolveResetIntensity(
-          storedIntensity,
+        const incomingIntensity = resolveResetActivation(
+          storedActivation,
+          params.get("activation"),
+          legacyStoredIntensity,
           params.get("intensity"),
-          Math.min(10, nextActivation * 2),
+          nextActivation,
         );
         setIntensityBefore(incomingIntensity.value);
         setIntensityAfter(incomingIntensity.value);
@@ -325,6 +362,8 @@ export default function ResetPage() {
       }
       window.sessionStorage.removeItem(PENDING_TRIGGER_KEY);
       window.sessionStorage.removeItem(PENDING_MODE_KEY);
+      window.sessionStorage.removeItem(PENDING_ACTIVATION_KEY);
+      window.sessionStorage.removeItem(PENDING_INPUT_METHOD_KEY);
       window.sessionStorage.removeItem(PENDING_INTENSITY_KEY);
       /* eslint-enable react-hooks/set-state-in-effect */
     } catch {
@@ -333,14 +372,16 @@ export default function ResetPage() {
   }, []);
 
   const recommendation = useMemo(() => recommendMethods({
-    activation: state.activation,
+    activation: intensityBefore,
     mode,
     duration,
     outcome: state.outcome,
     eyesOpenPreferred: true,
     bodyFocusAllowed: true,
     breathChangeAllowed: true,
-  }), [duration, mode, state.activation, state.outcome]);
+    scope: "reset",
+  }), [duration, intensityBefore, mode, state.outcome]);
+  const localCinema = useMemo(() => localCinemaFor(incomingTrigger), [incomingTrigger]);
 
   const recommendedMethod = recommendation.kind === "practice" ? recommendation.primary : METHOD_BY_ID.get("grounded-action")!;
   const activeMethodId = manualChoice && selectedMethodId ? selectedMethodId : recommendedMethod.id;
@@ -350,6 +391,10 @@ export default function ResetPage() {
   const currentStep = practice?.steps[stepIndex];
   const totalSeconds = practice?.steps.reduce((sum, step) => sum + step.seconds, 0) ?? 0;
   const completedSeconds = practice ? practice.steps.slice(0, stepIndex).reduce((sum, step) => sum + step.seconds, 0) + ((currentStep?.seconds ?? 0) - secondsLeft) : 0;
+  const completedBreathingSeconds = practice
+    ? practice.steps.slice(0, stepIndex).reduce((sum, step) => sum + (step.kind === "breathe" ? step.seconds : 0), 0)
+      + (currentStep?.kind === "breathe" ? (currentStep.seconds - secondsLeft) : 0)
+    : 0;
   const progress = totalSeconds > 0 ? Math.min(100, Math.max(0, (completedSeconds / totalSeconds) * 100)) : 0;
   const methodReason =
     recommendation.kind === "practice" && method.id === recommendation.primary.id
@@ -421,8 +466,8 @@ export default function ResetPage() {
     setAutoStartPending(false);
     setResult(undefined);
     const nextActivation = STATE_OPTIONS.find((item) => item.id === nextMode)?.activation ?? 3;
-    setIntensityBefore(Math.min(10, nextActivation * 2));
-    setIntensityAfter(Math.min(10, nextActivation * 2));
+    setIntensityBefore(nextActivation);
+    setIntensityAfter(nextActivation);
   }
 
   function chooseMethod(id: MethodId) {
@@ -475,9 +520,10 @@ export default function ResetPage() {
       mode,
       methodId: method.id,
       durationSeconds: totalSeconds,
-      activationBefore: toActivationBucket(intensityBefore),
-      activationAfter: toActivationBucket(intensityAfter),
+      activationBefore: intensityBefore,
+      activationAfter: intensityAfter,
       result: finalResult,
+      reuseIntent: analyticsReuseIntent(reuseIntent),
       groundedActionId: action,
       contentVersion: practice.contentVersion,
     };
@@ -495,6 +541,21 @@ export default function ResetPage() {
       reuseIntent,
       note: feedbackNote.trim().slice(0, 500),
     });
+    if (shareAnonymous) {
+      void sendAnonymousEvent("reset_entry_submitted", {
+        mode,
+        activation_bucket: intensityBefore,
+        input_method: inputMethod,
+        text_provided: Boolean(incomingTrigger.trim()),
+      });
+      void sendAnonymousEvent("after_check_saved", {
+        method_id: method.id,
+        result: finalResult,
+        activation_change_bucket: intensityAfter < intensityBefore ? "down" : intensityAfter > intensityBefore ? "up" : "same",
+        grounded_action_id: action,
+        reuse_intent: analyticsReuseIntent(reuseIntent),
+      });
+    }
     setPhase("done");
   }
 
@@ -570,7 +631,7 @@ export default function ResetPage() {
                 {!focusMode ? <div className="mt-3 grid gap-2 text-xs text-stone-400 sm:grid-cols-3">
                   <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">先被看见</span>
                   <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">退回观众席</span>
-                  <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">前后 0-10 评分</span>
+                  <span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">前后 1-5 评分</span>
                 </div> : null}
                 {!focusMode ? <p className="mt-3 text-sm leading-6 text-violet-100/70">先跟着这一分钟走完，不用先研究 12 种方法；完成后会看到前后变化。</p> : null}{phase === "choose" ? <button type="button" onClick={requestStart} className="mt-4 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]">开始 {practice?.minutes ?? duration} 分钟练习</button> : null}
               </div>
@@ -587,8 +648,8 @@ export default function ResetPage() {
               <div className={practiceShellClass}>
                 {phase === "choose" && practice ? <ChoosePractice method={method} practice={practice} /> : null}
                 {phase === "precheck" && practice ? <PrePracticeCheck method={method} practice={practice} intensityBefore={intensityBefore} lockedBeforeScore={lockedBeforeScore} onIntensityBefore={setIntensityBefore} onStart={startPractice} /> : null}
-                {phase === "practice" && practice && currentStep ? <PracticePlayer method={method} practice={practice} stepIndex={stepIndex} secondsLeft={secondsLeft} progress={progress} paused={paused} onPause={() => setPaused((value) => !value)} onStop={stopPractice} /> : null}
-                {phase === "check" ? <CheckView intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} onIntensityAfter={setIntensityAfter} onReuseIntent={setReuseIntent} onFeedbackNote={setFeedbackNote} onComplete={completeSession} /> : null}
+                {phase === "practice" && practice && currentStep ? <PracticePlayer method={method} practice={practice} stepIndex={stepIndex} secondsLeft={secondsLeft} elapsedSeconds={completedSeconds} breathingSeconds={completedBreathingSeconds} progress={progress} paused={paused} trigger={incomingTrigger} cinema={localCinema} onPause={() => setPaused((value) => !value)} onStop={stopPractice} /> : null}
+                {phase === "check" ? <CheckView intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} shareAnonymous={shareAnonymous} onIntensityAfter={setIntensityAfter} onReuseIntent={setReuseIntent} onFeedbackNote={setFeedbackNote} onShareAnonymous={setShareAnonymous} onComplete={completeSession} /> : null}
                 {phase === "done" ? <DoneView method={method} action={action} intensityBefore={intensityBefore} intensityAfter={intensityAfter} reuseIntent={reuseIntent} feedbackNote={feedbackNote} onAgain={resetAgain} /> : null}
               </div>
 
@@ -688,9 +749,9 @@ function PrePracticeCheck({
 }: {
   method: MethodDefinition;
   practice: PracticeVariant;
-  intensityBefore: number;
+  intensityBefore: ActivationLevel;
   lockedBeforeScore: boolean;
-  onIntensityBefore: (value: number) => void;
+  onIntensityBefore: (value: ActivationLevel) => void;
   onStart: () => void;
 }) {
   return (
@@ -699,14 +760,14 @@ function PrePracticeCheck({
         <p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">练习前</p>
         <h3 className="mt-3 text-3xl font-semibold text-white">{lockedBeforeScore ? "练习前分数已记录。" : "先标记一下此刻的强度。"}</h3>
         <p className="mt-3 text-base leading-7 text-stone-400">
-          {lockedBeforeScore ? "首页已经记录了你被脑内剧情带走的程度，不需要重复选择。" : "你现在被脑内剧情带走的程度？0 = 很稳定，10 = 完全被带走。"}
+          {lockedBeforeScore ? "首页已经记录了你被脑内剧情带走的程度，不需要重复选择。" : "你现在被脑内剧情带走的程度？1 = 稳定，5 = 完全被带走。"}
         </p>
       </div>
 
       {lockedBeforeScore ? (
         <div className="rounded-3xl border border-amber-200/20 bg-amber-100/[0.07] p-4">
           <p className="text-sm text-stone-400">练习前被带走程度</p>
-          <p className="mt-2 text-4xl font-semibold text-amber-100">{intensityBefore}/10</p>
+          <p className="mt-2 text-4xl font-semibold text-amber-100">{intensityBefore}/5</p>
           <p className="mt-2 text-sm leading-6 text-stone-500">练完后只需要再选一次练习后分数，用来看有没有下降。</p>
         </div>
       ) : (
@@ -726,21 +787,21 @@ function PrePracticeCheck({
   );
 }
 
-function PracticePlayer({ method, practice, stepIndex, secondsLeft, progress, paused, onPause, onStop }: { method: MethodDefinition; practice: PracticeVariant; stepIndex: number; secondsLeft: number; progress: number; paused: boolean; onPause: () => void; onStop: () => void }) {
+function PracticePlayer({ method, practice, stepIndex, secondsLeft, elapsedSeconds, breathingSeconds, progress, paused, trigger, cinema, onPause, onStop }: { method: MethodDefinition; practice: PracticeVariant; stepIndex: number; secondsLeft: number; elapsedSeconds: number; breathingSeconds: number; progress: number; paused: boolean; trigger: string; cinema: CinemaPayload; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
-  return <div className="flex h-full flex-col gap-5"><div className="flex items-center justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">{method.title}</p><h3 className="mt-2 text-2xl font-semibold text-white">{step.title}</h3></div><div className="text-right"><p className="text-4xl font-semibold tabular-nums text-white">{secondsLeft}</p><p className="text-xs uppercase tracking-[0.22em] text-stone-500">秒</p></div></div><div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-200 to-amber-200 transition-[width]" style={{ width: `${progress}%` }} /></div><MethodExperience methodId={method.id} instruction={step.instruction} secondsLeft={secondsLeft} stepIndex={stepIndex} /><div className="mt-auto flex flex-wrap gap-3"><button type="button" onClick={onPause} className="rounded-full border border-white/12 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white transition hover:border-violet-200/35">{paused ? "继续" : "暂停"}</button><button type="button" onClick={onStop} className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-amber-200/35 hover:text-white">停止并反馈</button></div></div>;
+  return <div className="flex h-full flex-col gap-5"><div className="flex items-center justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">{method.title}</p><h3 className="mt-2 text-2xl font-semibold text-white">{step.title}</h3></div><div className="text-right"><p className="text-4xl font-semibold tabular-nums text-white">{secondsLeft}</p><p className="text-xs uppercase tracking-[0.22em] text-stone-500">秒</p></div></div><div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-200 to-amber-200 transition-[width]" style={{ width: `${progress}%` }} /></div><MethodExperience methodId={method.id} instruction={step.instruction} secondsLeft={secondsLeft} elapsedSeconds={elapsedSeconds} breathingSeconds={breathingSeconds} stepIndex={stepIndex} trigger={trigger} cinema={cinema} /><div className="mt-auto flex flex-wrap gap-3"><button type="button" onClick={onPause} className="rounded-full border border-white/12 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white transition hover:border-violet-200/35">{paused ? "继续" : "暂停"}</button><button type="button" onClick={onStop} className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-amber-200/35 hover:text-white">停止并反馈</button></div></div>;
 }
 
-function MethodExperience({ methodId, instruction, secondsLeft, stepIndex }: { methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
-  const breathIn = Math.floor(secondsLeft / 3) % 2 === 0;
-  const thoughts = ["我必须回应", "是不是我不够好", "他们不理解我", "我不能输"];
+function MethodExperience({ methodId, instruction, secondsLeft, elapsedSeconds, breathingSeconds, stepIndex, trigger, cinema }: { methodId: MethodId; instruction: string; secondsLeft: number; elapsedSeconds: number; breathingSeconds: number; stepIndex: number; trigger: string; cinema: CinemaPayload }) {
+  const breathIn = Math.floor(elapsedSeconds / 3) % 2 === 0;
+  const thoughts = cinema.innerNoise.length > 0 ? cinema.innerNoise : ["我必须回应", "是不是我不够好", "他们不理解我", "我不能输"];
 
   if (["paced-breath", "wide-gaze", "trigger-journal", "grounded-action"].includes(methodId)) {
-    return <FocusObjectEngine methodId={methodId} instruction={instruction} secondsLeft={secondsLeft} stepIndex={stepIndex} breathIn={breathIn} />;
+    return <FocusObjectEngine methodId={methodId} instruction={instruction} secondsLeft={secondsLeft} breathingSeconds={breathingSeconds} stepIndex={stepIndex} breathIn={breathIn} />;
   }
 
   if (["inner-cinema", "thought-watching", "logout-pause", "person-shift"].includes(methodId)) {
-    return <ThoughtBubbleEngine methodId={methodId} instruction={instruction} stepIndex={stepIndex} thoughts={thoughts} />;
+    return <ThoughtBubbleEngine methodId={methodId} instruction={instruction} stepIndex={stepIndex} thoughts={thoughts} trigger={trigger} cinema={cinema} />;
   }
 
   if (["body-scan", "release", "open-awareness"].includes(methodId)) {
@@ -754,14 +815,13 @@ function MethodExperience({ methodId, instruction, secondsLeft, stepIndex }: { m
   return <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_34%,rgba(139,92,246,0.14),transparent_45%),rgba(2,6,23,0.72)] p-6 text-center"><div>{thoughts.map((thought, index) => <span key={thought} className="m-1 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-stone-300" style={{ opacity: Math.max(0.25, 1 - (stepIndex + index) * 0.14) }}>{thought}</span>)}<p className="mx-auto mt-8 max-w-xl text-2xl font-semibold leading-10 text-white">{instruction}</p></div></div>;
 }
 
-function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, breathIn }: { methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number; breathIn: boolean }) {
+function FocusObjectEngine({ methodId, instruction, secondsLeft, breathingSeconds, stepIndex, breathIn }: { methodId: MethodId; instruction: string; secondsLeft: number; breathingSeconds: number; stepIndex: number; breathIn: boolean }) {
   const [returns, setReturns] = useState(0);
   const [resetAt, setResetAt] = useState(secondsLeft);
   const [stability, setStability] = useState(34);
   const [holding, setHolding] = useState(false);
-  const [detailIndex, setDetailIndex] = useState(0);
-  const elapsed = Math.max(0, 20 - secondsLeft);
-  const exhaleCount = Math.max(0, Math.floor(elapsed / 6));
+  const [detailIndex, setDetailIndex] = useState<number>();
+  const exhaleCount = Math.max(0, Math.floor(breathingSeconds / 6));
   const steadySeconds = Math.max(0, resetAt - secondsLeft);
   const detailSteps = [
     { label: "环境", value: "这个房间", hint: "先看见大范围", x: "50%", y: "50%" },
@@ -770,7 +830,8 @@ function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, brea
     { label: "触感", value: "脚底压力", hint: "加入身体感官", x: "48%", y: "78%" },
   ] as const;
   const suggestedDetailIndex = Math.min(stepIndex, detailSteps.length - 1);
-  const activeDetail = detailSteps[Math.max(detailIndex, suggestedDetailIndex)] ?? detailSteps[0];
+  const activeDetailIndex = detailIndex ?? suggestedDetailIndex;
+  const activeDetail = detailSteps[activeDetailIndex] ?? detailSteps[0];
 
   useEffect(() => {
     if (methodId !== "trigger-journal") return;
@@ -842,7 +903,7 @@ function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, brea
       <div className="relative mx-auto h-56 w-56 rounded-full border border-amber-100/20 bg-amber-200/10 shadow-[0_0_60px_rgba(245,158,11,0.18)]">
         <span className="absolute inset-10 rounded-full border border-amber-100/10" />
         <span className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-100/25 bg-slate-950/50" />
-        {detailSteps.map((item, index) => <button key={item.label} type="button" onClick={() => setDetailIndex(index)} className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border px-3 py-2 text-xs font-semibold transition ${index === Math.max(detailIndex, suggestedDetailIndex) ? "border-amber-100/65 bg-amber-100/18 text-white" : "border-white/10 bg-slate-950/70 text-stone-400"}`} style={{ left: item.x, top: item.y }}>{item.label}</button>)}
+        {detailSteps.map((item, index) => <button key={item.label} type="button" aria-pressed={index === activeDetailIndex} onClick={() => setDetailIndex(index)} className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border px-3 py-2 text-xs font-semibold transition ${index === activeDetailIndex ? "border-amber-100/65 bg-amber-100/18 text-white" : "border-white/10 bg-slate-950/70 text-stone-400"}`} style={{ left: item.x, top: item.y }}>{item.label}</button>)}
       </div>
       <div className="mx-auto max-w-md rounded-2xl border border-amber-100/15 bg-amber-100/[0.07] p-4"><p className="text-xs text-amber-100/55">当前焦点</p><p className="mt-1 text-2xl font-semibold text-amber-50">{activeDetail.value}</p><p className="mt-2 text-sm text-stone-400">{activeDetail.hint}</p></div>
       <p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
@@ -850,10 +911,12 @@ function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, brea
   );
 }
 
-function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts }: { methodId: MethodId; instruction: string; stepIndex: number; thoughts: string[] }) {
+function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts, trigger, cinema }: { methodId: MethodId; instruction: string; stepIndex: number; thoughts: string[]; trigger: string; cinema: CinemaPayload }) {
   const [seen, setSeen] = useState<Record<string, "升起" | "停留" | "落下">>({});
   const [name, setName] = useState("Will");
-  const [sentence, setSentence] = useState("我现在很想证明自己没错。");
+  const [sentence, setSentence] = useState(trigger || "我现在很想证明自己没错。");
+  const [manualCinemaLens, setManualCinemaLens] = useState<number>();
+  const [manualLogoutMode, setManualLogoutMode] = useState<"explain" | "join" | "logout">();
   const shifted = sentence.replaceAll("我", name || "这个人");
   const further = `一个人正在经历：${shifted.replaceAll(name || "这个人", "").trim() || sentence.replaceAll("我", "")}`;
   const lenses = [
@@ -861,7 +924,8 @@ function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts }: { m
     { id: "audience", label: "观众席", body: "我正在看见这一幕", heat: 46 },
     { id: "witness", label: "见证位", body: "念头经过，不必进入", heat: 24 },
   ] as const;
-  const activeLens = lenses[Math.min(stepIndex, lenses.length - 1)];
+  const activeLensIndex = manualCinemaLens ?? Math.min(stepIndex, lenses.length - 1);
+  const activeLens = lenses[activeLensIndex] ?? lenses[0];
 
   function toggleSeen(thought: string) {
     setSeen((items) => {
@@ -886,12 +950,13 @@ function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts }: { m
   }
 
   if (methodId === "inner-cinema") {
+    const scene = cinema.scenes[Math.min(stepIndex, cinema.scenes.length - 1)];
     return (
       <div className="flex flex-1 flex-col justify-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.14),transparent_45%),#050914] p-6 text-center">
-        <p className="text-xs uppercase tracking-[0.28em] text-violet-200/55">Scene {String(stepIndex + 1).padStart(2, "0")}</p>
-        <p className="mx-auto mt-7 max-w-2xl text-2xl font-semibold leading-snug text-white sm:text-3xl">{instruction}</p>
+        <p className="text-xs uppercase tracking-[0.28em] text-violet-200/55">{cinema.title} · {scene?.label ?? `Scene ${String(stepIndex + 1).padStart(2, "0")}`}</p>
+        <p className="mx-auto mt-7 max-w-2xl text-2xl font-semibold leading-snug text-white sm:text-3xl">{scene?.line ?? instruction}</p>
         <div className="mx-auto mt-6 w-full max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>入戏</span><span>观众席</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-rose-300 via-amber-200 to-violet-300 transition-[width] duration-700" style={{ width: `${activeLens.heat}%` }} /></div><p className="mt-2 text-xs text-stone-400">当前位置：{activeLens.label} · 入戏度 {activeLens.heat}%</p></div>
-        <div className="mx-auto mt-8 grid max-w-2xl gap-2 sm:grid-cols-3">{lenses.map((item) => <div key={item.id} className={`rounded-2xl border p-3 text-left transition ${item.id === activeLens.id ? "border-violet-100/60 bg-violet-100/14 text-white shadow-[0_0_28px_rgba(168,85,247,0.16)]" : "border-white/10 bg-white/[0.035] text-stone-500"}`}><span className="block text-sm font-semibold">{item.label}</span><span className="mt-1 block text-xs leading-5 opacity-75">{item.body}</span></div>)}</div>
+        <div className="mx-auto mt-8 grid w-full max-w-2xl grid-cols-3 gap-2">{lenses.map((item, index) => <button key={item.id} type="button" aria-pressed={index === activeLensIndex} onClick={() => setManualCinemaLens(index)} className={`rounded-2xl border p-3 text-left transition ${index === activeLensIndex ? "border-violet-100/60 bg-violet-100/14 text-white shadow-[0_0_28px_rgba(168,85,247,0.16)]" : "border-white/10 bg-white/[0.035] text-stone-500 hover:border-violet-200/30 hover:text-stone-300"}`}><span className="block text-sm font-semibold">{item.label}</span><span className="mt-1 hidden text-xs leading-5 opacity-75 sm:block">{item.body}</span></button>)}</div>
       </div>
     );
   }
@@ -902,8 +967,9 @@ function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts }: { m
       { id: "join", label: "参与", body: "我想马上回应", quiet: 38 },
       { id: "logout", label: "只读", body: "先不解释，不参与", quiet: 76 },
     ] as const;
-    const active = options[Math.min(stepIndex, options.length - 1)];
-    return <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6"><p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>信息互动</span><span>只读模式</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-amber-200 to-violet-300 transition-[width] duration-700" style={{ width: `${active.quiet}%` }} /></div><p className="mt-2 text-sm text-stone-300">{active.body}</p></div><div className="grid grid-cols-3 gap-2 text-center text-sm">{options.map((item) => <div key={item.id} className={`rounded-2xl border px-2 py-4 transition sm:p-4 ${item.id === active.id ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.035] text-stone-500"}`}><span className="block font-semibold">{item.label}</span><span className="mt-2 hidden text-xs leading-5 opacity-75 sm:block">{item.body}</span></div>)}</div></div>;
+    const activeId = manualLogoutMode ?? options[Math.min(stepIndex, options.length - 1)]?.id ?? "explain";
+    const active = options.find((item) => item.id === activeId) ?? options[0];
+    return <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6"><p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>信息互动</span><span>只读模式</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-amber-200 to-violet-300 transition-[width] duration-700" style={{ width: `${active.quiet}%` }} /></div><p className="mt-2 text-sm text-stone-300">{active.body}</p></div><div className="grid grid-cols-3 gap-2 text-center text-sm">{options.map((item) => <button key={item.id} type="button" aria-pressed={item.id === active.id} onClick={() => setManualLogoutMode(item.id)} className={`rounded-2xl border px-2 py-4 transition sm:p-4 ${item.id === active.id ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.035] text-stone-500 hover:border-amber-200/25 hover:text-stone-300"}`}><span className="block font-semibold">{item.label}</span><span className="mt-2 hidden text-xs leading-5 opacity-75 sm:block">{item.body}</span></button>)}</div></div>;
   }
 
   const seenCount = Object.keys(seen).length;
@@ -920,11 +986,20 @@ function BodySpaceEngine({ methodId, instruction, stepIndex }: { methodId: Metho
   const fields = ["声音", "身体", "念头", "空间"];
   const [zoneId, setZoneId] = useState<(typeof zones)[number]["id"]>("feet");
   const [releaseDistance, setReleaseDistance] = useState(54);
+  const [manualAwarenessFields, setManualAwarenessFields] = useState<string[]>();
   const selected = zones.find((zone) => zone.id === zoneId) ?? zones[0];
   const includedCount = Math.min(fields.length, stepIndex + 1);
+  const activeAwarenessFields = manualAwarenessFields ?? fields.slice(0, includedCount);
+
+  function toggleAwarenessField(field: string) {
+    setManualAwarenessFields((current) => {
+      const base = current ?? fields.slice(0, includedCount);
+      return base.includes(field) ? base.filter((item) => item !== field) : [...base, field];
+    });
+  }
 
   if (methodId === "open-awareness") {
-    return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2, 3].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10 transition-[width,height,opacity]" style={{ width: 110 + index * 74 + includedCount * 18, height: 110 + index * 74 + includedCount * 18, opacity: Math.max(0.12, 0.74 - index * 0.14) }} />)}<div className="relative grid gap-3 sm:grid-cols-4">{fields.map((field, index) => <span key={field} className={`rounded-full border px-5 py-3 text-sm transition ${index < includedCount ? "border-violet-100/45 bg-violet-100/13 text-violet-50 shadow-[0_0_22px_rgba(216,180,254,0.12)]" : "border-white/10 bg-white/[0.04] text-stone-500"}`}>{field}</span>)}</div><p className="relative mt-5 text-xs text-violet-100/55">自动纳入：{fields.slice(0, includedCount).join("、")}</p><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">这是扩展注意范围，不是在追求神秘体验。</p></div>;
+    return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2, 3].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10 transition-[width,height,opacity]" style={{ width: 110 + index * 74 + activeAwarenessFields.length * 18, height: 110 + index * 74 + activeAwarenessFields.length * 18, opacity: Math.max(0.12, 0.74 - index * 0.14) }} />)}<div className="relative grid grid-cols-2 gap-3 sm:grid-cols-4">{fields.map((field) => <button key={field} type="button" aria-pressed={activeAwarenessFields.includes(field)} onClick={() => toggleAwarenessField(field)} className={`rounded-full border px-5 py-3 text-sm transition ${activeAwarenessFields.includes(field) ? "border-violet-100/45 bg-violet-100/13 text-violet-50 shadow-[0_0_22px_rgba(216,180,254,0.12)]" : "border-white/10 bg-white/[0.04] text-stone-500 hover:border-violet-200/30 hover:text-stone-300"}`}>{field}</button>)}</div><p className="relative mt-5 text-xs text-violet-100/55">已纳入：{activeAwarenessFields.length > 0 ? activeAwarenessFields.join("、") : "暂时留白"}</p><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">点选要纳入的经验；这是扩展注意范围，不是在追求神秘体验。</p></div>;
   }
 
   if (methodId === "release") {
@@ -942,7 +1017,7 @@ function PerspectiveZoomEngine({ instruction, stepIndex }: { instruction: string
     { id: "sky", label: "宇宙", body: "把它放进更大的时间线", scale: 0.38 },
   ] as const;
   const [manualZoomIndex, setManualZoomIndex] = useState<number | undefined>();
-  const zoomIndex = Math.max(manualZoomIndex ?? 0, Math.min(stepIndex, levels.length - 1));
+  const zoomIndex = manualZoomIndex ?? Math.min(stepIndex, levels.length - 1);
   const active = levels[zoomIndex] ?? levels[0];
 
   return <div className="grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(96,165,250,0.16),transparent_44%),rgba(2,6,23,0.78)] p-6 text-center"><div className="relative grid h-72 w-72 place-items-center"><span className="absolute h-16 w-16 rounded-full bg-[radial-gradient(circle_at_35%_28%,#eff6ff,#60a5fa_32%,#1d4ed8_62%,#020617)] shadow-[0_0_44px_rgba(96,165,250,0.32)] transition" style={{ transform: `scale(${active.scale})`, opacity: Math.max(0.34, active.scale) }} />{[0, 1, 2, 3, 4].map((index) => <span key={index} className="distance-star absolute h-1.5 w-1.5 rounded-full bg-white/70" style={{ left: `${18 + index * 15}%`, top: `${16 + (index % 3) * 22}%`, animationDelay: `${index * 0.4}s`, opacity: zoomIndex >= 1 ? 0.75 : 0.22 }} />)}{levels.map((item, index) => <span key={item.id} className={`absolute rounded-full border transition ${index <= zoomIndex ? "border-violet-100/35 bg-violet-100/[0.045]" : "border-white/10"}`} style={{ width: 96 + index * 72, height: 96 + index * 72 }} />)}<span className="relative mt-28 rounded-full border border-white/10 bg-slate-950/70 px-4 py-2 text-sm font-semibold text-stone-200">{active.label}</span></div><input aria-label="拉远镜头" type="range" min="0" max="3" value={zoomIndex} onChange={(event) => setManualZoomIndex(Number(event.target.value))} className="w-full max-w-sm accent-violet-200" /><p className="max-w-md text-sm leading-6 text-sky-100/70">{active.body}</p><p className="max-w-md text-base leading-8 text-stone-300">{instruction}</p><p className="text-xs text-stone-500">拖动镜头，从近景拉到高空；最后仍要回到一个现实小动作。</p></div>;
@@ -953,27 +1028,31 @@ function CheckView({
   intensityAfter,
   reuseIntent,
   feedbackNote,
+  shareAnonymous,
   onIntensityAfter,
   onReuseIntent,
   onFeedbackNote,
+  onShareAnonymous,
   onComplete,
 }: {
-  intensityBefore: number;
-  intensityAfter: number;
+  intensityBefore: ActivationLevel;
+  intensityAfter: ActivationLevel;
   reuseIntent: ReuseIntent;
   feedbackNote: string;
-  onIntensityAfter: (value: number) => void;
+  shareAnonymous: boolean;
+  onIntensityAfter: (value: ActivationLevel) => void;
   onReuseIntent: (value: ReuseIntent) => void;
   onFeedbackNote: (value: string) => void;
+  onShareAnonymous: (value: boolean) => void;
   onComplete: () => void;
 }) {
   const intents: ReuseIntent[] = ["会", "不确定", "不会"];
   const delta = intensityAfter - intensityBefore;
-  return <div className="flex h-full flex-col justify-center gap-5"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">练后反馈</p><h3 className="mt-3 text-3xl font-semibold text-white">练完后，现在是多少分？</h3><p className="mt-3 text-base leading-7 text-stone-400">只需要 20 秒。请不要写真实姓名、隐私事件、创伤细节或医疗危机场景。</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">练习前分数</p><span className="text-lg font-semibold tabular-nums text-amber-100">{intensityBefore}/10</span></div><p className="mt-2 text-xs leading-5 text-stone-500">已在开始前记录，用来和练习后状态对比。</p></div><IntensityScale label="练习后状态强度" value={intensityAfter} onChange={onIntensityAfter} /><div aria-live="polite" className="rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-4"><p className="text-sm font-medium text-stone-100">前后变化</p><p className="mt-2 text-sm leading-6 text-stone-400">{delta < 0 ? `下降 ${Math.abs(delta)} 分` : delta > 0 ? `上升 ${delta} 分` : "暂时没有变化"}</p></div><div><p className="mb-2 text-sm font-medium text-stone-100">下次类似场景是否愿意再用</p><div className="grid gap-2 sm:grid-cols-3">{intents.map((item) => <button key={item} type="button" onClick={() => onReuseIntent(item)} className={reuseIntent === item ? "rounded-2xl border border-violet-200/70 bg-violet-200/14 p-3 text-center text-sm font-semibold text-white transition" : "rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center text-sm font-semibold text-stone-300 transition hover:border-violet-200/35"}>{item}</button>)}</div></div><label className="block"><span className="mb-2 block text-sm font-medium text-stone-100">一句话反馈：哪里有用或哪里不舒服</span><textarea name="practice-feedback" autoComplete="off" value={feedbackNote} onChange={(event) => onFeedbackNote(event.target.value)} maxLength={500} placeholder="例如：三步很清楚，但倒计时有点快。" className="min-h-24 w-full rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-white placeholder:text-stone-600 focus:border-violet-200/45" /></label><button type="button" onClick={onComplete} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950">保存反馈并完成</button></div>;
+  return <div className="flex h-full flex-col justify-center gap-5"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">练后反馈</p><h3 className="mt-3 text-3xl font-semibold text-white">练完后，现在是多少？</h3><p className="mt-3 text-sm leading-6 text-stone-400">练习前 {intensityBefore}/5，不用重复选择。</p></div><IntensityScale label="现在被带走的程度" value={intensityAfter} onChange={onIntensityAfter} /><div aria-live="polite" className="rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-4"><p className="text-sm font-medium text-stone-100">{delta < 0 ? `下降 ${Math.abs(delta)} 级` : delta > 0 ? `上升 ${delta} 级` : "暂时没有变化"}</p><p className="mt-1 text-xs leading-5 text-stone-500">这只是一次小样本，不是考试。</p></div><div><p className="mb-2 text-sm font-medium text-stone-100">下次类似场景是否愿意再用</p><div className="grid grid-cols-3 gap-2">{intents.map((item) => <button key={item} type="button" onClick={() => onReuseIntent(item)} className={reuseIntent === item ? "rounded-2xl border border-violet-200/70 bg-violet-200/14 p-3 text-center text-sm font-semibold text-white transition" : "rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center text-sm font-semibold text-stone-300 transition hover:border-violet-200/35"}>{item}</button>)}</div></div><label className="block"><span className="mb-2 block text-sm font-medium text-stone-100">一句话反馈（可选）</span><textarea name="practice-feedback" autoComplete="off" value={feedbackNote} onChange={(event) => onFeedbackNote(event.target.value)} maxLength={500} placeholder="哪里有用，哪里不舒服？" className="min-h-20 w-full rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-white placeholder:text-stone-600 focus:border-violet-200/45" /></label><label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3"><input type="checkbox" checked={shareAnonymous} onChange={(event) => onShareAnonymous(event.target.checked)} className="mt-1 h-4 w-4 accent-violet-400" /><span className="text-xs leading-5 text-stone-400">匿名提交前后等级、方法和复用意愿，帮助改进推荐。不发送原话或反馈文字。</span></label><button type="button" onClick={onComplete} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950">完成</button></div>;
 }
 
-function IntensityScale({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
-  return <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">{label}</p><span className="text-sm font-semibold tabular-nums text-amber-100">{value}/10</span></div><div className="mt-3 flex flex-wrap gap-1.5">{Array.from({ length: 11 }, (_, index) => <button key={index} type="button" aria-label={`${label} ${index}`} onClick={() => onChange(index)} className={`grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold transition ${value === index ? "border-amber-200/75 bg-amber-200/18 text-white" : "border-white/10 bg-slate-950/36 text-stone-500 hover:border-violet-200/35 hover:text-stone-200"}`}>{index}</button>)}</div></div>;
+function IntensityScale({ label, value, onChange }: { label: string; value: ActivationLevel; onChange: (value: ActivationLevel) => void }) {
+  return <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-100">{label}</p><span className="text-sm font-semibold tabular-nums text-amber-100">{value}/5</span></div><div className="mt-3 grid grid-cols-5 gap-2">{([1, 2, 3, 4, 5] as const).map((level) => <button key={level} type="button" aria-label={`${label} ${level}`} onClick={() => onChange(level)} className={`grid min-h-10 place-items-center rounded-xl border text-sm font-semibold transition ${value === level ? "border-amber-200/75 bg-amber-200/18 text-white" : "border-white/10 bg-slate-950/36 text-stone-500 hover:border-violet-200/35 hover:text-stone-200"}`}>{level}</button>)}</div></div>;
 }
 
 function DoneView({
@@ -987,8 +1066,8 @@ function DoneView({
 }: {
   method: MethodDefinition;
   action: string;
-  intensityBefore: number;
-  intensityAfter: number;
+  intensityBefore: ActivationLevel;
+  intensityAfter: ActivationLevel;
   reuseIntent: ReuseIntent;
   feedbackNote: string;
   onAgain: () => void;
@@ -1002,8 +1081,8 @@ function DoneView({
     const text = [
       "StillMind Web Reset 反馈",
       `练习方法：${method.title}`,
-      `练习前：${intensityBefore}/10`,
-      `练习后：${intensityAfter}/10`,
+      `练习前：${intensityBefore}/5`,
+      `练习后：${intensityAfter}/5`,
       `变化：${changeCopy}`,
       `下次类似场景是否愿意再用：${reuseIntent}`,
       `一句话反馈：${feedbackLine}`,
