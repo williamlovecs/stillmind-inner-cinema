@@ -1,0 +1,168 @@
+name: Isolated native maintenance
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+concurrency:
+  group: native-maintenance-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  candidate:
+    if: github.event.pull_request.head.repo.full_name == 'williamlovecs/stillmind-inner-cinema' && github.event.pull_request.head.ref == 'fix/native-integrity-deps-20260906'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      changed: ${{ steps.package.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - name: Capture tracked source for reproducible review
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/source-review"
+          python3 - <<'PY'
+          import subprocess, pathlib, zipfile, json, os
+          root=pathlib.Path('.')
+          files=subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'source-review'
+          excluded=[]
+          with zipfile.ZipFile(out/'tracked-source.zip','w',zipfile.ZIP_DEFLATED) as z:
+            for name in files:
+              if not name: continue
+              p=root/name
+              if p.suffix.lower() in ('.ttf','.otf','.woff','.woff2','.pem','.p12','.key') or (p.name.startswith('.env') and p.name!='.env.example'):
+                excluded.append(name); continue
+              if p.is_file() and not p.is_symlink(): z.write(p,name)
+          (out/'source-metadata.json').write_text(json.dumps({'head':os.environ['HEAD_SHA'],'excluded':excluded},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-review
+          path: ${{ runner.temp }}/source-review
+          retention-days: 14
+      - name: Install baseline locked dependencies
+        run: npm ci
+      - name: Align candidate with the published SDK57 compatibility manifest
+        env:
+          CI: '1'
+        run: |
+          mkdir -p "$RUNNER_TEMP/dependency-evidence"
+          npm audit --json > "$RUNNER_TEMP/dependency-evidence/before-audit.json" || true
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          const temp=process.env.RUNNER_TEMP;
+          const dir=path.join(temp,'expo-manifest');fs.mkdirSync(dir,{recursive:true});
+          // Stay within SDK57, at or above the officially documented Hermes fixes.
+          const versions=JSON.parse(execFileSync('npm',['view','expo@~57.0.17','version','--json'],{encoding:'utf8'}));
+          const stable=(Array.isArray(versions)?versions:[versions]).filter(v=>/^57\.0\.\d+$/.test(v)).sort((a,b)=>Number(a.split('.')[2])-Number(b.split('.')[2]));
+          const target=stable.at(-1);if(!target||Number(target.split('.')[2])<17)throw Error('No verified stable SDK57 target');
+          const packed=JSON.parse(execFileSync('npm',['pack',`expo@${target}`,'--json','--pack-destination',dir],{encoding:'utf8'}))[0];
+          const bundle=JSON.parse(execFileSync('tar',['-xOf',path.join(dir,packed.filename),'package/bundledNativeModules.json'],{encoding:'utf8'}));
+          const changes=[];
+          for(const file of ['package.json','mobile/package.json']){
+            const p=JSON.parse(fs.readFileSync(file,'utf8'));
+            for(const section of ['dependencies','devDependencies'])for(const [name,before] of Object.entries(p[section]||{})){
+              const after=name==='expo'?`~${target}`:bundle[name];
+              if(after&&before!==after){p[section][name]=after;changes.push({file,section,name,before,after});}
+            }
+            fs.writeFileSync(file,JSON.stringify(p,null,2)+'\n');
+          }
+          fs.writeFileSync(path.join(temp,'dependency-evidence','alignment.json'),JSON.stringify({target,tarballIntegrity:packed.integrity,compatibilityManifest:bundle,changes},null,2));
+          console.log(JSON.stringify({target,changes},null,2));
+          JS
+          npm install
+          (cd mobile && npx expo install --check)
+      - name: Verify the complete candidate without waiving any gates
+        run: npm run verify:release
+      - name: Check Web behavior against the candidate dependencies
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-noto-cjk
+          npm run smoke:web
+      - name: Collect current advisory evidence
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/dependency-evidence"
+          npm audit --json > "$RUNNER_TEMP/dependency-evidence/after-audit.json" || true
+          git diff --stat > "$RUNNER_TEMP/dependency-evidence/diff-stat.txt"
+          git diff -- package.json mobile/package.json > "$RUNNER_TEMP/dependency-evidence/manifests.patch"
+      - name: Package only validated dependency files
+        id: package
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';import path from 'node:path';import {execFileSync} from 'node:child_process';import {createHash} from 'node:crypto';
+          const allowed=['package.json','mobile/package.json','package-lock.json'];
+          const changed=execFileSync('git',['diff','--name-only'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
+          if(changed.some(p=>!allowed.includes(p)))throw Error('Unexpected change outside dependency allowlist: '+changed.join(','));
+          const dest=path.join(process.env.RUNNER_TEMP,'validated-dependencies');fs.mkdirSync(path.join(dest,'mobile'),{recursive:true});
+          const manifest={head:process.env.HEAD_SHA,files:{}};
+          for(const p of allowed){const bytes=fs.readFileSync(p);JSON.parse(bytes);fs.writeFileSync(path.join(dest,p),bytes);manifest.files[p]=createHash('sha256').update(bytes).digest('hex');}
+          fs.writeFileSync(path.join(dest,'candidate.json'),JSON.stringify(manifest,null,2));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`changed=${changed.length>0}\n`);
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validated-dependencies
+          path: ${{ runner.temp }}/validated-dependencies
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-dependency-evidence
+          path: ${{ runner.temp }}/dependency-evidence
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maintenance-web-smoke
+          path: artifacts/web-smoke
+          if-no-files-found: ignore
+          retention-days: 14
+  commit-validated-lock:
+    needs: candidate
+    if: needs.candidate.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      # No npm install or app code executes in this write-capable job.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-dependencies
+          path: ${{ runner.temp }}/validated-dependencies
+      - name: Check base SHA, hashes and allowlist, then commit only this maintenance branch
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          target='fix/native-integrity-deps-20260906'
+          actual=$(git ls-remote origin "refs/heads/$target" | cut -f1)
+          test "$actual" = "$EXPECTED_HEAD"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+          const dir=path.join(process.env.RUNNER_TEMP,'validated-dependencies');const m=JSON.parse(fs.readFileSync(path.join(dir,'candidate.json')));
+          const allowed=['package.json','mobile/package.json','package-lock.json'];
+          if(m.head!==process.env.EXPECTED_HEAD||JSON.stringify(Object.keys(m.files).sort())!==JSON.stringify([...allowed].sort()))throw Error('Unexpected candidate');
+          for(const file of allowed){const b=fs.readFileSync(path.join(dir,file));if(createHash('sha256').update(b).digest('hex')!==m.files[file])throw Error('Hash mismatch');JSON.parse(b);fs.writeFileSync(file,b);}
+          JS
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- package.json mobile/package.json package-lock.json
+          git commit -m 'build: align validated Expo SDK57 dependencies and lockfile'
+          git push origin "HEAD:refs/heads/$target"
+          echo "Validated dependency commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
