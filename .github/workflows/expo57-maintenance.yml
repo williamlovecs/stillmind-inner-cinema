@@ -57,6 +57,11 @@ jobs:
           fs.copyFileSync('/tmp/expo57-meta/package/bundledNativeModules.json','artifacts/expo57-maintenance/sdk57-bundled.json');
           console.log(JSON.stringify(changes,null,2));
           JS
+          # The SDK56 peer graph cannot be updated consistently in-place. Preserve it,
+          # resolve the deliberately aligned manifests in this disposable runner only,
+          # and require full verification before committing the new lockfile.
+          cp package-lock.json artifacts/expo57-maintenance/original-package-lock.json
+          rm package-lock.json
           npm install
           (cd mobile && npx expo install --fix)
       - name: Verify complete repository release checks with aligned dependencies
@@ -70,7 +75,7 @@ jobs:
           git diff --binary -- package.json mobile/package.json package-lock.json > artifacts/expo57-maintenance/migration.patch
           cp package.json artifacts/expo57-maintenance/root-package.json
           cp mobile/package.json artifacts/expo57-maintenance/mobile-package.json
-          cp package-lock.json artifacts/expo57-maintenance/package-lock.json
+          test ! -f package-lock.json || cp package-lock.json artifacts/expo57-maintenance/package-lock.json
       - name: Commit only validated dependency manifests to the same non-production branch
         if: ${{ success() && steps.plan.outputs.needed == 'true' }}
         env:
