@@ -13,6 +13,7 @@
 # testing
 /coverage
 /.expo-ci/
+/artifacts/web-smoke/
 
 # next.js
 /.next/
