@@ -57,13 +57,15 @@ jobs:
           fs.copyFileSync('/tmp/expo57-meta/package/bundledNativeModules.json','artifacts/expo57-maintenance/sdk57-bundled.json');
           console.log(JSON.stringify(changes,null,2));
           JS
-          # The SDK56 peer graph cannot be updated consistently in-place. Preserve it,
-          # resolve the deliberately aligned manifests in this disposable runner only,
-          # and require full verification before committing the new lockfile.
+          # Do not ask npm to reconcile a live SDK56 tree against SDK57 manifests.
+          # Preserve the old lock for evidence, then solve from an empty install graph.
           cp package-lock.json artifacts/expo57-maintenance/original-package-lock.json
+          rm -rf node_modules mobile/node_modules
           rm package-lock.json
-          npm install
+          npm install --prefer-dedupe
           (cd mobile && npx expo install --fix)
+          npm dedupe
+          npm ci
       - name: Verify complete repository release checks with aligned dependencies
         if: steps.plan.outputs.needed == 'true'
         run: npm run verify:release
