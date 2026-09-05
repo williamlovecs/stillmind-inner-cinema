@@ -2,9 +2,26 @@
   "name": "stillmind-inner-cinema",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=20.19.4" },
-  "workspaces": ["mobile", "packages/*"],
-  "overrides": { "postcss": "8.5.25", "sharp": "0.35.3", "minimatch@3.1.5": { "brace-expansion": "1.1.18" } },
+  "engines": {
+    "node": ">=20.19.4"
+  },
+  "workspaces": [
+    "mobile",
+    "packages/*"
+  ],
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "0.35.3",
+    "minimatch@3.1.5": {
+      "brace-expansion": "1.1.18"
+    },
+    "xcode": {
+      "uuid": "11.1.1"
+    },
+    "query-string": {
+      "decode-uri-component": "0.5.0"
+    }
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -44,12 +61,27 @@
     "test:payment-interviews": "tsx --test test/payment-interviews.test.ts",
     "analyze:payment-interviews": "node scripts/summarize-payment-interviews.mjs",
     "test:audit": "tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs",
-    "smoke:web": "node scripts/smoke-web.mjs"
+    "smoke:web": "node scripts/smoke-web.mjs",
+    "postinstall": "node scripts/patch-query-string-cjs.mjs"
   },
-  "dependencies": { "@stillmind/content": "*", "@stillmind/domain": "*", "next": "^16.2.12", "react": "19.2.3", "react-dom": "19.2.3" },
+  "dependencies": {
+    "@stillmind/content": "*",
+    "@stillmind/domain": "*",
+    "next": "^16.2.12",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
   "devDependencies": {
-    "@expo/metro-runtime": "^56.0.15", "@tailwindcss/postcss": "^4", "@types/node": "^20", "@types/react": "^19",
-    "@types/react-dom": "^19", "eslint": "^9", "eslint-config-next": "^16.2.12", "expo-router": "~56.2.11",
-    "tailwindcss": "^4", "tsx": "^4.20.6", "typescript": "^5"
+    "@expo/metro-runtime": "~57.0.15",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.2.12",
+    "expo-router": "~57.0.19",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.6",
+    "typescript": "^5"
   }
 }
