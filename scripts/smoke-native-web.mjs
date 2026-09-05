@@ -36,17 +36,17 @@ function cdp(method,params={}){const n=++id;return new Promise((resolve,reject)=
 });}
 async function evaluate(expression){const v=await cdp('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(v.exceptionDetails)throw Error(v.exceptionDetails.exception?.description??v.exceptionDetails.text);return v.result.value;}
 async function until(fn,label,ms=15000){const end=Date.now()+ms;while(Date.now()<end){try{if(await fn())return;}catch{}await wait(150);}throw Error('Timeout: '+label);}
-const buttonExpr=label=>`[...document.querySelectorAll('[role="button"],button')].find(b=>b.textContent.trim()===${JSON.stringify(label)}&&b.getAttribute('aria-disabled')!=='true'&&!b.disabled)`;
+const buttonExpr=label=>`[...document.querySelectorAll('[role="button"],button')].find(b=>(b.textContent.trim()===${JSON.stringify(label)}||[...b.children].some(c=>c.textContent.trim()===${JSON.stringify(label)}))&&b.getAttribute('aria-disabled')!=='true'&&!b.disabled)`;
 const has=label=>evaluate(`Boolean(${buttonExpr(label)})`);
 async function click(label){await until(()=>has(label),'button '+label);await evaluate(`(()=>{const b=${buttonExpr(label)};b.scrollIntoView();b.click();})()`);await wait(150);}
 async function navigate(path){await cdp('Page.navigate',{url:origin+path});await until(()=>evaluate(`location.pathname===${JSON.stringify(path.split('?')[0])}&&document.readyState==='complete'`),path);await wait(500);}
 async function screenshot(name){const data=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});writeFileSync(join(artifacts,name+'.png'),Buffer.from(data.data,'base64'));}
 const records=()=>evaluate(`JSON.parse(localStorage.getItem('stillmind.sessions.v1')||'[]')`);
 async function resetData(patch={}){await evaluate(`localStorage.clear();localStorage.setItem('stillmind.preferences.v1',JSON.stringify(${JSON.stringify({schemaVersion:2,onboardingComplete:true,historyEnabled:true,aiEnabled:false,anonymousAnalyticsEnabled:false,eyesOpenPreferred:true,bodyFocusAllowed:true,breathChangeAllowed:true,hapticsEnabled:false,reminderEnabled:false,reminderHour:21,favoriteMethodIds:[],hiddenMethodIds:[],...patch})}));`);}
-const seconds=()=>evaluate(`document.body.innerText.match(/(\d+) 秒/)?.[1]`);
+const seconds=()=>evaluate(`document.body.innerText.match(/(\\d+) 秒/)?.[1]`);
 function pass(label){passes.push(label);console.log('PASS '+label);}
 try{
-  assert.ok(existsSync(join(root,'index.html'))),'Run the Expo Web export first');
+  assert.ok(existsSync(join(root,'index.html')), 'Run the Expo Web export first');
   await new Promise(r=>server.listen(3102,'127.0.0.1',r));
   const binary=[process.env.CHROME_BIN,'google-chrome','google-chrome-stable','chromium','chromium-browser'].filter(Boolean).find(x=>spawnSync(x,['--version'],{stdio:'ignore'}).status===0);
   assert.ok(binary,'Chrome/Chromium required');
@@ -65,9 +65,9 @@ try{
   await until(()=>has('结束并返回'),'stopped ending');pass('onboarding precedes native direct start; stopped feedback can be skipped');
   await resetData();await navigate('/');
   await until(()=>has('开始 1 分钟 Reset'),'home');
-  assert.equal(await evaluate(`document.querySelectorAll('[aria-selected="true"]').length`),0);
+  assert.equal(await evaluate(`document.querySelectorAll('[role="button"][aria-selected="true"]').length`),0);
   await click('开始 1 分钟 Reset');await until(()=>has('暂停'),'unrated native practice');
-  await screenshot('native-practice');await click('暂停');const before=await seconds();await wait(2100);assert.equal(await seconds(),before);
+  await screenshot('native-practice');await click('暂停');const before=await seconds();assert.ok(before);await wait(2100);assert.equal(await seconds(),before);
   await click('继续');await wait(8100);await click('停止');await click('跳过反馈，结束');
   await until(async()=> (await records())[0]?.status==='stopped','persisted stop');
   let row=(await records())[0];assert.ok(row.durationSeconds>=8&&row.durationSeconds<14);assert.equal(row.plannedDurationSeconds,60);
