@@ -1,0 +1,58 @@
+name: Handoff evidence
+on:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: handoff-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+      - name: Package tracked source and exact comparison
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p artifacts/handoff-source
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, zipfile
+          out = pathlib.Path('artifacts/handoff-source')
+          head, base = os.environ['HEAD_SHA'], os.environ['BASE_SHA']
+          paths = subprocess.check_output(['git','ls-tree','-r','--name-only',head], text=True).splitlines()
+          allowed_roots = ('src/', 'packages/', 'mobile/', 'test/', 'scripts/', 'public/', '.github/', 'docs/engineering/')
+          allowed_root_files = {'package.json','package-lock.json','AGENTS.md','README.md','tsconfig.json','next.config.ts','next.config.js','eslint.config.mjs','postcss.config.mjs','.gitignore'}
+          extensions = {'.ts','.tsx','.js','.jsx','.mjs','.cjs','.json','.css','.md','.yaml','.yml','.svg','.png','.jpg','.jpeg','.webp'}
+          manifest = {'base_sha':base, 'head_sha':head, 'files':[]}
+          with zipfile.ZipFile(out/'source.zip','w',zipfile.ZIP_DEFLATED) as z:
+            for path in paths:
+              p=pathlib.PurePosixPath(path)
+              if path not in allowed_root_files and not (path.startswith(allowed_roots) and p.suffix.lower() in extensions): continue
+              if p.name.startswith('.env') or any(x in p.parts for x in ('node_modules','.git','.expo','.vercel')): continue
+              data=subprocess.check_output(['git','show',f'{head}:{path}'])
+              z.writestr(path,data)
+              manifest['files'].append({'path':path,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()})
+          (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+          (out/'candidate.patch').write_bytes(subprocess.check_output(['git','diff','--binary',base,head,'--','.']))
+          print(f'Archived {len(manifest["files"])} tracked files for {head}; excludes env, credentials and font files.')
+          PY
+      - name: Capture current public registry metadata without changing the lockfile
+        run: |
+          npm view expo dist-tags --json > artifacts/handoff-source/expo-dist-tags.json
+          npm view expo@57.0.9 version peerDependencies --json > artifacts/handoff-source/expo-57.0.9.json 2>&1 || true
+          npm view react-native@0.86.2 version dependencies.hermes-compiler --json > artifacts/handoff-source/rn-0.86.2.json 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: handoff-source
+          path: artifacts/handoff-source
+          retention-days: 14
+          if-no-files-found: error
