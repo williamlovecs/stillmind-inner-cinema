@@ -69,18 +69,35 @@ jobs:
           const packed=JSON.parse(execFileSync('npm',['pack',`expo@${target}`,'--json','--pack-destination',dir],{encoding:'utf8'}))[0];
           const bundle=JSON.parse(execFileSync('tar',['-xOf',path.join(dir,packed.filename),'package/bundledNativeModules.json'],{encoding:'utf8'}));
           const changes=[];
+          const previousLock=JSON.parse(fs.readFileSync('package-lock.json','utf8'));
+          const desired=new Map();
           for(const file of ['package.json','mobile/package.json']){
             const p=JSON.parse(fs.readFileSync(file,'utf8'));
             for(const section of ['dependencies','devDependencies'])for(const [name,before] of Object.entries(p[section]||{})){
               const after=name==='expo'?`~${target}`:bundle[name];
               if(after&&before!==after){p[section][name]=after;changes.push({file,section,name,before,after});}
             }
+            desired.set(file,JSON.parse(JSON.stringify(p)));
+            // Preserve every unrelated direct dependency's resolved version during a clean solve.
+            for(const section of ['dependencies','devDependencies'])for(const name of Object.keys(p[section]||{})){
+              if(name==='expo'||bundle[name]||name.startsWith('@stillmind/'))continue;
+              const local=file==='mobile/package.json'?previousLock.packages[`mobile/node_modules/${name}`]:undefined;
+              const resolved=local??previousLock.packages[`node_modules/${name}`];
+              if(resolved?.version)p[section][name]=resolved.version;
+            }
             fs.writeFileSync(file,JSON.stringify(p,null,2)+'\n');
           }
           fs.writeFileSync(path.join(temp,'dependency-evidence','alignment.json'),JSON.stringify({target,tarballIntegrity:packed.integrity,compatibilityManifest:bundle,changes},null,2));
           console.log(JSON.stringify({target,changes},null,2));
+          // Disposable CI checkout only. Save baseline lock and eliminate the stale SDK56 peer graph.
+          fs.copyFileSync('package-lock.json',path.join(temp,'dependency-evidence','baseline-lock.json'));
+          fs.rmSync('node_modules',{recursive:true,force:true});fs.rmSync('mobile/node_modules',{recursive:true,force:true});
+          fs.rmSync('package-lock.json');
+          execFileSync('npm',['install'],{stdio:'inherit'});
+          for(const [file,p] of desired)fs.writeFileSync(file,JSON.stringify(p,null,2)+'\n');
+          execFileSync('npm',['install','--package-lock-only','--ignore-scripts'],{stdio:'inherit'});
+          execFileSync('npm',['ci'],{stdio:'inherit'});
           JS
-          npm install
           (cd mobile && npx expo install --check)
       - name: Verify the complete candidate without waiving any gates
         run: npm run verify:release
