@@ -2,7 +2,7 @@
 
 ## 唯一接手入口
 
-继续分支 `fix/native-integrity-deps-20260906`，Draft PR #3。它包含 PR #1 的完整 Web 修复，PR #3 的 base 是 PR #1 分支，不是 main。
+继续分支 `fix/native-integrity-deps-20260906`，Draft PR #3。它包含 PR #1 的完整 Web 修复，PR #3 现在直接以 main 为 base；不要再合并已分叉的 PR #1 或已关闭的 PR #4。
 
 - 原始 main：`b4cf885eae5105cb1266d82c040f8ecab7e168b9`。
 - Web 修复基准：`cfbbac68a4bb56b7f2fec8019bf34c832fc9dd68`，PR #1。
@@ -12,6 +12,12 @@
 本轮未合并 main，未主动发布生产。GitHub/Vercel 自动 PR Preview 不等于正式发布。保护原代码指保留 main、可审阅分支与回退路径，不代表修复分支零改动或零风险。
 
 此前聊天中的 `StillMind_Session_Trust_Candidate_20260906.zip` 实际只有交付说明，不是代码包，请弃用。真实代码以本分支和 Actions 的 `source-handoff` 为准；该包带源码逐文件哈希和相对原 main/PR #1 的补丁，不含 node_modules、密钥或字体文件。
+
+## 第二轮新增入口
+
+先读 `ROUND2_REVIEW_2026-09-06.md`；新增API边界、非法评分、周报归因、统计撤回和内测分析修复。此轮结果必须以最新head的CI为准，不能沿用6b944e6的100项通过。
+
+执行材料：`docs/research/SEED_TEST_LAUNCH_PACK_ZH.md`、`CONTENT_RIGHTS_MATRIX.md`、`docs/app-store/PREFLIGHT_2026-09-06.md`。版权/真人/账号门槛仍未完成。
 
 ## 已做什么
 

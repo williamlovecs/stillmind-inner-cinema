@@ -72,6 +72,7 @@ export function AppProvider({ children }: PropsWithChildren) {
   const updatePreferences = useCallback(async (patch: Partial<Preferences>) => {
     const next = { ...preferencesRef.current, ...patch };
     preferencesRef.current = next;
+    if (!next.anonymousAnalyticsEnabled) configureAnalytics(undefined);
     setPreferences(next);
     await storageQueue.run(() => AsyncStorage.setItem(PREFS_KEY, JSON.stringify(next)));
   }, [storageQueue]);

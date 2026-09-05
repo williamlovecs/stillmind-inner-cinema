@@ -2,10 +2,14 @@ import type { AnalyticsEvent, AnalyticsEventName, AnalyticsEvents, WeeklyNextSte
 
 export type { AnalyticsEvent, AnalyticsEventName, AnalyticsEvents, WeeklyNextStepReason } from "@stillmind/domain";
 
-type AnalyticsSink = (event: AnalyticsEvent) => void | Promise<void>;
+type AnalyticsSink = (event: AnalyticsEvent, signal?: AbortSignal) => void | Promise<void>;
 let sink: AnalyticsSink | undefined;
+let consentScope: AbortController | undefined;
 
 export function configureAnalytics(nextSink?: AnalyticsSink) {
+  // Reconfiguration/withdrawal invalidates queued work, not just future track calls.
+  consentScope?.abort();
+  consentScope = nextSink ? new AbortController() : undefined;
   sink = nextSink;
 }
 
@@ -13,7 +17,7 @@ export function track<Name extends AnalyticsEventName>(name: Name, payload: Anal
   if (!sink) return;
   const event = { schemaVersion: 1, name, payload } as AnalyticsEvent;
   try {
-    void Promise.resolve(sink(event)).catch(() => undefined);
+    void Promise.resolve(sink(event, consentScope?.signal)).catch(() => undefined);
   } catch {
     // Analytics must never interrupt a practice.
   }

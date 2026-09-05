@@ -32,14 +32,16 @@ async function anonymousId(): Promise<string> {
   try { return await task; } finally { if (identityTask === task) identityTask = undefined; }
 }
 
-export async function sendAnonymousAnalytics(event: AnalyticsEvent): Promise<void> {
+export async function sendAnonymousAnalytics(event: AnalyticsEvent, consentSignal?: AbortSignal): Promise<void> {
   const baseUrl = apiBaseUrl();
-  if (!baseUrl) return;
+  if (!baseUrl || consentSignal?.aborted) return;
   const generation = identityGeneration;
   const id = await anonymousId();
-  if (generation !== identityGeneration) return;
+  if (generation !== identityGeneration || consentSignal?.aborted) return;
   const envelope: AnalyticsEnvelope = { ...event, anonymousId: id, platform: platform() };
   const controller = new AbortController();
+  const cancel = () => controller.abort();
+  consentSignal?.addEventListener("abort", cancel, { once: true });
   const timeout = setTimeout(() => controller.abort(), 3_500);
   try {
     const response = await fetch(`${baseUrl}/api/events`, {
@@ -53,6 +55,7 @@ export async function sendAnonymousAnalytics(event: AnalyticsEvent): Promise<voi
     if (result.accepted !== true) throw new Error("Analytics sink is unavailable; event not stored");
   } finally {
     clearTimeout(timeout);
+    consentSignal?.removeEventListener("abort", cancel);
   }
 }
 
