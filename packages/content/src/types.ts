@@ -15,7 +15,8 @@ export type PracticeStep = {
 export type PracticeVariant = {
   id: string;
   methodId: MethodId;
-  contentVersion: "1.0.0";
+  // 1.0.0 keeps existing offline scripts; 1.1.0 records the revised generated-session contract.
+  contentVersion: "1.0.0" | "1.1.0";
   minutes: DurationMinutes;
   title: string;
   subtitle: string;
