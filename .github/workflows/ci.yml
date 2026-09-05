@@ -23,6 +23,7 @@ jobs:
           node-version: 22.14.0
           cache: npm
       - name: Install dependencies
+        id: install
         run: npm ci
       - name: Capture dependency advisories (report only; no automatic upgrades)
         run: |
@@ -35,19 +36,36 @@ jobs:
           fi
       - name: Run release verification
         run: npm run verify:release
-      - name: Browser regression against local production build
-        run: npm run smoke:web
-      - name: Save browser regression artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-smoke
-          path: artifacts/web-smoke
-          if-no-files-found: ignore
+      - name: Collect bundle export evidence when release validation fails
+        if: ${{ !cancelled() && failure() && steps.install.outcome == 'success' }}
+        run: npm run build:mobile:ios && npm run build:mobile:web
       - name: Save dependency advisory report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dependency-audit
           path: artifacts/dependency-audit
+          if-no-files-found: ignore
+  web-regression:
+    name: Web production browser regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Build Web and exercise real browser paths
+        run: npm run build && npm run smoke:web
+      - name: Save browser regression artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-smoke
+          path: artifacts/web-smoke
           if-no-files-found: ignore
