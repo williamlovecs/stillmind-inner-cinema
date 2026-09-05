@@ -13,6 +13,7 @@
 # testing
 /coverage
 /.expo-ci/
+/artifacts/
 
 # next.js
 /.next/
@@ -32,7 +33,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 !.env.example
 
@@ -43,4 +44,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# Private participant data / permission evidence must never enter public source.
+/private-research/
