@@ -35,6 +35,8 @@ export function MethodPracticeExperience({
   stepCount,
   seconds,
   trigger = "",
+  paused = false,
+  elapsedSeconds = 0,
 }: {
   methodId: MethodId;
   title: string;
@@ -43,9 +45,11 @@ export function MethodPracticeExperience({
   stepCount: number;
   seconds: number;
   trigger?: string;
+  paused?: boolean;
+  elapsedSeconds?: number;
 }) {
   const [thoughtStates, setThoughtStates] = useState<Record<string, ThoughtState>>({});
-  const [observerName, setObserverName] = useState("Will");
+  const [observerName, setObserverName] = useState("这个人");
   const [observerSentence, setObserverSentence] = useState(trigger.trim() || "我现在很想证明自己没错。");
   const [manualLogoutMode, setManualLogoutMode] = useState<"解释" | "参与" | "只读">();
   const [bodyZone, setBodyZone] = useState<(typeof BODY_ZONES)[number]["id"]>("feet");
@@ -60,14 +64,20 @@ export function MethodPracticeExperience({
   const [manualCinemaLens, setManualCinemaLens] = useState<number>();
 
   useEffect(() => {
-    if (methodId !== "trigger-journal") return;
+    if (methodId !== "trigger-journal" || paused) return;
     const timer = setInterval(() => {
       setStability((current) => Math.max(20, Math.min(100, current + (holding ? 4 : -1))));
     }, 260);
     return () => clearInterval(timer);
-  }, [holding, methodId]);
+  }, [holding, methodId, paused]);
 
-  const phase = Math.floor(seconds / 3) % 2 === 0 ? "吸气" : "呼气";
+  useEffect(() => {
+    if (!paused) return;
+    const timer = setTimeout(() => setHolding(false), 0);
+    return () => clearTimeout(timer);
+  }, [paused]);
+
+  const phase = Math.floor(elapsedSeconds / 3) % 2 === 0 ? "吸气" : "呼气";
   const logoutMode = manualLogoutMode ?? (stepIndex >= 2 ? "只读" : stepIndex === 1 ? "参与" : "解释");
   const focusLevel = manualFocusLevel ?? Math.min(stepIndex, FOCUS_LEVELS.length - 1);
   const zoomLevel = manualZoomLevel ?? Math.min(stepIndex, ZOOM_LEVELS.length - 1);
@@ -82,14 +92,8 @@ export function MethodPracticeExperience({
   ] as const;
   const cinemaLensIndex = manualCinemaLens ?? Math.min(stepIndex, 2);
   const cinemaLens = cinemaLenses[cinemaLensIndex];
-  const triggerExcerpt = trigger.trim().slice(0, 90);
-  const cinemaCopy = triggerExcerpt
-    ? [
-      `“${triggerExcerpt}”`,
-      `一个角色正在经历：${triggerExcerpt}`,
-      "这是一段正在经过的剧情，不是全部的你",
-    ][cinemaLensIndex]
-    : cinemaLens.copy;
+  // Show the actual offline/AI step. A change of visual lens is not a measured mental change.
+  const cinemaCopy = instruction;
 
   function cycleThought(thought: string) {
     setThoughtStates((current) => {
@@ -109,11 +113,11 @@ export function MethodPracticeExperience({
   if (methodId === "paced-breath") {
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <Pressable accessibilityRole="button" accessibilityLabel={phase === "呼气" ? "呼气时轻点记录一次" : "跟随吸气"} onPress={() => { if (phase === "呼气") setExhaleTaps((value) => value + 1); }} style={({ pressed }) => pressed && styles.pressed}>
-          <BreathingOrb phase={phase} seconds={seconds} />
+        <Pressable disabled={paused} accessibilityRole="button" accessibilityLabel={phase === "呼气" ? "呼气时轻点记录一次" : "跟随吸气"} onPress={() => { if (phase === "呼气") setExhaleTaps((value) => value + 1); }} style={({ pressed }) => pressed && styles.pressed}>
+          <BreathingOrb phase={phase} seconds={seconds} paused={paused} elapsedSeconds={elapsedSeconds} />
         </Pressable>
-        <Metric label="呼气锚点" value={exhaleTaps > 0 ? `${exhaleTaps} 次` : "呼气时可轻点"} />
-        <Text style={styles.helper}>跟着光圈。呼气时在心里数数；轻点只是可选的回到当下，不用控制呼吸。</Text>
+        <Metric label="主动轻点次数" value={exhaleTaps > 0 ? `${exhaleTaps} 次` : "呼气时可轻点"} />
+        <Text style={styles.helper}>光圈只提示节奏，不检测呼吸。轻点可选；不舒服就停止。</Text>
       </ExperienceShell>
     );
   }
@@ -121,7 +125,7 @@ export function MethodPracticeExperience({
   if (methodId === "wide-gaze") {
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <Pressable
+        <Pressable disabled={paused}
           accessibilityLabel="走神了，点一下回到烛光"
           onPress={() => setReturns((value) => value + 1)}
           style={({ pressed }) => [styles.candleStage, pressed && styles.pressed]}
@@ -131,7 +135,7 @@ export function MethodPracticeExperience({
           <View style={styles.candleBody} />
           <Text style={styles.stageHint}>走神时点一下，回到火焰</Text>
         </Pressable>
-        <Metric label="回到凝视对象" value={`${returns} 次`} />
+        <Metric label="主动点击次数" value={`${returns} 次`} />
       </ExperienceShell>
     );
   }
@@ -143,13 +147,13 @@ export function MethodPracticeExperience({
           <View style={styles.observerCore}><Text style={styles.observerCoreText}>看见 {seenThoughts}</Text></View>
           <View style={styles.wrap}>
             {THOUGHTS.map((thought) => (
-              <Pressable key={thought} onPress={() => cycleThought(thought)} style={[styles.thoughtChip, thoughtStates[thought] === "落下" && styles.thoughtFaded]}>
+              <Pressable disabled={paused} key={thought} onPress={() => cycleThought(thought)} style={[styles.thoughtChip, thoughtStates[thought] === "落下" && styles.thoughtFaded]}>
                 <Text style={styles.thoughtText}>{thought}{thoughtStates[thought] ? ` · ${thoughtStates[thought]}` : ""}</Text>
               </Pressable>
             ))}
           </View>
         </View>
-        <Text style={styles.helper}>点一个念头，只标记它的升起、停留和落下。</Text>
+        <Text style={styles.helper}>这里是示例念头，不是系统对你的判断；不符合可以忽略。</Text>
       </ExperienceShell>
     );
   }
@@ -162,13 +166,13 @@ export function MethodPracticeExperience({
           <Text style={styles.cinemaCopy}>{cinemaCopy}</Text>
           <View style={styles.lensTrack}>
             {cinemaLenses.map((item, index) => (
-              <Pressable accessibilityRole="button" accessibilityState={{ selected: index === cinemaLensIndex }} onPress={() => setManualCinemaLens(index)} key={item.label} style={[styles.lensDot, index === cinemaLensIndex && styles.lensDotActive]}>
+              <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: index === cinemaLensIndex }} onPress={() => setManualCinemaLens(index)} key={item.label} style={[styles.lensDot, index === cinemaLensIndex && styles.lensDotActive]}>
                 <Text style={[styles.lensText, index === cinemaLensIndex && styles.lensTextActive]}>{item.label}</Text>
               </Pressable>
             ))}
           </View>
         </View>
-        <Metric label="当前位置" value={cinemaLens.label} />
+        <Metric label="当前画面视角" value={cinemaLens.label} />
         <Text style={styles.helper}>轻点三个视角，感受同一件事在不同观看位置里的变化。</Text>
       </ExperienceShell>
     );
@@ -178,8 +182,8 @@ export function MethodPracticeExperience({
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
         <View style={styles.inputStack}>
-          <TextInput value={observerName} onChangeText={setObserverName} placeholder="你的名字" placeholderTextColor={colors.textFaint} style={styles.input} />
-          <TextInput value={observerSentence} onChangeText={setObserverSentence} placeholder="写一句脑内正在说的话" placeholderTextColor={colors.textFaint} multiline style={[styles.input, styles.multiline]} />
+          <TextInput editable={!paused} value={observerName} onChangeText={setObserverName} placeholder="你的名字" placeholderTextColor={colors.textFaint} style={styles.input} />
+          <TextInput editable={!paused} value={observerSentence} onChangeText={setObserverSentence} placeholder="写一句脑内正在说的话" placeholderTextColor={colors.textFaint} multiline style={[styles.input, styles.multiline]} />
         </View>
         <Comparison label="名字视角" value={shiftedSentence} />
         <Comparison label="再退一步" value={thirdPersonSentence} warm />
@@ -188,17 +192,16 @@ export function MethodPracticeExperience({
   }
 
   if (methodId === "logout-pause") {
-    const quiet = logoutMode === "只读" ? 82 : logoutMode === "参与" ? 42 : 18;
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
         <View style={styles.segmented}>
           {(["解释", "参与", "只读"] as const).map((item) => (
-            <Pressable key={item} onPress={() => setManualLogoutMode(item)} style={[styles.segment, logoutMode === item && styles.segmentActive]}>
+            <Pressable disabled={paused} key={item} onPress={() => setManualLogoutMode(item)} style={[styles.segment, logoutMode === item && styles.segmentActive]}>
               <Text style={[styles.segmentText, logoutMode === item && styles.segmentTextActive]}>{item}</Text>
             </Pressable>
           ))}
         </View>
-        <ProgressMetric label="信息互动" endLabel="只读模式" value={quiet} />
+        <Metric label="当前画面模式" value={logoutMode} />
         <Text style={styles.helper}>{logoutMode === "只读" ? "现在先不解释，也不回应。让信息经过。" : "看见自己正在加入故事，然后试试切到“只读”。"}</Text>
       </ExperienceShell>
     );
@@ -209,12 +212,13 @@ export function MethodPracticeExperience({
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
         <View style={styles.bodyMap}>
           {BODY_ZONES.map((zone) => (
-            <Pressable key={zone.id} onPress={() => setBodyZone(zone.id)} style={[styles.bodyZone, bodyZone === zone.id && styles.bodyZoneActive]}>
+            <Pressable disabled={paused} key={zone.id} onPress={() => setBodyZone(zone.id)} style={[styles.bodyZone, bodyZone === zone.id && styles.bodyZoneActive]}>
               <Text style={[styles.bodyZoneText, bodyZone === zone.id && styles.bodyZoneTextActive]}>{zone.label}</Text>
             </Pressable>
           ))}
         </View>
-        <Metric label="只观察，不解释" value={`${selectedZone.label} · ${selectedZone.quality}`} />
+        <Metric label="只观察，不解释" value={selectedZone.label} />
+        <Text style={styles.helper}>留意真实感觉；也可以没有明显感觉。不舒服的部位可以跳过。</Text>
       </ExperienceShell>
     );
   }
@@ -229,7 +233,7 @@ export function MethodPracticeExperience({
         </View>
         <View style={styles.segmented}>
           {(["靠近", "保持距离", "暂不接触"] as const).map((item) => (
-            <Pressable key={item} onPress={() => setBoundary(item)} style={[styles.segment, boundary === item && styles.segmentWarm]}>
+            <Pressable disabled={paused} key={item} onPress={() => setBoundary(item)} style={[styles.segment, boundary === item && styles.segmentWarm]}>
               <Text style={[styles.segmentText, boundary === item && styles.segmentTextActive]}>{item}</Text>
             </Pressable>
           ))}
@@ -246,7 +250,7 @@ export function MethodPracticeExperience({
           <View style={styles.awarenessRing} />
           <View style={styles.wrapCentered}>
             {AWARENESS_FIELDS.map((field) => (
-              <Pressable key={field} onPress={() => toggleAwareness(field)} style={[styles.awarenessChip, awarenessFields.includes(field) && styles.awarenessChipActive]}>
+              <Pressable disabled={paused} key={field} onPress={() => toggleAwareness(field)} style={[styles.awarenessChip, awarenessFields.includes(field) && styles.awarenessChipActive]}>
                 <Text style={[styles.awarenessText, awarenessFields.includes(field) && styles.awarenessTextActive]}>{field}</Text>
               </Pressable>
             ))}
@@ -263,7 +267,7 @@ export function MethodPracticeExperience({
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
         <View style={styles.focusStage}>
           {FOCUS_LEVELS.map((item, index) => (
-            <Pressable key={item.label} onPress={() => setManualFocusLevel(index)} style={[styles.focusRing, { width: 210 - index * 38, height: 210 - index * 38, borderRadius: 120 - index * 18 }, focusLevel === index && styles.focusRingActive]}>
+            <Pressable disabled={paused} key={item.label} onPress={() => setManualFocusLevel(index)} style={[styles.focusRing, { width: 210 - index * 38, height: 210 - index * 38, borderRadius: 120 - index * 18 }, focusLevel === index && styles.focusRingActive]}>
               {focusLevel === index ? <Text style={styles.focusRingText}>{item.label}</Text> : null}
             </Pressable>
           ))}
@@ -276,7 +280,7 @@ export function MethodPracticeExperience({
   if (methodId === "trigger-journal") {
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <Pressable
+        <Pressable disabled={paused}
           accessibilityLabel="按住画面，让波动慢下来"
           onPressIn={() => setHolding(true)}
           onPressOut={() => setHolding(false)}
@@ -285,7 +289,8 @@ export function MethodPracticeExperience({
           <View style={[styles.stabilityPattern, { transform: [{ rotate: `${stability * 1.8}deg` }, { scale: 0.8 + stability / 500 }] }]} />
           <Text style={styles.stageHint}>{holding ? "正在稳定" : "按住画面"}</Text>
         </Pressable>
-        <ProgressMetric label="波动" endLabel="稳定" value={stability} />
+        <ProgressMetric label="画面转动" endLabel="画面变慢" value={stability} />
+        <Text style={styles.helper}>这个变化来自按压操作，不代表身体或心理测量。</Text>
       </ExperienceShell>
     );
   }
@@ -300,7 +305,7 @@ export function MethodPracticeExperience({
         </View>
         <View style={styles.segmented}>
           {ZOOM_LEVELS.map((item, index) => (
-            <Pressable key={item.label} onPress={() => setManualZoomLevel(index)} style={[styles.segment, zoomLevel === index && styles.segmentActive]}>
+            <Pressable disabled={paused} key={item.label} onPress={() => setManualZoomLevel(index)} style={[styles.segment, zoomLevel === index && styles.segmentActive]}>
               <Text style={[styles.segmentText, zoomLevel === index && styles.segmentTextActive]}>{item.label}</Text>
             </Pressable>
           ))}

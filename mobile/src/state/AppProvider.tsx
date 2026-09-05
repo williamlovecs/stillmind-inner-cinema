@@ -5,6 +5,7 @@ import type { MethodId, PracticeSession } from "@stillmind/domain";
 import { deleteAllSessions as clearStoredSessions, deleteSession as removeStoredSession, loadSessions, saveSession } from "@/storage/database";
 import { DEFAULT_PREFERENCES, normalizePreferences, type Preferences } from "@/state/preferences";
 import { configureAnalytics, track } from "@/lib/analytics";
+import { createSerialTaskQueue } from "@/lib/serial-tasks";
 import { clearAnonymousAnalyticsIdentity, sendAnonymousAnalytics } from "@/lib/analytics-sink";
 
 export type { Preferences } from "@/state/preferences";
@@ -32,6 +33,9 @@ type AppContextValue = {
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 export function AppProvider({ children }: PropsWithChildren) {
+  const [storageQueue] = useState(createSerialTaskQueue);
+  const knownSessionIds = useRef(new Set<string>());
+  const deletedSessionIds = useRef(new Set<string>());
   const [ready, setReady] = useState(false);
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   const preferencesRef = useRef(DEFAULT_PREFERENCES);
@@ -49,9 +53,10 @@ export function AppProvider({ children }: PropsWithChildren) {
           setPreferences(normalized);
         } catch { /* keep safe defaults */ }
       }
+      storedSessions.forEach(session => knownSessionIds.current.add(session.id));
       setSessions(storedSessions);
       setReady(true);
-    }).catch(() => setReady(true));
+    }).catch(() => { if (active) setReady(true); });
     return () => { active = false; };
   }, []);
 
@@ -68,27 +73,39 @@ export function AppProvider({ children }: PropsWithChildren) {
     const next = { ...preferencesRef.current, ...patch };
     preferencesRef.current = next;
     setPreferences(next);
-    await AsyncStorage.setItem(PREFS_KEY, JSON.stringify(next));
-  }, []);
+    await storageQueue.run(() => AsyncStorage.setItem(PREFS_KEY, JSON.stringify(next)));
+  }, [storageQueue]);
 
   const addSession = useCallback(async (session: PracticeSession) => {
-    if (!preferences.historyEnabled) return;
-    setSessions((current) => [session, ...current.filter((item) => item.id !== session.id)]);
-    await saveSession(session);
-  }, [preferences.historyEnabled]);
+    if (!preferencesRef.current.historyEnabled || deletedSessionIds.current.has(session.id)) return;
+    knownSessionIds.current.add(session.id);
+    setSessions(current => [session, ...current.filter(item => item.id !== session.id)]);
+    await storageQueue.run(async () => {
+      if (!preferencesRef.current.historyEnabled || deletedSessionIds.current.has(session.id)) return;
+      await saveSession(session);
+    });
+  }, [storageQueue]);
 
   const deleteSession = useCallback(async (id: string) => {
-    setSessions((current) => current.filter((item) => item.id !== id));
-    await removeStoredSession(id);
+    // A pending finish/feedback write cannot resurrect a deleted attempt.
+    deletedSessionIds.current.add(id);
+    setSessions(current => current.filter(item => item.id !== id));
+    await storageQueue.run(() => removeStoredSession(id));
     track("data_deleted", { scope: "session" });
-  }, []);
+  }, [storageQueue]);
 
   const deleteAllData = useCallback(async () => {
-    setSessions([]);
+    knownSessionIds.current.forEach(id => deletedSessionIds.current.add(id));
+    setSessions([]); setPendingResetDraft(undefined);
     preferencesRef.current = DEFAULT_PREFERENCES;
-    setPreferences(DEFAULT_PREFERENCES);
-    await Promise.all([clearStoredSessions(), AsyncStorage.removeItem(PREFS_KEY), clearAnonymousAnalyticsIdentity()]);
-  }, []);
+    setPreferences(DEFAULT_PREFERENCES); configureAnalytics(undefined);
+    // Clear runs after any in-flight database mutation; future writes to old IDs are ignored.
+    await storageQueue.run(async () => {
+      await clearStoredSessions();
+      await AsyncStorage.removeItem(PREFS_KEY);
+      await clearAnonymousAnalyticsIdentity();
+    });
+  }, [storageQueue]);
 
   const toggleFavorite = useCallback(async (id: MethodId) => {
     const favorites = preferences.favoriteMethodIds.includes(id)

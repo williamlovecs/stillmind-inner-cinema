@@ -21,6 +21,7 @@ export function isPracticeSession(value: unknown): value is PracticeSession {
     && (item.durationSource === undefined || item.durationSource === "active-clock")
     && optionalRating(item.activationBefore) && optionalRating(item.activationAfter)
     && (item.result === undefined || RESULTS.has(item.result))
+    && (item.reportedResult === undefined || ["better", "same", "worse"].includes(item.reportedResult))
     && (item.reuseIntent === undefined || REUSE_INTENTS.has(item.reuseIntent))
     && typeof item.contentVersion === "string"
     && (item.rawTrigger === undefined || (typeof item.rawTrigger === "string" && item.rawTrigger.length <= 5000))

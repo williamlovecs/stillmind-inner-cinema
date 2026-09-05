@@ -59,6 +59,8 @@ export type PracticeSession = {
   plannedDurationSeconds?: number;
   durationSource?: "active-clock";
   activationBefore?: ActivationLevel; activationAfter?: ActivationLevel; result?: SessionResult;
+  // Optional direct feeling, kept separately from the numeric change.
+  reportedResult?: "better" | "same" | "worse";
   reuseIntent?: "yes" | "unsure" | "no"; groundedActionId?: string;
   rawTrigger?: string; privateNote?: string; contentVersion: string;
 };
