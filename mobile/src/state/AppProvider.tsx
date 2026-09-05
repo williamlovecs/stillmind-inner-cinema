@@ -73,8 +73,8 @@ export function AppProvider({ children }: PropsWithChildren) {
 
   const addSession = useCallback(async (session: PracticeSession) => {
     if (!preferences.historyEnabled) return;
-    setSessions((current) => [session, ...current.filter((item) => item.id !== session.id)]);
     await saveSession(session);
+    setSessions((current) => [session, ...current.filter((item) => item.id !== session.id)]);
   }, [preferences.historyEnabled]);
 
   const deleteSession = useCallback(async (id: string) => {

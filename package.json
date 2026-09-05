@@ -43,7 +43,7 @@
     "verify:release": "npm run verify && npm run check:release-readiness && npm run doctor:mobile && npm run build:mobile:ios && npm run build:mobile:web",
     "test:payment-interviews": "tsx --test test/payment-interviews.test.ts",
     "analyze:payment-interviews": "node scripts/summarize-payment-interviews.mjs",
-    "test:audit": "tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs",
+    "test:audit": "tsx --test test/session-integrity.test.ts test/native-session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs",
     "smoke:web": "node scripts/smoke-web.mjs"
   },
   "dependencies": { "@stillmind/content": "*", "@stillmind/domain": "*", "next": "^16.2.12", "react": "19.2.3", "react-dom": "19.2.3" },

@@ -31,13 +31,14 @@ export async function requestCinema(trigger: string, timeoutMs = 10_000): Promis
   finally { clearTimeout(timeout); }
 }
 export function cinemaToPractice(result: CinemaResult): PracticeVariant {
-  const sceneSeconds = Math.floor(42 / Math.max(result.cinema.scenes.length, 1));
+  const scenes = result.cinema.scenes.slice(0, 3);
+  const sceneSeconds = Math.floor(42 / Math.max(scenes.length, 1));
   return {
     id: `inner-cinema-live-${Date.now()}`, methodId: "inner-cinema", contentVersion: "1.0.0", minutes: 1,
     title: `《${result.cinema.title}》`, subtitle: result.source === "stepfun" ? "StepFun 实时分镜" : "稳定分镜",
     preparation: "这是一副观看镜头，不是对你的分析。",
     steps: [
-      ...result.cinema.scenes.slice(0, 3).map((scene, index) => ({ id: `scene-${index + 1}`, kind: "observe" as const, title: scene.label, instruction: scene.line, seconds: sceneSeconds, haptic: "soft" as const })),
+      ...scenes.map((scene, index) => ({ id: `scene-${index + 1}`, kind: "observe" as const, title: scene.label, instruction: scene.line, seconds: sceneSeconds, haptic: "soft" as const })),
       { id: "audience", kind: "observe" as const, title: "观众席", instruction: result.cinema.audienceView, seconds: 10, haptic: "soft" as const },
       { id: "return", kind: "close" as const, title: "离开银幕", instruction: result.cinema.witnessView, seconds: 8, haptic: "soft" as const },
     ],
