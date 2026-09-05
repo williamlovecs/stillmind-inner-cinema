@@ -17,7 +17,7 @@ test("bounded JSON rejects actual UTF-8 bytes with absent or forged Content-Leng
 });
 test("bounded JSON decodes UTF-8 split across arbitrary stream chunks", async () => {
   const bytes = new TextEncoder().encode('{"text":"中🙂"}');
-  const body = new ReadableStream<Uint8Array>({start(c) { for (const byte of bytes) c.enqueue(new Uint8Array([byte])); c.close(); }});
+  const body = new ReadableStream<Uint8Array<ArrayBuffer>>({start(c) { for (const byte of bytes) c.enqueue(new Uint8Array([byte])); c.close(); }});
   assert.deepEqual(await readBoundedJson({headers:new Headers(),body}, 100), {ok:true,value:{text:"中🙂"}});
 });
 test("bounded JSON rejects invalid encoding, malformed JSON and an idle stream", async () => {
@@ -25,7 +25,7 @@ test("bounded JSON rejects invalid encoding, malformed JSON and an idle stream",
     const result = await readBoundedJson(body, 100); assert.equal(result.ok, false);
   }
   let cancelled = false;
-  const body = new ReadableStream<Uint8Array>({cancel() { cancelled = true; }});
+  const body = new ReadableStream<Uint8Array<ArrayBuffer>>({cancel() { cancelled = true; }});
   const result = await readBoundedJson({headers:new Headers(),body}, 100, 10);
   assert.equal(result.ok, false); if (!result.ok) assert.equal(result.status, 408);
   assert.equal(cancelled, true);
