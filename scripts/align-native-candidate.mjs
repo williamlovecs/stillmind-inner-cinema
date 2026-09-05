@@ -24,8 +24,11 @@ for(const file of ['package.json','mobile/package.json']){
   if(file==='package.json'){
     // Scope replacements to the actual callers. Avoid npm audit's suggested SDK downgrades.
     // GHSA-w5hq-g745-h8pq: patched dual-CJS uuid11.1.1; xcode uses v4.
-    // GHSA-vcc3-ghjq-m6fr: decode-uri-component0.5.0 removes exponential malformed decoding.
+    // GHSA-vcc3-ghjq-m6fr: decoder0.5 removes exponential malformed decoding but exports ESM.
     p.overrides={...p.overrides,xcode:{uuid:'11.1.1'},'query-string':{'decode-uri-component':'0.5.0'}};
+    const bridge='node scripts/patch-query-string-cjs.mjs';
+    if(p.scripts.postinstall&&p.scripts.postinstall!==bridge)throw Error('Review existing postinstall before extending it');
+    p.scripts.postinstall=bridge;
   }
   desired.set(file,JSON.parse(JSON.stringify(p)));
   for(const section of ['dependencies','devDependencies'])for(const name of Object.keys(p[section]||{})){
