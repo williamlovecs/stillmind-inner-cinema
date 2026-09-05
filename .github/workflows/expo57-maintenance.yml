@@ -1,0 +1,100 @@
+name: Isolated Expo57 maintenance
+on:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: expo57-maintenance-${{ github.head_ref }}
+  cancel-in-progress: false
+jobs:
+  migrate-and-verify:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'maintenance/expo57-validated-20260906'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - name: Decide whether this exact branch still needs migration
+        id: plan
+        run: |
+          node - <<'JS'
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('mobile/package.json','utf8'));
+          const needed = !pkg.dependencies.expo.includes('57.0.20');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `needed=${needed}\n`);
+          JS
+      - name: Align declared packages with official SDK57 metadata
+        if: steps.plan.outputs.needed == 'true'
+        run: |
+          mkdir -p artifacts/expo57-maintenance /tmp/expo57-meta
+          npm pack expo@57.0.20 --ignore-scripts --pack-destination /tmp/expo57-meta --json > /tmp/expo57-meta/pack.json
+          tar -xzf /tmp/expo57-meta/expo-57.0.20.tgz -C /tmp/expo57-meta
+          node - <<'JS'
+          const fs = require('fs');
+          const bundled = JSON.parse(fs.readFileSync('/tmp/expo57-meta/package/bundledNativeModules.json','utf8'));
+          const changes = [];
+          for (const path of ['package.json','mobile/package.json']) {
+            const pkg = JSON.parse(fs.readFileSync(path,'utf8'));
+            for (const section of ['dependencies','devDependencies']) {
+              for (const [name, old] of Object.entries(pkg[section] ?? {})) {
+                const allowed = path.startsWith('mobile/') || ['@expo/metro-runtime','expo-router'].includes(name);
+                const next = name === 'expo' ? '~57.0.20' : allowed ? bundled[name] : undefined;
+                if (next && next !== old) { pkg[section][name] = next; changes.push({path,section,name,old,next}); }
+              }
+            }
+            pkg.engines = {...pkg.engines, node:'>=22.14.0'};
+            fs.writeFileSync(path, JSON.stringify(pkg,null,2)+'\n');
+          }
+          fs.writeFileSync('artifacts/expo57-maintenance/declaration-changes.json',JSON.stringify(changes,null,2));
+          fs.copyFileSync('/tmp/expo57-meta/package/bundledNativeModules.json','artifacts/expo57-maintenance/sdk57-bundled.json');
+          console.log(JSON.stringify(changes,null,2));
+          JS
+          npm install
+          (cd mobile && npx expo install --fix)
+      - name: Verify complete repository release checks with aligned dependencies
+        if: steps.plan.outputs.needed == 'true'
+        run: npm run verify:release
+      - name: Record dependency security status
+        if: ${{ !cancelled() && steps.plan.outputs.needed == 'true' }}
+        run: |
+          mkdir -p artifacts/expo57-maintenance
+          npm audit --json > artifacts/expo57-maintenance/npm-audit-after.json || true
+          git diff --binary -- package.json mobile/package.json package-lock.json > artifacts/expo57-maintenance/migration.patch
+          cp package.json artifacts/expo57-maintenance/root-package.json
+          cp mobile/package.json artifacts/expo57-maintenance/mobile-package.json
+          cp package-lock.json artifacts/expo57-maintenance/package-lock.json
+      - name: Commit only validated dependency manifests to the same non-production branch
+        if: ${{ success() && steps.plan.outputs.needed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+          TARGET_BRANCH: maintenance/expo57-validated-20260906
+        run: |
+          set -eu
+          test "$GITHUB_HEAD_REF" = "$TARGET_BRANCH"
+          current=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$TARGET_BRANCH" --jq .object.sha)
+          test "$current" = "$EXPECTED_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json mobile/package.json package-lock.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'chore: align Expo57 dependencies after full release verification'
+          git config credential.helper '!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f'
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git config --unset credential.helper
+          git rev-parse HEAD > artifacts/expo57-maintenance/validated-head.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: expo57-maintenance
+          path: artifacts/expo57-maintenance
+          if-no-files-found: ignore
+          retention-days: 14
