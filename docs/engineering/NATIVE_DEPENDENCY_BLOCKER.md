@@ -1,38 +1,21 @@
-# 原生依赖阻塞与验证记录
+# 原生依赖阻塞记录｜历史问题与当前处置
 
-## 已观察的 CI 结果
+## 当前结论
 
-修复分支 `a99a0f9`，Actions run `33979627992`：
+原有 Expo56/Hermes、版本不匹配与npm通告问题已在独立 `fix/native-integrity-deps-20260906` 分支处理，不再仅留一张待办。main没有升级。完整集成结果以PR #3的最新Checks为准；人工真机和正式发布仍未完成。
 
-- 83 项测试（原有59 + 新增24）通过。
-- Web/domain/content/mobile 类型检查、Web/mobile lint 通过。
-- 扩大范围后的文案 guard、Next.js 生产构建、发布材料/EAS/App Store/GTM/来源边界检查通过。
-- `expo-doctor@1.20.4`：20/22 通过，两项失败，完整 `verify:release` 因此为红色。不得称为全部检查通过。
+依赖验证运行 https://github.com/williamlovecs/stillmind-inner-cinema/actions/runs/33983507595 ：候选完整 verify:release 与 Web Chromium 回归通过，随后仅两个package.json与lockfile被写回分支，提交3b024f3d069f5f2c1b4e1f102b88ab9273939535。
 
-日志：https://github.com/williamlovecs/stillmind-inner-cinema/actions/runs/33979627992
+目标Expo57.0.20、RN0.86.3，其余按已发布SDK manifest对齐；使用clean安装与dedupe，没有ignore Doctor或force升级。该次after-audit.json所有级别均为0；完整报告 artifact9974524732。0项通告不表示产品或全部供应链绝对安全。
 
-## 阻塞项
+两个scoped override及query-string CJS/ESM桥接有实际调用回归测试；详见 NATIVE_REPAIR_2026-09-06.md。一次性可写CI已移除，不保留自动维护写权限。
 
-Doctor 报告当前锁定 `expo@56.0.18` / Hermes V1 `250829098.0.10` 涉及已知内存回归，并建议评估 SDK57 / React Native0.86.2 或之后的匹配版本。另报告11个Expo包的patch版本不匹配。这里是该次工具输出，不是本分支已完成的升级方案；迁移前应核实官方当前发布说明和设备兼容性。
+## 历史记录（不要当成当前结论）
 
-本次会话修复没有改变依赖版本、overrides或lockfile。原生SDK升级会涉及新的回归面，不为使CI变绿而执行 `npm audit fix --force`，不忽略Doctor检查，不降级Doctor掩盖结果。
+先前 a99a0f9 / run33979627992：83项测试、类型、lint、Web构建和仓库检查通过；Expo Doctor20/22，失败为SDK56/Hermes内存回归警告和11个patch版本不匹配。npm audit当时23项受影响包（16 moderate、7high）。依赖链会重复计数，不等于23个独立可利用漏洞。
 
-## npm audit
+迁移中曾发现旧peer graph安装冲突、重复原生模块，以及decoder0.5的ESM导出与query-string7的CJS调用不兼容；分别通过干净求解、dedupe和仅导入层的桥接解决，没有弱化原检查。
 
-同一CI的JSON报告：23项（16 moderate、7 high、0 critical）。这是受影响包计数，不能等同于23个独立且可利用的线上漏洞。
+## 仍需确认
 
-报告中的high包括 @expo/metro、metro、metro-config、metro-transform-worker、browserslist、image-size、nanoid，存在依赖链重复计数。需按安装路径、实际调用方式和可用修复版本逐项判断。audit有建议重大变更甚至降级的候选，不能机械应用。
-
-报告：https://github.com/williamlovecs/stillmind-inner-cinema/actions/runs/33979627992/artifacts/9973364629
-
-没有这些风险已经解决、没有可利用路径或生产安全的保证。
-
-## 接手顺序
-
-1. 保存本分支的Web修复，不改main、不自动发布。
-2. 在另一个原生依赖维护分支对齐Expo/RN/Hermes和lockfile；先读当前官方迁移与回归说明。
-3. 用原有完整 `npm run verify:release` 验证，不排除失败检查；再做签名preview和iPhone真机测试。
-4. 单独核验npm audit中的安全通告及实际依赖路径，记录解决/不适用的证据。
-5. Web浏览器回归独立运行，避免原生Doctor阻止我们看到Web行为结果。这个拆分不豁免发布检查；发布job继续按真实结果失败。
-
-CI会在完整验证失败时继续采集iOS/Web bundle导出证据，但导出成功也不是已签名可安装包。最终结果看最新PR，不以本记录覆盖更新的运行结果。
+真实设备、签名build、用户允许的线上模型调用、内容许可和发布批准不由依赖检查替代。继续看 Issue #2 与 CODEX_HANDOFF.md，不要凭这个历史文件重复降级回SDK56或把bundle导出当作上架。
