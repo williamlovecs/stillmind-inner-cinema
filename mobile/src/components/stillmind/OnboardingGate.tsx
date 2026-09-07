@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, gradients, radii, spacing } from "@/constants/theme";
@@ -25,7 +25,7 @@ export function OnboardingGate() {
   const item = PAGES[page];
   const completeOnboarding = () => {
     track("onboarding_completed", { eyes_open: preferences.eyesOpenPreferred, body_focus: preferences.bodyFocusAllowed, breath_change: preferences.breathChangeAllowed });
-    void updatePreferences({ onboardingComplete: true });
+    void updatePreferences({ onboardingComplete: true }).catch(() => Alert.alert("本次设置暂未保存", "本次仍可使用；下次打开可能需要重新确认。"));
   };
 
   return (
@@ -41,7 +41,7 @@ export function OnboardingGate() {
               {[{ key: "eyesOpenPreferred", label: "优先睁眼练习" }, { key: "bodyFocusAllowed", label: "允许身体关注" }, { key: "breathChangeAllowed", label: "允许调整呼吸" }].map((choice) => {
                 const key = choice.key as "eyesOpenPreferred" | "bodyFocusAllowed" | "breathChangeAllowed";
                 const selected = preferences[key];
-                return <Pressable key={key} onPress={() => updatePreferences({ [key]: !selected })} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.lavender : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
+                return <Pressable key={key} onPress={() => { void updatePreferences({ [key]: !selected }).catch(() => Alert.alert("设置暂未保存", "本次使用仍会遵守你的选择。")); }} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.lavender : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
               })}
             </View>
           ) : null}

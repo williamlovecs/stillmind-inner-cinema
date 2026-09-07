@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { readBoundedJson, requestAddress, WindowRateLimit } from "@/lib/server-limits";
 import { containsHighRiskLanguage } from "@stillmind/domain";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 
@@ -42,6 +42,9 @@ function isCinemaPayload(value: unknown): value is CinemaPayload {
 
 function normalizeCinema(value: unknown): CinemaPayload | undefined {
   if (!isCinemaPayload(value)) return undefined;
+  // Validate all rendered fields before truncating; labels are user-visible too.
+  const sourceText = [value.title, ...value.innerNoise, ...value.scenes.flatMap(scene => [scene.label, scene.line]), value.roleView, value.audienceView, value.witnessView].join(" ");
+  if (PROHIBITED_OUTPUT.test(sourceText)) return undefined;
   const cinema: CinemaPayload = {
     title: compact(value.title, 24),
     innerNoise: value.innerNoise.slice(0, 4).map((line) => compact(line, 24)).filter(Boolean),
@@ -53,13 +56,13 @@ function normalizeCinema(value: unknown): CinemaPayload | undefined {
     audienceView: compact(value.audienceView, 72),
     witnessView: compact(value.witnessView, 60),
   };
-  const allText = [cinema.title, ...cinema.innerNoise, ...cinema.scenes.map((scene) => scene.line), cinema.roleView, cinema.audienceView, cinema.witnessView].join(" ");
-  if (!cinema.title || cinema.scenes.length < 2 || PROHIBITED_OUTPUT.test(allText)) return undefined;
+  const allText = [cinema.title, ...cinema.innerNoise, ...cinema.scenes.flatMap((scene) => [scene.label, scene.line]), cinema.roleView, cinema.audienceView, cinema.witnessView].join(" ");
+  if (!cinema.title || !cinema.roleView || !cinema.audienceView || !cinema.witnessView || cinema.scenes.length < 2 || PROHIBITED_OUTPUT.test(allText)) return undefined;
   return cinema;
 }
 
 function json(data: unknown, status = 200) {
-  return NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
+  return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 }
 
 function presetResponse(trigger: string) {
@@ -73,50 +76,18 @@ function parseJsonContent(content: string) {
   return JSON.parse(jsonText);
 }
 
-// 简单 in-memory rate limit：每 IP 每分钟 10 次
-// pre-launch 阶段够用，真流量再换 KV / Upstash
-const RATE_WINDOW_MS = 60_000;
-const RATE_MAX = 10;
-const rateBuckets = new Map<string, number[]>();
-
-function checkRate(ip: string): boolean {
-  const now = Date.now();
-  if (rateBuckets.size > 2000) {
-    for (const [key, timestamps] of rateBuckets) {
-      if (!timestamps.some((timestamp) => now - timestamp < RATE_WINDOW_MS)) rateBuckets.delete(key);
-    }
-  }
-  const bucket = rateBuckets.get(ip) ?? [];
-  const fresh = bucket.filter((ts) => now - ts < RATE_WINDOW_MS);
-  if (fresh.length >= RATE_MAX) {
-    rateBuckets.set(ip, fresh);
-    return false;
-  }
-  fresh.push(now);
-  rateBuckets.set(ip, fresh);
-  return true;
-}
-
-function clientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-  return request.headers.get("x-real-ip") ?? "unknown";
-}
+// Per-instance only. Production must also enforce an infrastructure-level budget.
+const rateLimit = new WindowRateLimit(10);
 
 export async function POST(request: Request) {
-  const ip = clientIp(request);
-  if (!checkRate(ip)) {
+  const ip = requestAddress(request);
+  if (!rateLimit.allow(ip)) {
     return json({ error: "rate-limit" }, 429);
   }
 
-  const contentLength = Number(request.headers.get("content-length") ?? 0);
-  if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) return json({ error: "payload-too-large" }, 413);
-
-  const body = (await request.json().catch(() => null)) as {
-    trigger?: unknown;
-  } | null;
+  const read = await readBoundedJson(request, MAX_BODY_BYTES);
+  if (!read.ok) return json({ error: read.reason }, read.status);
+  const body = read.value as { trigger?: unknown } | null;
   const trigger =
     typeof body?.trigger === "string" ? body.trigger.trim().slice(0, MAX_TRIGGER_LENGTH) : "";
 
@@ -179,7 +150,9 @@ export async function POST(request: Request) {
       return presetResponse(trigger);
     }
 
-    const data = await response.json();
+    const providerBody = await readBoundedJson(response, 65_536, 8_500);
+    if (!providerBody.ok) return presetResponse(trigger);
+    const data = providerBody.value as { choices?: { message?: { content?: unknown } }[] } | null;
     const content = data?.choices?.[0]?.message?.content;
 
     if (typeof content !== "string") {

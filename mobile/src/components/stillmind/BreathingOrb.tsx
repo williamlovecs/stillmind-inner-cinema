@@ -3,13 +3,13 @@ import { AccessibilityInfo, Animated, Easing, Platform, StyleSheet, Text, View }
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "@/constants/theme";
 
-export function BreathingOrb({ phase, seconds, compact = false }: { phase?: "吸气" | "呼气"; seconds?: number; compact?: boolean }) {
+export function BreathingOrb({ phase, seconds, compact = false, paused = false, elapsedSeconds }: { phase?: "吸气" | "呼气"; seconds?: number; compact?: boolean; paused?: boolean; elapsedSeconds?: number }) {
   const [scale] = useState(() => new Animated.Value(0.94));
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
     let active = true;
-    void AccessibilityInfo.isReduceMotionEnabled().then((enabled) => { if (active) setReduceMotion(enabled); });
+    void AccessibilityInfo.isReduceMotionEnabled().then((enabled) => { if (active) setReduceMotion(enabled); }).catch(() => { if (active) setReduceMotion(true); });
     const subscription = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduceMotion);
     return () => { active = false; subscription.remove(); };
   }, []);
@@ -19,13 +19,22 @@ export function BreathingOrb({ phase, seconds, compact = false }: { phase?: "吸
       scale.setValue(1);
       return;
     }
+    if (paused || elapsedSeconds !== undefined) return;
     const animation = Animated.loop(Animated.sequence([
       Animated.timing(scale, { toValue: 1.08, duration: 3000, easing: Easing.inOut(Easing.sin), useNativeDriver: Platform.OS !== "web" }),
       Animated.timing(scale, { toValue: 0.94, duration: 3000, easing: Easing.inOut(Easing.sin), useNativeDriver: Platform.OS !== "web" }),
     ]));
     animation.start();
     return () => animation.stop();
-  }, [reduceMotion, scale]);
+  }, [reduceMotion, scale, paused, elapsedSeconds]);
+
+  useEffect(() => {
+    if (reduceMotion || paused || elapsedSeconds === undefined) return;
+    // Controlled by the same active clock as phase text; pausing freezes both.
+    const phaseSeconds = elapsedSeconds % 6;
+    const fraction = phaseSeconds <= 3 ? phaseSeconds / 3 : (6 - phaseSeconds) / 3;
+    scale.setValue(0.94 + 0.14 * (1 - Math.cos(Math.PI * fraction)) / 2);
+  }, [elapsedSeconds, paused, reduceMotion, scale]);
 
   const size = compact ? 132 : 190;
   return (

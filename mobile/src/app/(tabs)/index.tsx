@@ -9,6 +9,7 @@ import {
   recommendMethods,
   RESET_STATE_BY_MODE,
   RESET_STATE_PROFILES,
+  ratingText,
   type ActivationLevel,
   type StateMode,
 } from "@stillmind/domain";
@@ -26,7 +27,7 @@ const EXAMPLES = [
 
 export default function TodayScreen() {
   const [trigger, setTrigger] = useState("");
-  const [activation, setActivation] = useState<ActivationLevel>(3);
+  const [activation, setActivation] = useState<ActivationLevel | undefined>();
   const [manualMode, setManualMode] = useState<StateMode>();
   const [inputMethod, setInputMethod] = useState<ResetDraft["inputMethod"]>("typed");
   const [showStates, setShowStates] = useState(false);
@@ -38,7 +39,7 @@ export default function TodayScreen() {
   const profile = RESET_STATE_BY_MODE.get(mode) ?? RESET_STATE_PROFILES[1];
   const history = useMemo(() => buildMethodHistory(sessions, preferences.favoriteMethodIds), [sessions, preferences.favoriteMethodIds]);
   const recommendation = useMemo(() => recommendMethods({
-    activation,
+    activation: activation ?? profile.defaultActivation,
     mode,
     duration: 1,
     outcome: profile.outcome,
@@ -48,7 +49,7 @@ export default function TodayScreen() {
     breathChangeAllowed: preferences.breathChangeAllowed,
     hiddenMethodIds: preferences.hiddenMethodIds,
     history,
-  }), [activation, history, mode, preferences, profile.outcome]);
+  }), [activation, history, mode, preferences, profile.outcome, profile.defaultActivation]);
   const method = recommendation.kind === "practice" ? recommendation.primary : METHOD_BY_ID.get("grounded-action")!;
 
   function chooseExample(value: string) {
@@ -59,7 +60,7 @@ export default function TodayScreen() {
 
   function chooseMode(value: StateMode) {
     setManualMode(value);
-    setActivation(RESET_STATE_BY_MODE.get(value)?.defaultActivation ?? 3);
+    setActivation(undefined);
     if (!trigger.trim()) setInputMethod("state-only");
   }
 
@@ -76,21 +77,20 @@ export default function TodayScreen() {
       return;
     }
 
+    if (recommendation.kind !== "practice") {
+      Alert.alert("当前没有匹配的练习", recommendation.explanation);
+      return;
+    }
     setStarting(true);
     const resolvedInputMethod = text ? inputMethod : "state-only";
     setPendingResetDraft({ trigger: text, inputMethod: resolvedInputMethod });
-    track("reset_entry_submitted", {
-      mode,
-      activation_bucket: activation,
-      input_method: resolvedInputMethod,
-      text_provided: Boolean(text),
-    });
+    // The reset screen records the actual start once, with a joinable session id.
     router.push({
       pathname: "/reset",
       params: {
         mode,
         methodId: method.id,
-        activation: String(activation),
+        ...(activation === undefined ? {} : { activation: String(activation), ratingProvided: "1" }),
         duration: "1",
         outcome: profile.outcome,
         direct: "1",
@@ -104,7 +104,7 @@ export default function TodayScreen() {
       <BrandHeader />
       <View style={styles.heroCopy}>
         <Text style={type.display}>现在发生了什么？</Text>
-        <Text style={type.body}>说一句，或者写一句。不用解释完整。</Text>
+        <Text style={type.body}>说一句就够。不想写，也可以直接开始。</Text>
       </View>
 
       <Surface style={styles.intakeCard}>
@@ -138,10 +138,10 @@ export default function TodayScreen() {
 
         <View style={styles.scaleHeader}>
           <View>
-            <Text style={type.bodyStrong}>现在被带走的程度</Text>
+            <Text style={type.bodyStrong}>现在被带走的程度（可选）</Text>
             <Text style={type.caption}>1 = 还能停一下，5 = 很难停下来</Text>
           </View>
-          <Text style={styles.score}>{activation}/5</Text>
+          <Text style={styles.score}>{ratingText(activation)}</Text>
         </View>
         <View style={styles.scale}>
           {([1, 2, 3, 4, 5] as const).map((value) => (
@@ -149,7 +149,7 @@ export default function TodayScreen() {
               key={value}
               accessibilityRole="button"
               accessibilityState={{ selected: activation === value }}
-              onPress={() => setActivation(value)}
+              onPress={() => setActivation(activation === value ? undefined : value)}
               style={[styles.scaleButton, activation === value && styles.scaleButtonActive]}
             >
               <Text style={[styles.scaleText, activation === value && styles.scaleTextActive]}>{value}</Text>

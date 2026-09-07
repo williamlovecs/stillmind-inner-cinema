@@ -14,6 +14,12 @@
     "sharp": "0.35.3",
     "minimatch@3.1.5": {
       "brace-expansion": "1.1.18"
+    },
+    "xcode": {
+      "uuid": "11.1.1"
+    },
+    "query-string": {
+      "decode-uri-component": "0.5.0"
     }
   },
   "scripts": {
@@ -37,7 +43,7 @@
     "test:seed-users": "tsx --test test/seed-users.test.ts",
     "test:device-qa": "tsx --test test/device-qa.test.ts",
     "test:reset-routing": "tsx --test test/reset-routing.test.ts",
-    "test": "npm run test:domain && npm run test:content && npm run test:api && npm run test:api-events && npm run test:analytics && npm run test:timeline && npm run test:seed-users && npm run test:device-qa && npm run test:reset-routing && npm run test:payment-interviews",
+    "test": "npm run test:domain && npm run test:content && npm run test:api && npm run test:api-events && npm run test:analytics && npm run test:timeline && npm run test:seed-users && npm run test:device-qa && npm run test:reset-routing && npm run test:payment-interviews && npm run test:audit && npm run test:native && npm run test:dependencies && npm run test:round2",
     "check:claims": "node scripts/check-public-claims.mjs",
     "check:eas": "node scripts/check-eas-config.mjs",
     "check:app-store": "node scripts/check-app-store-metadata.mjs",
@@ -53,7 +59,14 @@
     "verify": "npm run test && npm run typecheck && npm run lint && npm run check:claims && npm run build",
     "verify:release": "npm run verify && npm run check:release-readiness && npm run doctor:mobile && npm run build:mobile:ios && npm run build:mobile:web",
     "test:payment-interviews": "tsx --test test/payment-interviews.test.ts",
-    "analyze:payment-interviews": "node scripts/summarize-payment-interviews.mjs"
+    "analyze:payment-interviews": "node scripts/summarize-payment-interviews.mjs",
+    "test:audit": "tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs",
+    "smoke:web": "node scripts/smoke-web.mjs && node scripts/smoke-adversarial.mjs",
+    "postinstall": "node scripts/patch-query-string-cjs.mjs",
+    "test:native": "tsx --test test/native-session.test.ts",
+    "smoke:native": "node scripts/smoke-native-web.mjs",
+    "test:dependencies": "node --test test/dependency-compat.test.mjs",
+    "test:round2": "tsx --test test/round2-contracts.test.ts && node --test test/round2-seed.test.mjs"
   },
   "dependencies": {
     "@stillmind/content": "*",
@@ -63,14 +76,14 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "@expo/metro-runtime": "^56.0.15",
+    "@expo/metro-runtime": "~57.0.15",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^16.2.12",
-    "expo-router": "~56.2.11",
+    "expo-router": "~57.0.19",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5"

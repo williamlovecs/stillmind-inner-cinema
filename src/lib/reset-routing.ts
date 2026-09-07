@@ -1,5 +1,5 @@
 import {
-  clampActivation,
+  reportedActivation,
   detectStateModeFromText,
   isStateMode,
   legacyTenPointToActivation,
@@ -51,9 +51,13 @@ export function resolveResetActivation(
   legacyQueryValue: string | null,
   fallback: ActivationLevel,
 ): { value: ActivationLevel; supplied: boolean } {
-  const current = parseIntensity(storedValue) ?? parseIntensity(queryValue);
-  if (current !== undefined) return { value: clampActivation(current, fallback), supplied: true };
-  const legacy = parseIntensity(legacyStoredValue) ?? parseIntensity(legacyQueryValue);
+  const current = reportedActivation(parseIntensity(storedValue)) ?? reportedActivation(parseIntensity(queryValue));
+  if (current !== undefined) return { value: current, supplied: true };
+  const validLegacy = (value: string | null) => {
+    const parsed = parseIntensity(value);
+    return parsed !== undefined && parsed >= 0 && parsed <= 10 ? parsed : undefined;
+  };
+  const legacy = validLegacy(legacyStoredValue) ?? validLegacy(legacyQueryValue);
   if (legacy !== undefined) return { value: legacyTenPointToActivation(legacy, fallback), supplied: true };
   return { value: fallback, supplied: false };
 }

@@ -37,7 +37,7 @@ export function buildWeeklyReview(sessions: readonly PracticeSession[], start: D
     const total = activationChanges.reduce((sum, value) => sum + value, 0);
     review.averageActivationChange = Math.round((total / activationChanges.length) * 10) / 10;
   }
-  review.nextStep = buildWeeklyNextStep(review);
+  review.nextStep = buildWeeklyNextStep(review, inRange);
   return review;
 }
 
@@ -91,7 +91,7 @@ const MODE_NEXT_STEP: Record<StateMode, { methodId: MethodId; outcome: DesiredOu
   },
 };
 
-function buildWeeklyNextStep(review: WeeklyReview): WeeklyNextStep {
+function buildWeeklyNextStep(review: WeeklyReview, sessions: readonly PracticeSession[]): WeeklyNextStep {
   if (review.sessions === 0) return EMPTY_NEXT_STEP;
 
   const uneasyCount = review.results.worse + review.results.stopped;
@@ -108,17 +108,21 @@ function buildWeeklyNextStep(review: WeeklyReview): WeeklyNextStep {
     };
   }
 
-  const topMethod = topEntry(review.methodCounts);
-  if (topMethod && review.results.better >= 2) {
+  const betterCounts: Partial<Record<MethodId, number>> = {};
+  for (const session of sessions) if (session.status === "completed" && session.result === "better") {
+    betterCounts[session.methodId] = (betterCounts[session.methodId] ?? 0) + 1;
+  }
+  const topMethod = topEntry(betterCounts);
+  if (topMethod && topMethod[1] >= 2) {
     const method = METHOD_BY_ID.get(topMethod[0]);
     if (method) {
       return {
-        title: "延续一个有效样本",
-        body: `本周有 ${review.results.better} 次记录显示“多了一点选择”。下一次可以继续用“${method.title}”。`,
+        title: "回看你记录过有帮助的方法",
+        body: `本周“${method.title}”有 ${topMethod[1]} 次完成记录反馈较好。是否再次使用由你决定。`,
         cta: `继续 ${method.title}`,
         mode: topEntry(review.modeCounts)?.[0] ?? "curious",
         methodId: method.id,
-        duration: nextDuration(review.sessions),
+        duration: method.durations.includes(nextDuration(review.sessions)) ? nextDuration(review.sessions) : method.durations[0],
         outcome: method.outcomes[0] ?? "choose",
         reasonCodes: ["weekly:better-signal", `method:${method.id}`],
       };
@@ -132,7 +136,7 @@ function buildWeeklyNextStep(review: WeeklyReview): WeeklyNextStep {
       ...next,
       cta: "按本周线索练一次",
       mode: topMode[0],
-      duration: 1,
+      duration: METHOD_BY_ID.get(next.methodId)?.durations[0] ?? 1,
       reasonCodes: ["weekly:repeated-mode", `mode:${topMode[0]}`],
     };
   }

@@ -151,7 +151,13 @@ Copy overlays, if used, must stay modest:
 - "私密历史，只在设备上"
 - "可选 AI，关闭后仍可使用"
 
-Do not claim clinical outcomes, awakening guarantees, consciousness ranking, trauma treatment, anxiety/depression treatment, or guaranteed calm.
+<!-- Keep each prohibition explicit; a nearby disclaimer must not exempt another positive claim. -->
+Do not claim clinical outcomes.
+Do not make awakening guarantees.
+Do not provide consciousness ranking.
+Do not claim trauma treatment.
+Do not claim anxiety/depression treatment.
+Do not promise guaranteed calm.
 
 ## Pre-Submit Checklist
 

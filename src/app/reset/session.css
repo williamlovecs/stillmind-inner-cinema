@@ -1,0 +1,8 @@
+/* A paused session freezes visual animations as well as its clock.
+   The enclosing fieldset also disables interactive practice controls, not exit buttons. */
+[data-practice-paused="true"] *,
+[data-practice-paused="true"] *::before,
+[data-practice-paused="true"] *::after {
+  animation-play-state: paused !important;
+  transition: none !important;
+}

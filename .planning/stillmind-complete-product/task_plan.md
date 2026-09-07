@@ -1,5 +1,7 @@
 # StillMind Complete Product Plan
 
+> **Current-status notice (2026-09-07)**: this is a historical plan. Read `CURRENT_STATE.md` and `../../docs/product/MODULES_AND_COMBINATIONS.md` first. Old complete/100% labels do not establish a complete authorized knowledge service, implemented UX01–UX09, physical-device validation, or market evidence. Keep this historical record; do not resume its old completed phases as new implementation orders.
+
 ## Goal
 
 Build the complete ideal StillMind product: a coherent, non-clinical system of practices for stepping out of ego-driven narratives, delivered as a production-grade iOS app with supporting backend, GTM system, safety boundaries, testing, and App Store submission materials.
