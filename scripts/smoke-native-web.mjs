@@ -38,7 +38,7 @@ function pass(label){passed.push(label);console.log('PASS '+label);}
 try{
   if(!existsSync(join(root,'index.html')))throw Error('Build the Expo web export first');
   await new Promise(r=>server.listen(port,'127.0.0.1',r));
-  const binary=[process.env.CHROME_BIN,'google-chrome','google-chrome-stable','chromium'].filter(Boolean).find(b=>spawnSync(b,['--version'],{stdio:'ignore'}).status===0);
+  const binary=[process.env.CHROME_BIN,'google-chrome','google-chrome-stable','chromium'].filter(Boolean).find(b=>existsSync(b)||spawnSync(b,['--version'],{stdio:'ignore',timeout:5000}).status===0);
   if(!binary)throw Error('Chrome not available; tests did not run');
   chrome=spawn(binary,['--headless=new','--no-sandbox','--disable-dev-shm-usage',`--remote-debugging-port=${debugPort}`,`--user-data-dir=${profile}`,'about:blank'],{stdio:'ignore'});
   await waitFor(async()=> (await fetch(`http://127.0.0.1:${debugPort}/json/version`)).ok,'Chrome');
@@ -87,6 +87,37 @@ try{
   await waitFor(()=>evaluate(`document.body.innerText.includes('未能完整保存')`),'native storage warning');assert.equal(await has('结束并返回'),true);
   await screenshot('native-storage-failure');await cdp('Page.removeScriptToEvaluateOnNewDocument',{identifier:injected.identifier});
   pass('native storage failure preserves the exit and reports unsaved data');
+
+  await seed();await navigate('/reset?mode=looping&methodId=inner-cinema&activation=2&ratingProvided=1&direct=1');await waitFor(()=>has('暂停'),'native observer');
+  const screen=`document.querySelector('[data-testid="observer-screen"]')`;
+  const subject=await evaluate(`${screen}.textContent`),nearWidth=await evaluate(`${screen}.getBoundingClientRect().width`);
+  assert.equal(subject.trim(),'有一个念头');
+  await screenshot('native-observer-near');
+  await click('退远一点');assert.equal(await evaluate(`${screen}.textContent`),subject);
+  assert.ok(await evaluate(`${screen}.getBoundingClientRect().width`)<nearWidth*0.9);
+  await sleep(500);await screenshot('native-observer-audience');
+  await click('近一点');assert.ok(Math.abs(await evaluate(`${screen}.getBoundingClientRect().width`)-nearWidth)<1);
+  await click('停止');await click('跳过反馈，结束');
+  pass('native observer changes the same central object and restores the near composition');
+  await seed();await navigate('/reset?mode=tense&methodId=paced-breath&activation=2&ratingProvided=1&direct=1');await waitFor(()=>has('暂停'),'native natural breath');
+  await sleep(6200);assert.equal(await evaluate("document.body.innerText.includes('自然呼吸')"),true);
+  await click('轻点记一次数');assert.equal(await evaluate("document.body.innerText.includes('轻点 1')"),true);
+  await screenshot('native-natural-breath');
+  await click('停止');await click('跳过反馈，结束');
+  pass('native breathing has no fixed phase and only records optional taps');
+  await seed();await cdp('Emulation.setDeviceMetricsOverride',{width:320,height:568,deviceScaleFactor:1,mobile:true});
+  await navigate('/reset?mode=looping&methodId=person-shift&activation=2&ratingProvided=1&direct=1');await waitFor(()=>has('暂停'),'native long original');
+  const longOriginal='我们在做自我观察。他说：我想晚点回答。'.repeat(20);
+  await evaluate(`(()=>{const el=document.querySelector('textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(el,${JSON.stringify(longOriginal)});el.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await waitFor(()=>evaluate(`document.body.innerText.includes(${JSON.stringify(longOriginal)})`),'native original preserved');
+  assert.equal(await evaluate("document.querySelector('input[aria-label=用于人称替代的名字]').value"),'');
+  const stopPoint=await evaluate(`(()=>{const b=${buttons}.find(b=>b.textContent.trim()==='停止');const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+  assert.ok(stopPoint.x>0&&stopPoint.x<320&&stopPoint.y>0&&stopPoint.y<568,'stop must remain visible with long text');
+  await screenshot('native-long-text-320');
+  await cdp('Input.dispatchMouseEvent',{type:'mousePressed',...stopPoint,button:'left',clickCount:1});
+  await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',...stopPoint,button:'left',clickCount:1});
+  await waitFor(()=>has('跳过反馈，结束'),'native physical stop');await click('跳过反馈，结束');
+  pass('native long quoted input stays intact and small-screen stop remains physically reachable');
   assert.equal(network.filter(u=>u.includes('/api/')).length,0,'default native flow must not send model or analytics requests');
   assert.deepEqual(failures,[]);complete=true;
   console.log('Native Expo Web regression PASS; physical iOS and signing are not tested.');

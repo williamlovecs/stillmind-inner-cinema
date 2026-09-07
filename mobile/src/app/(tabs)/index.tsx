@@ -31,6 +31,7 @@ export default function TodayScreen() {
   const [manualMode, setManualMode] = useState<StateMode>();
   const [inputMethod, setInputMethod] = useState<ResetDraft["inputMethod"]>("typed");
   const [showStates, setShowStates] = useState(false);
+  const [showIntake, setShowIntake] = useState(false);
   const [starting, setStarting] = useState(false);
   const { preferences, sessions, setPendingResetDraft } = useApp();
 
@@ -103,11 +104,18 @@ export default function TodayScreen() {
     <Screen contentStyle={styles.screen}>
       <BrandHeader />
       <View style={styles.heroCopy}>
-        <Text style={type.display}>现在发生了什么？</Text>
-        <Text style={type.body}>说一句就够。不想写，也可以直接开始。</Text>
+        <Text style={type.display}>现在，先停一分钟。</Text>
+        <Text style={type.body}>不必先解释，跟着做就好。</Text>
       </View>
 
-      <Surface style={styles.intakeCard}>
+        <PrimaryButton
+          label={starting ? "正在准备…" : "开始 1 分钟 Reset"}
+          disabled={starting}
+          icon={<Ionicons name="play" size={18} color={colors.white} />}
+          onPress={start}
+        />
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: showIntake }} onPress={() => setShowIntake(!showIntake)} style={styles.secondaryLink}><Text style={styles.secondaryLinkText}>{showIntake ? "收起输入" : "想说一句，或记录此刻程度（可选）"}</Text></Pressable>
+      {showIntake ? <Surface style={styles.intakeCard}>
         <View style={styles.dictationHint}>
           <Ionicons name="mic-outline" size={17} color={colors.lavender} />
           <Text style={styles.dictationText}>可直接使用键盘上的语音输入</Text>
@@ -157,14 +165,9 @@ export default function TodayScreen() {
           ))}
         </View>
 
-        <PrimaryButton
-          label={starting ? "正在准备…" : "开始 1 分钟 Reset"}
-          disabled={starting}
-          icon={<Ionicons name="play" size={18} color={colors.white} />}
-          onPress={start}
-        />
+
         <Text style={styles.matchCopy}>将使用：{method.title}</Text>
-      </Surface>
+      </Surface> : null}
 
       <Pressable onPress={() => setShowStates((value) => !value)} style={styles.secondaryLink}>
         <Text style={styles.secondaryLinkText}>{showStates ? "收起状态选择" : "不想描述？直接选状态"}</Text>

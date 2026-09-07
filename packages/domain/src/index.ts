@@ -1,4 +1,5 @@
 export { METHOD_BY_ID, METHOD_CATALOG } from "./catalog";
+export { OBSERVER_LENSES, observationText, observerFrame } from "./observation";
 export { isAnalyticsEnvelope } from "./analytics";
 export { clampActivation, detectStateModeFromText, isStateMode, legacyTenPointToActivation, RESET_STATE_BY_MODE, RESET_STATE_PROFILES } from "./intake";
 export { CORE_RESET_METHOD_IDS, isCoreResetMethod } from "./launch";

@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import type { MethodId } from "@stillmind/domain";
-import { BreathingOrb } from "@/components/stillmind/BreathingOrb";
+import { OBSERVER_LENSES, observationText, observerFrame, type MethodId } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
 
-type ThoughtState = "升起" | "停留" | "落下";
-
-const THOUGHTS = ["我必须回应", "是不是我不够好", "他们不理解我", "我不能输"] as const;
 const BODY_ZONES = [
   { id: "feet", label: "脚底", quality: "支撑" },
   { id: "hands", label: "手掌", quality: "温度" },
@@ -33,10 +29,8 @@ export function MethodPracticeExperience({
   instruction,
   stepIndex,
   stepCount,
-  seconds,
   trigger = "",
   paused = false,
-  elapsedSeconds = 0,
 }: {
   methodId: MethodId;
   title: string;
@@ -48,10 +42,10 @@ export function MethodPracticeExperience({
   paused?: boolean;
   elapsedSeconds?: number;
 }) {
-  const [thoughtStates, setThoughtStates] = useState<Record<string, ThoughtState>>({});
-  const [observerName, setObserverName] = useState("这个人");
-  const [observerSentence, setObserverSentence] = useState(trigger.trim() || "我现在很想证明自己没错。");
-  const [manualLogoutMode, setManualLogoutMode] = useState<"解释" | "参与" | "只读">();
+  const [noticed, setNoticed] = useState(false);
+  const [observerName, setObserverName] = useState("");
+  const [observerSentence, setObserverSentence] = useState(trigger);
+  const [hidden, setHidden] = useState(false);
   const [bodyZone, setBodyZone] = useState<(typeof BODY_ZONES)[number]["id"]>("feet");
   const [boundary, setBoundary] = useState<"靠近" | "保持距离" | "暂不接触">("保持距离");
   const [awarenessFields, setAwarenessFields] = useState<string[]>(["声音"]);
@@ -61,7 +55,7 @@ export function MethodPracticeExperience({
   const [stability, setStability] = useState(32);
   const [manualZoomLevel, setManualZoomLevel] = useState<number>();
   const [exhaleTaps, setExhaleTaps] = useState(0);
-  const [manualCinemaLens, setManualCinemaLens] = useState<number>();
+  const [cinemaLensIndex, setCinemaLensIndex] = useState(0);
 
   useEffect(() => {
     if (methodId !== "trigger-journal" || paused) return;
@@ -77,49 +71,27 @@ export function MethodPracticeExperience({
     return () => clearTimeout(timer);
   }, [paused]);
 
-  const phase = Math.floor(elapsedSeconds / 3) % 2 === 0 ? "吸气" : "呼气";
-  const logoutMode = manualLogoutMode ?? (stepIndex >= 2 ? "只读" : stepIndex === 1 ? "参与" : "解释");
   const focusLevel = manualFocusLevel ?? Math.min(stepIndex, FOCUS_LEVELS.length - 1);
   const zoomLevel = manualZoomLevel ?? Math.min(stepIndex, ZOOM_LEVELS.length - 1);
   const selectedZone = BODY_ZONES.find((item) => item.id === bodyZone) ?? BODY_ZONES[0];
-  const shiftedSentence = observerSentence.replaceAll("我", observerName.trim() || "这个人");
-  const thirdPersonSentence = `一个人正在经历：${observerSentence.replaceAll("我", "").trim()}`;
-  const seenThoughts = Object.keys(thoughtStates).length;
-  const cinemaLenses = [
-    { label: "角色里", copy: "事情正在发生在我身上" },
-    { label: "观众席", copy: "我正在看见这段反应" },
-    { label: "见证位", copy: "念头经过，不必跟随" },
-  ] as const;
-  const cinemaLensIndex = manualCinemaLens ?? Math.min(stepIndex, 2);
-  const cinemaLens = cinemaLenses[cinemaLensIndex];
-  // Show the actual offline/AI step. A change of visual lens is not a measured mental change.
-  const cinemaCopy = instruction;
-
-  function cycleThought(thought: string) {
-    setThoughtStates((current) => {
-      const state = current[thought];
-      const next = state === "升起" ? "停留" : state === "停留" ? "落下" : state === "落下" ? undefined : "升起";
-      const copy = { ...current };
-      if (next) copy[thought] = next;
-      else delete copy[thought];
-      return copy;
-    });
-  }
+  const subject = observationText(trigger);
+  const cinemaLens = OBSERVER_LENSES[cinemaLensIndex];
 
   function toggleAwareness(field: string) {
     setAwarenessFields((current) => current.includes(field) ? current.filter((item) => item !== field) : [...current, field]);
   }
 
   if (methodId === "paced-breath") {
-    return (
-      <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <Pressable disabled={paused} accessibilityRole="button" accessibilityLabel={phase === "呼气" ? "呼气时轻点记录一次" : "跟随吸气"} onPress={() => { if (phase === "呼气") setExhaleTaps((value) => value + 1); }} style={({ pressed }) => pressed && styles.pressed}>
-          <BreathingOrb phase={phase} seconds={seconds} paused={paused} elapsedSeconds={elapsedSeconds} />
+    return <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
+      <View style={styles.naturalBreathStage}>
+        <Pressable disabled={paused} accessibilityRole="button" accessibilityLabel="轻点记一次数"
+          onPress={() => setExhaleTaps((value) => value + 1)} style={styles.naturalBreath}>
+          <Text accessibilityLiveRegion="polite" style={styles.naturalBreathText}>{exhaleTaps ? `轻点 ${exhaleTaps}` : "自然呼吸"}</Text>
         </Pressable>
-        <Metric label="主动轻点次数" value={exhaleTaps > 0 ? `${exhaleTaps} 次` : "呼气时可轻点"} />
-        <Text style={styles.helper}>光圈只提示节奏，不检测呼吸。轻点可选；不舒服就停止。</Text>
-      </ExperienceShell>
-    );
+      </View>
+      <Text style={styles.helper}>呼气时心里数一下，也可以轻点记数。不点也可以。</Text>
+      {exhaleTaps > 0 ? <Pressable disabled={paused} accessibilityRole="button" onPress={() => setExhaleTaps(0)} style={styles.segment}><Text style={styles.segmentText}>重新数</Text></Pressable> : null}
+    </ExperienceShell>;
   }
 
   if (methodId === "wide-gaze") {
@@ -141,70 +113,49 @@ export function MethodPracticeExperience({
   }
 
   if (methodId === "thought-watching") {
-    return (
-      <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <View style={styles.thoughtField}>
-          <View style={styles.observerCore}><Text style={styles.observerCoreText}>看见 {seenThoughts}</Text></View>
-          <View style={styles.wrap}>
-            {THOUGHTS.map((thought) => (
-              <Pressable disabled={paused} key={thought} onPress={() => cycleThought(thought)} style={[styles.thoughtChip, thoughtStates[thought] === "落下" && styles.thoughtFaded]}>
-                <Text style={styles.thoughtText}>{thought}{thoughtStates[thought] ? ` · ${thoughtStates[thought]}` : ""}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-        <Text style={styles.helper}>这里是示例念头，不是系统对你的判断；不符合可以忽略。</Text>
-      </ExperienceShell>
-    );
+    return <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
+      <View style={styles.thoughtField}><Text style={styles.cinemaCopy}>{subject}</Text></View>
+      <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: noticed }} onPress={() => setNoticed(!noticed)} style={styles.segment}>
+        <Text style={styles.segmentText}>{noticed ? "撤销标记" : "注意到了"}</Text>
+      </Pressable>
+      <Text accessibilityLiveRegion="polite" style={styles.helper}>{noticed ? "已记下这次主动标记。" : "不需要点，也不需要让念头消失。"}</Text>
+    </ExperienceShell>;
   }
 
   if (methodId === "inner-cinema") {
-    return (
-      <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <View style={styles.cinema}>
-          <Text style={styles.sceneLabel}>SCENE {String(stepIndex + 1).padStart(2, "0")}</Text>
-          <Text style={styles.cinemaCopy}>{cinemaCopy}</Text>
-          <View style={styles.lensTrack}>
-            {cinemaLenses.map((item, index) => (
-              <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: index === cinemaLensIndex }} onPress={() => setManualCinemaLens(index)} key={item.label} style={[styles.lensDot, index === cinemaLensIndex && styles.lensDotActive]}>
-                <Text style={[styles.lensText, index === cinemaLensIndex && styles.lensTextActive]}>{item.label}</Text>
-              </Pressable>
-            ))}
-          </View>
+    return <ExperienceShell title={title} instruction={cinemaLens.hint} stepIndex={stepIndex} stepCount={stepCount}>
+      <View testID="observer-stage" style={styles.cinema}>
+        <View testID="observer-screen" style={[styles.cinemaScreen, { width: `${cinemaLens.width}%`, marginBottom: cinemaLensIndex * 18 }]}>
+          <Text style={styles.cinemaCopy}>{subject}</Text>
         </View>
-        <Metric label="当前画面视角" value={cinemaLens.label} />
-        <Text style={styles.helper}>轻点三个视角，感受同一件事在不同观看位置里的变化。</Text>
-      </ExperienceShell>
-    );
+        {cinemaLensIndex > 0 ? <View accessible={false} style={[styles.observerSeat, { height: cinemaLensIndex === 1 ? 38 : 58 }]} /> : null}
+      </View>
+      <View style={styles.segmented}>
+        {OBSERVER_LENSES.map((item, index) => <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: index === cinemaLensIndex }}
+          key={item.id} onPress={() => setCinemaLensIndex(index)} style={[styles.segment, cinemaLensIndex === index && styles.segmentActive]}>
+          <Text style={[styles.segmentText, cinemaLensIndex === index && styles.segmentTextActive]}>{item.label}</Text>
+        </Pressable>)}
+      </View>
+    </ExperienceShell>;
   }
 
   if (methodId === "person-shift") {
-    return (
-      <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <View style={styles.inputStack}>
-          <TextInput editable={!paused} value={observerName} onChangeText={setObserverName} placeholder="你的名字" placeholderTextColor={colors.textFaint} style={styles.input} />
-          <TextInput editable={!paused} value={observerSentence} onChangeText={setObserverSentence} placeholder="写一句脑内正在说的话" placeholderTextColor={colors.textFaint} multiline style={[styles.input, styles.multiline]} />
-        </View>
-        <Comparison label="名字视角" value={shiftedSentence} />
-        <Comparison label="再退一步" value={thirdPersonSentence} warm />
-      </ExperienceShell>
-    );
+    return <ExperienceShell title={title} instruction="保留原句，试着用名字描述“注意到这句话”。" stepIndex={stepIndex} stepCount={stepCount}>
+      <View style={styles.inputStack}>
+        <TextInput accessibilityLabel="用于人称替代的名字" editable={!paused} value={observerName} onChangeText={setObserverName} maxLength={40} placeholder="昵称或代称（可不填）" placeholderTextColor={colors.textFaint} style={styles.input} />
+        <TextInput accessibilityLabel="需要转换为旁观语言的念头" editable={!paused} value={observerSentence} onChangeText={setObserverSentence} maxLength={500} placeholder="写一句脑内正在说的话（可不填）" placeholderTextColor={colors.textFaint} multiline style={[styles.input, styles.multiline]} />
+      </View>
+      {observerSentence.trim() ? <Comparison label="试着这样读" value={observerFrame(observerSentence, observerName)} /> : <Text style={styles.helper}>也可以只在心里试，不需要输入。</Text>}
+    </ExperienceShell>;
   }
 
   if (methodId === "logout-pause") {
-    return (
-      <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <View style={styles.segmented}>
-          {(["解释", "参与", "只读"] as const).map((item) => (
-            <Pressable disabled={paused} key={item} onPress={() => setManualLogoutMode(item)} style={[styles.segment, logoutMode === item && styles.segmentActive]}>
-              <Text style={[styles.segmentText, logoutMode === item && styles.segmentTextActive]}>{item}</Text>
-            </Pressable>
-          ))}
-        </View>
-        <Metric label="当前画面模式" value={logoutMode} />
-        <Text style={styles.helper}>{logoutMode === "只读" ? "现在先不解释，也不回应。让信息经过。" : "看见自己正在加入故事，然后试试切到“只读”。"}</Text>
-      </ExperienceShell>
-    );
+    return <ExperienceShell title={title} instruction={hidden ? "暂时不接触这句话，也可以随时回来。" : "看见它，先不解释，也不急着回应。"} stepIndex={stepIndex} stepCount={stepCount}>
+      <View testID="logout-subject" style={styles.thoughtField}><Text style={styles.cinemaCopy}>{hidden ? "先看看周围，不用继续读这句话。" : subject}</Text></View>
+      <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: hidden }} onPress={() => setHidden(!hidden)} style={styles.segment}>
+        <Text style={styles.segmentText}>{hidden ? "重新显示这句话" : "暂时收起这句话"}</Text>
+      </Pressable>
+    </ExperienceShell>;
   }
 
   if (methodId === "body-scan") {
@@ -352,6 +303,11 @@ function ProgressMetric({ label, endLabel, value }: { label: string; endLabel: s
 }
 
 const styles = StyleSheet.create({
+  naturalBreathStage: { minHeight: 240, alignItems: "center", justifyContent: "center" },
+  naturalBreath: { width: 176, height: 176, borderRadius: 88, borderWidth: 1, borderColor: colors.blue, backgroundColor: "rgba(103,183,232,0.1)", alignItems: "center", justifyContent: "center" },
+  naturalBreathText: { color: colors.text, fontSize: 20, fontWeight: "700" },
+  cinemaScreen: { minHeight: 210, justifyContent: "center", padding: 14, borderRadius: 8, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: "#182238" },
+  observerSeat: { position: "absolute", bottom: 0, width: 100, borderTopLeftRadius: 36, borderTopRightRadius: 36, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: "#090C17" },
   shell: { flex: 1, gap: spacing.md },
   heading: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: spacing.md },
   headingCopy: { flex: 1, gap: 5 },
@@ -378,7 +334,7 @@ const styles = StyleSheet.create({
   thoughtChip: { borderRadius: radii.round, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceSoft, paddingHorizontal: 12, paddingVertical: 9 },
   thoughtFaded: { opacity: 0.42 },
   thoughtText: { color: colors.textMuted, fontSize: 12 },
-  cinema: { minHeight: 260, borderRadius: radii.large, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: "#050914", padding: 24, alignItems: "center", justifyContent: "center", gap: 24, shadowColor: colors.violet, shadowOpacity: 0.3, shadowRadius: 28 },
+  cinema: { minHeight: 300, borderRadius: radii.large, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: "#050914", padding: 12, alignItems: "center", justifyContent: "center", gap: 24, shadowColor: colors.violet, shadowOpacity: 0.3, shadowRadius: 28 },
   sceneLabel: { color: colors.textFaint, fontSize: 11, fontWeight: "700", letterSpacing: 3 },
   cinemaCopy: { color: colors.text, fontSize: 24, lineHeight: 34, fontWeight: "800", textAlign: "center" },
   lensTrack: { flexDirection: "row", gap: 7, alignItems: "center" },

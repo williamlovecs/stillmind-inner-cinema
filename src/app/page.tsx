@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { containsHighRiskLanguage, detectStateModeFromText, RESET_STATE_BY_MODE, type ActivationLevel } from "@stillmind/domain";
+import { containsHighRiskLanguage, detectStateModeFromText, type ActivationLevel } from "@stillmind/domain";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { PracticeOptionsPanel } from "@/components/PracticeOptionsPanel";
 import { DEFAULT_PRACTICE_OPTIONS, PENDING_PRACTICE_OPTIONS_KEY, type PracticeOptions } from "@/lib/practice-options";
@@ -37,7 +37,6 @@ export default function Home() {
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const voiceBaseRef = useRef("");
   const mode = useMemo(() => detectStateModeFromText(trigger), [trigger]);
-  const matchedState = RESET_STATE_BY_MODE.get(mode);
   useEffect(() => {
     router.prefetch("/reset");
     const speechWindow = window as Window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor };
@@ -97,9 +96,11 @@ export default function Home() {
           <Link href="/methods" className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-300 transition hover:border-violet-200/35 hover:text-white">方法库</Link>
         </header>
         <div className="flex flex-1 items-center py-7 sm:py-10">
-          <section className="w-full rounded-[2rem] border border-violet-200/15 bg-[#081123]/82 p-5 shadow-2xl shadow-black/35 backdrop-blur-xl sm:p-7">
-            <h1 className="text-4xl font-semibold leading-[1.12] text-white sm:text-5xl">现在发生了什么？</h1>
-            <p className="mt-3 text-base text-stone-400">说一句就够。不想写，也可以直接开始。</p>
+          <section className="w-full py-5">
+            <h1 className="text-4xl font-semibold leading-[1.12] text-white sm:text-5xl">现在，先停一分钟。</h1>
+            <p className="mt-3 text-base text-stone-400">不必先解释，跟着做就好。</p>
+            <button type="button" onClick={startReset} disabled={starting} className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 text-base font-semibold text-slate-950 shadow-xl shadow-violet-950/25 transition hover:scale-[1.01] disabled:cursor-wait disabled:opacity-70">{starting ? "正在进入…" : "开始 1 分钟 Reset"}</button>
+            <details className="mt-5"><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">想说一句，或记录此刻程度（可选）</summary>
             <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-medium text-stone-200">说一句，或者写一句</p>
@@ -119,10 +120,10 @@ export default function Home() {
                 {([1, 2, 3, 4, 5] as const).map((value) => <button key={value} type="button" aria-pressed={activation === value} onClick={() => setActivation(activation === value ? undefined : value)} className={`grid min-h-11 place-items-center rounded-xl border text-sm font-semibold transition ${activation === value ? "border-amber-100/65 bg-amber-100/15 text-white shadow-[0_0_22px_rgba(245,158,11,0.1)]" : "border-white/10 bg-slate-950/45 text-stone-500 hover:border-violet-200/30 hover:text-stone-200"}`}>{value}</button>)}
               </div>
             </div>
+            </details>
             {safetyNotice ? <div role="alert" className="mt-4 rounded-2xl border border-rose-200/25 bg-rose-200/[0.08] p-4 text-sm leading-6 text-rose-50"><p className="font-semibold">先联系现实中的支持。</p><p className="mt-1 text-rose-100/75">如果你有即时危险或无法保证安全，请联系当地紧急服务、急诊或可信任的人。StillMind 不处理危机场景。</p><Link href="/support" className="mt-3 inline-flex font-semibold underline underline-offset-4">查看支持边界</Link></div> : null}
             <div className="mt-4"><PracticeOptionsPanel value={options} onChange={setOptions} /></div>
-            <button type="button" onClick={startReset} disabled={starting} className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 text-base font-semibold text-slate-950 shadow-xl shadow-violet-950/25 transition hover:scale-[1.01] disabled:cursor-wait disabled:opacity-70">{starting ? "正在进入…" : "开始 1 分钟 Reset"}</button>
-            <p className="mt-3 text-center text-xs text-stone-500">本地匹配：{matchedState?.label ?? "脑子在重播"} · 文字只在本次练习中使用</p>
+
             <details className="mt-5 border-t border-white/8 pt-4 text-xs leading-5 text-stone-500"><summary className="cursor-pointer text-center">隐私与安全</summary><p className="mt-3">不要输入真实姓名、隐私事件、创伤细节或医疗危机场景。本工具只提供日常状态切换练习，不替代心理咨询或医疗帮助。</p><Link href="/support" className="mt-2 inline-flex underline decoration-white/15 underline-offset-4 transition hover:text-stone-300">支持与危机边界</Link></details>
           </section>
         </div>

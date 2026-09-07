@@ -27,9 +27,9 @@ export const PRACTICE_VARIANTS: readonly PracticeVariant[] = [
     { id: "role", kind: "observe", title: "角色正在演", instruction: "看见身体、念头和冲动。", seconds: 20 },
     { id: "audience", kind: "observe", title: "坐回观众席", instruction: "不急着进入剧情。", seconds: 20, haptic: "soft" },
   ], "观电影法只是 StillMind 的一种方法；你看见角色，但不必完全成为角色。"),
-  v("paced-breath", 1, "呼吸法", "数呼气，不追念头", "如果数息让你不舒服，只保持自然呼吸并看着数字变化。", [
+  v("paced-breath", 1, "呼吸法", "数呼气，不追念头", "不改变呼吸。数息不舒服时，可以停下并看看周围。", [
     { id: "arrive", kind: "arrive", title: "先找到呼气", instruction: "不用改变呼吸，只注意下一次呼气自然出现。", seconds: 8, alternative: "保持眼睛睁开，看着屏幕中央。" },
-    { id: "count-1", kind: "breathe", title: "呼气，数 1", instruction: "呼气时在心里数 1，吸气时不用做任何事。", seconds: 18, haptic: "breath" },
+    { id: "count-1", kind: "breathe", title: "呼气，数 1", instruction: "每次自然呼气时，在心里接着数一个数字。", seconds: 18 },
     { id: "count-2", kind: "breathe", title: "继续数下去", instruction: "每次呼气只加一个数字。走神了，就从下一个数字继续。", seconds: 18, haptic: "breath" },
     { id: "release", kind: "close", title: "放开数字", instruction: "让呼吸回到自己的速度，看看周围。", seconds: 16, haptic: "soft" },
   ], "重点不是控制呼吸，而是让注意力停在数字上。"),
@@ -54,10 +54,10 @@ export const PRACTICE_VARIANTS: readonly PracticeVariant[] = [
     { id: "whole", kind: "observe", title: "观整体", instruction: "把身体当成一个同时变化的感觉场。", seconds: 55 },
     { id: "orient", kind: "close", title: "回到现场", instruction: "睁眼，找到门、光源和一个让你安心的物体。", seconds: 40, haptic: "soft" },
   ], "内观只负责看见，不负责解释你是谁。"),
-  v("person-shift", 1, "人称替代法", "把“我”换成名字", "准备一句正在困住你的“我……”或“我必须……”。", [
+  v("person-shift", 1, "人称替代法", "用名字读一遍", "准备一句此刻的想法，也可以只在心里练习。", [
     { id: "original", kind: "notice", title: "原句", instruction: "看见原句，不和它争辩。", seconds: 10 },
-    { id: "name", kind: "observe", title: "换成名字", instruction: "把“我很生气”改成“某某正在生气”。", seconds: 18 },
-    { id: "third", kind: "observe", title: "再退一步", instruction: "改成：一个人正在经历这段反应。", seconds: 18 },
+    { id: "name", kind: "observe", title: "换成名字", instruction: "可以用昵称说：某某注意到，脑中出现了这样一句话。", seconds: 18 },
+    { id: "third", kind: "observe", title: "再退一步", instruction: "原句保持不变，注意你也正在读它。", seconds: 18 },
     { id: "choice", kind: "choose", title: "角色之外", instruction: "这个人现在可以先做哪件小事？", seconds: 14, haptic: "soft" },
   ], "名字替代不是否认自己，而是让观察距离出现。"),
   v("logout-pause", 1, "登出法", "不参与，不解释", "适合意识流很吵、越解释越停不下来时。", [

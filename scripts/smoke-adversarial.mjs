@@ -4,7 +4,7 @@
  */
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -78,7 +78,7 @@ try {
   server.stdout.on("data", b => logs.push(b.toString())); server.stderr.on("data", b => logs.push(b.toString()));
   await waitFor(async () => (await fetch(origin)).ok, "local production server", 40000);
   const binary = [process.env.CHROME_BIN, "google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]
-    .filter(Boolean).find(name => spawnSync(name, ["--version"], { stdio: "ignore" }).status === 0);
+    .filter(Boolean).find(name => existsSync(name) || spawnSync(name, ["--version"], { stdio: "ignore", timeout: 5000 }).status === 0);
   if (!binary) throw Error("Chrome/Chromium not installed; browser QA did not run.");
   chrome = spawn(binary, ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check",
     `--remote-debugging-port=${debugPort}`, "--remote-debugging-address=127.0.0.1", `--user-data-dir=${profile}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });

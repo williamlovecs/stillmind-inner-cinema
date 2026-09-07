@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, AppState, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+import { Alert, AppState, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -256,21 +256,24 @@ export default function ResetScreen() {
 
 function PracticePlayer({ methodTitle, practice, stepIndex, seconds, elapsedSeconds, paused, trigger, onPause, onStop }: { methodTitle: string; practice: PracticeVariant; stepIndex: number; seconds: number; elapsedSeconds: number; paused: boolean; trigger: string; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
-  const { height } = useWindowDimensions();
-  return <Screen scroll={height < 760} contentStyle={styles.player}>
+  return <Screen scroll={false} contentStyle={styles.player}>
     <TopBar title={methodTitle} meta={`${seconds} 秒${paused ? " · 已暂停" : ""}`} onClose={onStop} />
     <View style={styles.progressRow}>{practice.steps.map((item, index) => <View key={item.id} style={[styles.progressSegment, index <= stepIndex && styles.progressActive]} />)}</View>
-    <View style={styles.playerCenter}><MethodPracticeExperience methodId={practice.methodId} title={step.title} instruction={step.instruction} stepIndex={stepIndex} stepCount={practice.steps.length} seconds={seconds} elapsedSeconds={elapsedSeconds} paused={paused} trigger={trigger} /><Text style={styles.alternative}>{step.alternative ?? "不舒服就停止，不需要完成。"}</Text></View>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled"><View style={styles.playerCenter}><MethodPracticeExperience methodId={practice.methodId} title={step.title} instruction={step.instruction} stepIndex={stepIndex} stepCount={practice.steps.length} seconds={seconds} elapsedSeconds={elapsedSeconds} paused={paused} trigger={trigger} /><Text style={styles.alternative}>{step.alternative ?? "不舒服就停止，不需要完成。"}</Text></View></ScrollView>
     <View style={styles.controls}><SecondaryButton label={paused ? "继续" : "暂停"} icon={<Ionicons name={paused ? "play" : "pause"} size={18} color={colors.text} />} onPress={onPause} style={styles.control} /><SecondaryButton label="停止" onPress={onStop} style={styles.control} /></View>
   </Screen>;
 }
 function CheckView({ methodTitle, stopped, feeling, activationBefore, activation, reuseIntent, onFeeling, onActivation, onReuseIntent, onNext, onSkip }: { methodTitle: string; stopped: boolean; feeling?: Feeling; activationBefore?: ActivationLevel; activation?: ActivationLevel; reuseIntent?: ReuseIntent; onFeeling: (value: Feeling | undefined) => void; onActivation: (value: ActivationLevel | undefined) => void; onReuseIntent: (value: ReuseIntent | undefined) => void; onNext: () => void; onSkip: () => void }) {
+  const [showMore, setShowMore] = useState(false);
   return <Screen><TopBar title={methodTitle} onClose={onSkip} /><View style={styles.centerCopy}><Text style={type.display}>{stopped ? "练习已停止。" : "现在感觉怎样？"}</Text><Text style={type.body}>练习前：{ratingText(activationBefore)}。以下都可以不填。</Text></View>
     <SecondaryButton label="跳过反馈，结束" onPress={onSkip} />
     <Text style={type.label}>此刻被带走程度</Text><View style={styles.row}>{([1,2,3,4,5] as const).map(value => <Chip key={value} label={String(value)} selected={activation === value} onPress={() => onActivation(activation === value ? undefined : value)} />)}</View>
     <Surface style={styles.deltaCard}><Text style={type.bodyStrong}>{changeText(activationBefore, activation)}</Text><Text style={type.caption}>按实际感受记录；没有变化或更不舒服也可以。</Text></Surface>
+    <SecondaryButton label={showMore ? "收起更多反馈" : "更多反馈（可选）"} onPress={() => setShowMore(!showMore)} />
+    {showMore ? <>
     <Text style={type.label}>这次感觉（可选）</Text><View style={styles.stack}>{([["better","有帮助"],["same","差不多"],["worse","更不舒服"]] as [Feeling,string][]).map(([value,label]) => <Chip key={value} label={label} selected={feeling === value} onPress={() => onFeeling(feeling === value ? undefined : value)} />)}</View>
     <Text style={type.label}>下次类似场景还会用吗？（可选）</Text><View style={styles.row}>{([["yes","会"],["unsure","不确定"],["no","不会"]] as [ReuseIntent,string][]).map(([value,label]) => <Chip key={value} label={label} selected={reuseIntent === value} onPress={() => onReuseIntent(reuseIntent === value ? undefined : value)} />)}</View>
+    </> : null}
     <PrimaryButton label="保存本次反馈" onPress={onNext} />
   </Screen>;
 }

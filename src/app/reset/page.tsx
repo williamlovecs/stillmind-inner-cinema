@@ -225,7 +225,7 @@ function ResetExperience() {
   const currentStep = practice?.steps[stepIndex];
   const visibleStateOptions = showAllStates ? STATE_OPTIONS : STATE_OPTIONS.slice(0, 3);
   const methodReason = recommendation.kind === "practice" && method.id === recommendation.primary.id ? recommendation.explanation : method.summary;
-  const practiceShellClass = `flex min-w-0 flex-col rounded-[2rem] border border-white/10 bg-slate-950/55 p-5 shadow-inner shadow-black/30 ${phase === "practice" ? "min-h-[560px]" : "min-h-[360px]"}`;
+  const practiceShellClass = phase === "practice" ? "flex min-w-0 flex-col" : "flex min-h-[360px] min-w-0 flex-col p-3 sm:p-5";
   const focusMode = directEntry || phase !== "choose";
   const focusEyebrow = phase === "practice" ? "练习进行中" : phase === "check" ? "可选反馈" : phase === "done" ? "练习已结束" : "推荐练习";
   const focusStatusCopy = phase === "practice" ? "跟着做，随时可以停止。"
@@ -388,13 +388,12 @@ function ResetExperience() {
               <button type="button" onClick={() => setShowAllStates((value) => !value)} className="mt-3 w-full rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-sm font-medium text-stone-300 transition hover:border-violet-200/35 hover:text-white">{showAllStates ? "收起状态" : "更多状态"}</button>
             </div>
           </aside> : null}
-          <section className="grid w-full min-w-0 content-start gap-5 rounded-[2rem] border border-violet-200/15 bg-[#07111f]/76 p-4 shadow-2xl shadow-black/35 backdrop-blur-2xl sm:p-5">
-            <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
+          <section className="grid w-full min-w-0 content-start gap-5">
+            {phase !== "practice" ? <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
               <div>
                 <p className="text-sm uppercase tracking-[0.24em] text-violet-200/65">{focusMode ? focusEyebrow : "推荐练习"}</p>
                 <div className="mt-3 flex flex-wrap items-end gap-3"><h2 className="text-3xl font-semibold text-white sm:text-4xl">{method.title}</h2><span className="rounded-full border border-amber-200/25 bg-amber-100/10 px-3 py-1 text-sm text-amber-100">{practice?.minutes ?? duration} 分钟</span></div>
                 {!focusMode ? <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p> : <p className="mt-3 text-sm leading-6 text-stone-400">{focusStatusCopy}</p>}
-                {phase === "practice" && incomingTrigger ? <p className="mt-3 line-clamp-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm leading-6 text-stone-400">刚才发生了：{incomingTrigger}</p> : null}
                 {!focusMode ? <div className="mt-3 grid gap-2 text-xs text-stone-400 sm:grid-cols-3"><span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">先被看见</span><span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">退回观众席</span><span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">前后 1-5 评分</span></div> : null}
                 {!focusMode ? <p className="mt-3 text-sm leading-6 text-violet-100/70">先跟着这一分钟走完，不用先研究 12 种方法；完成后可以自愿记录感受。</p> : null}
                 {phase === "choose" ? <button type="button" onClick={requestStart} className="mt-4 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]">开始 {practice?.minutes ?? duration} 分钟练习</button> : null}
@@ -403,7 +402,7 @@ function ResetExperience() {
                 const minutes = value as DurationMinutes; const available = method.durations.includes(minutes);
                 return <button key={value} type="button" disabled={!available} onClick={() => setDuration(minutes)} className={`rounded-full border px-3 py-2 text-sm transition ${duration === minutes ? "border-violet-200/70 bg-violet-200/16 text-white" : "border-white/10 bg-white/[0.04] text-stone-300 enabled:hover:border-violet-200/35 disabled:cursor-not-allowed disabled:opacity-35"}`}>{value}m</button>;
               })}</div> : null}
-            </div>
+            </div> : null}
             {startNotice ? <div role="alert" className="rounded-2xl border border-amber-200/25 bg-amber-100/[0.06] p-4 text-sm leading-6 text-amber-50"><p>{startNotice}</p><button type="button" onClick={() => { setManualChoice(false); setShowAdvancedMethods(false); setDirectEntry(false); setAutoStartPending(false); setStartNotice(""); setPhase("choose"); }} className="mt-3 underline underline-offset-4">返回推荐</button><Link href="/support" className="ml-4 underline underline-offset-4">支持与退出</Link></div> : null}
             <div className="grid min-w-0 gap-4">
               <div className={practiceShellClass}>
@@ -465,9 +464,11 @@ function CheckView({ stopped, intensityBefore, intensityAfter, reuseIntent, feed
     <button type="button" onClick={onSkip} className="min-h-11 rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-stone-200">跳过反馈，结束</button>
     <IntensityScale label="现在被带走的程度（可不填）" value={intensityAfter} onChange={onIntensityAfter} />
     <div aria-live="polite" className="rounded-2xl border border-violet-200/15 bg-violet-200/[0.06] p-4"><p className="text-sm font-medium text-stone-100">{changeText(intensityBefore, intensityAfter)}</p><p className="mt-1 text-xs leading-5 text-stone-400">{feedbackOutcome === "worse" ? "先停在这里，不必继续这个练习。" : "按实际感受填写，没有变化也可以。"}</p></div>
+    <details className="space-y-4"><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">再留一句感受（可选）</summary>
     <div><p className="mb-2 text-sm font-medium text-stone-100">下次会再用吗？（可不选）</p><div className="grid grid-cols-3 gap-2">{(["会", "不确定", "不会"] as const).map((item) => <button key={item} type="button" aria-pressed={reuseIntent === item} onClick={() => onReuseIntent(item)} className={reuseIntent === item ? "rounded-2xl border border-violet-200/70 bg-violet-200/14 p-3 text-center text-sm font-semibold text-white" : "rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center text-sm text-stone-300"}>{item}</button>)}</div></div>
     <label className="block"><span className="mb-2 block text-sm font-medium text-stone-100">一句话感受（可选）</span><textarea name="practice-feedback" autoComplete="off" value={feedbackNote} onChange={(event) => onFeedbackNote(event.target.value)} maxLength={500} placeholder="哪里有用，哪里不舒服？" className="min-h-20 w-full rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 text-sm leading-6 text-white placeholder:text-stone-500 focus:border-violet-200/45" /></label>
     <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3"><input type="checkbox" checked={shareAnonymous} onChange={(event) => onShareAnonymous(event.target.checked)} className="mt-1 h-4 w-4 accent-violet-400" /><span className="text-xs leading-5 text-stone-400">自愿匿名分享已填写的变化、方法及复用意愿。不发送原话或反馈文字。</span></label>
+    </details>
     <button type="button" onClick={onComplete} className="rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 py-4 text-base font-semibold text-slate-950">保存反馈并结束</button>
   </div>;
 }

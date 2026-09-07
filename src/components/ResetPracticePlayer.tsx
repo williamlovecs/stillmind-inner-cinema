@@ -3,21 +3,34 @@
 // Extracted from the existing reset page without changing method layouts.
 // The parent owns the session clock; this component only renders guided visuals and controls.
 import Image from "next/image";
+import "./observer-cinema.css";
 import { useEffect, useState } from "react";
 import type { PracticeVariant } from "@stillmind/content";
-import type { MethodDefinition, MethodId } from "@stillmind/domain";
+import { OBSERVER_LENSES, observationText, observerFrame, type MethodDefinition, type MethodId } from "@stillmind/domain";
 import type { CinemaPayload } from "@/lib/cinema-presets";
 
 export function PracticePlayer({ method, practice, stepIndex, secondsLeft, elapsedSeconds, breathingSeconds, progress, paused, trigger, cinema, onPause, onStop }: { method: MethodDefinition; practice: PracticeVariant; stepIndex: number; secondsLeft: number; elapsedSeconds: number; breathingSeconds: number; progress: number; paused: boolean; trigger: string; cinema: CinemaPayload; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
-  return <div className="flex h-full flex-col gap-5"><div className="flex items-center justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.24em] text-violet-200/60">{method.title}</p><h3 className="mt-2 text-2xl font-semibold text-white">{step.title}</h3></div><div className="text-right"><p className="text-4xl font-semibold tabular-nums text-white">{secondsLeft}</p><p className="text-xs uppercase tracking-[0.22em] text-stone-500">秒</p></div></div><div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-200 to-amber-200 transition-[width]" style={{ width: `${progress}%` }} /></div><fieldset disabled={paused} data-practice-paused={paused} className="contents"><MethodExperience paused={paused} methodId={method.id} instruction={step.instruction} secondsLeft={secondsLeft} elapsedSeconds={elapsedSeconds} breathingSeconds={breathingSeconds} stepIndex={stepIndex} trigger={trigger} cinema={cinema} /></fieldset><p className="text-xs leading-5 text-stone-500">{practice.steps[stepIndex].alternative ?? "不舒服就停止，不需要完成。"}</p><div className="mt-auto flex flex-wrap gap-3"><button type="button" onClick={onPause} className="rounded-full border border-white/12 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white transition hover:border-violet-200/35">{paused ? "继续" : "暂停"}</button><button type="button" onClick={onStop} className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-stone-300 transition hover:border-amber-200/35 hover:text-white">停止</button></div></div>;
+  return <div className="flex h-full min-w-0 flex-col gap-4">
+    <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 bg-[#080e1b]/95 py-2">
+      <div><p className="text-sm text-violet-200/70">{method.title}</p><p className="tabular-nums text-sm text-stone-400">{secondsLeft} 秒{paused ? " · 已暂停" : ""}</p></div>
+      <div className="flex gap-2">
+        <button type="button" onClick={onPause} className="min-h-11 rounded-lg border border-white/20 px-4 text-sm text-white">{paused ? "继续" : "暂停"}</button>
+        <button type="button" onClick={onStop} className="min-h-11 rounded-lg border border-white/20 px-4 text-sm text-stone-200">停止</button>
+      </div>
+    </div>
+    <div role="progressbar" aria-label="练习时间" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} className="h-1 overflow-hidden rounded-full bg-white/10"><div className="h-full bg-violet-300 transition-[width]" style={{ width: `${progress}%` }} /></div>
+    <fieldset disabled={paused} data-practice-paused={paused} className="contents">
+      <MethodExperience paused={paused} methodId={method.id} instruction={step.instruction} secondsLeft={secondsLeft} elapsedSeconds={elapsedSeconds} breathingSeconds={breathingSeconds} stepIndex={stepIndex} trigger={trigger} cinema={cinema} />
+    </fieldset>
+    <p className="text-center text-xs leading-5 text-stone-500">{step.alternative ?? "不舒服就停止，不需要完成。"}</p>
+  </div>;
 }
 
-function MethodExperience({ methodId, instruction, secondsLeft, elapsedSeconds, breathingSeconds, stepIndex, trigger, cinema, paused }: { paused: boolean; methodId: MethodId; instruction: string; secondsLeft: number; elapsedSeconds: number; breathingSeconds: number; stepIndex: number; trigger: string; cinema: CinemaPayload }) {
-  const breathIn = Math.floor(elapsedSeconds / 3) % 2 === 0;
-  const thoughts = cinema.innerNoise.length > 0 ? cinema.innerNoise : ["我必须回应", "是不是我不够好", "他们不理解我", "我不能输"];
+function MethodExperience({ methodId, instruction, secondsLeft, elapsedSeconds, stepIndex, trigger, cinema, paused }: { paused: boolean; methodId: MethodId; instruction: string; secondsLeft: number; elapsedSeconds: number; breathingSeconds: number; stepIndex: number; trigger: string; cinema: CinemaPayload }) {
+  const thoughts = [observationText(trigger)];
   if (["paced-breath", "wide-gaze", "trigger-journal", "grounded-action"].includes(methodId)) {
-    return <FocusObjectEngine paused={paused} elapsedSeconds={elapsedSeconds} methodId={methodId} instruction={instruction} secondsLeft={secondsLeft} breathingSeconds={breathingSeconds} stepIndex={stepIndex} breathIn={breathIn} />;
+    return <FocusObjectEngine paused={paused} elapsedSeconds={elapsedSeconds} methodId={methodId} instruction={instruction} secondsLeft={secondsLeft} stepIndex={stepIndex} />;
   }
   if (["inner-cinema", "thought-watching", "logout-pause", "person-shift"].includes(methodId)) {
     return <ThoughtBubbleEngine methodId={methodId} instruction={instruction} stepIndex={stepIndex} thoughts={thoughts} trigger={trigger} cinema={cinema} />;
@@ -29,13 +42,13 @@ function MethodExperience({ methodId, instruction, secondsLeft, elapsedSeconds, 
   return <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_34%,rgba(139,92,246,0.14),transparent_45%),rgba(2,6,23,0.72)] p-6 text-center"><div>{thoughts.map((thought, index) => <span key={thought} className="m-1 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-stone-300" style={{ opacity: Math.max(0.25, 1 - (stepIndex + index) * 0.14) }}>{thought}</span>)}<p className="mx-auto mt-8 max-w-xl text-2xl font-semibold leading-10 text-white">{instruction}</p></div></div>;
 }
 
-function FocusObjectEngine({ methodId, instruction, secondsLeft, breathingSeconds, stepIndex, breathIn, paused, elapsedSeconds }: { paused: boolean; elapsedSeconds: number; methodId: MethodId; instruction: string; secondsLeft: number; breathingSeconds: number; stepIndex: number; breathIn: boolean }) {
+function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, paused, elapsedSeconds }: { paused: boolean; elapsedSeconds: number; methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
   const [returns, setReturns] = useState(0);
   const [resetAt, setResetAt] = useState(elapsedSeconds);
   const [stability, setStability] = useState(34);
   const [holding, setHolding] = useState(false);
   const [detailIndex, setDetailIndex] = useState<number>();
-  const exhaleCount = Math.max(0, Math.floor(breathingSeconds / 6));
+  const [exhaleTaps, setExhaleTaps] = useState(0);
   const steadySeconds = Math.floor(Math.max(0, elapsedSeconds - resetAt));
   const detailSteps = [
     { label: "环境", value: "这个房间", hint: "先看见大范围", x: "50%", y: "50%" },
@@ -63,23 +76,15 @@ function FocusObjectEngine({ methodId, instruction, secondsLeft, breathingSecond
   }, [paused]);
 
   if (methodId === "paced-breath") {
-    const ripples = Array.from({ length: 4 }, (_, index) => index);
-    const countTrail = Array.from({ length: Math.min(6, exhaleCount) }, (_, index) => exhaleCount - index).reverse();
     return (
-      <div className="grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.12),transparent_48%),radial-gradient(circle_at_50%_78%,rgba(139,92,246,0.2),transparent_56%),rgba(2,6,23,0.76)] p-6 text-center">
-        <div className="relative grid h-56 w-56 place-items-center">
-          {ripples.map((index) => <span key={index} className="absolute rounded-full border border-sky-100/20" style={{ width: 118 + index * 34, height: 118 + index * 34, opacity: Math.max(0.1, 0.38 - index * 0.07), animation: `breathRipple ${2.6 + index * 0.35}s ease-out infinite`, animationDelay: `${index * 0.28}s` }} />)}
-          <div className={`relative grid h-44 w-44 place-items-center rounded-full border border-sky-100/25 bg-[radial-gradient(circle_at_36%_28%,rgba(255,255,255,0.92),rgba(186,230,253,0.58)_18%,rgba(59,130,246,0.28)_44%,rgba(15,23,42,0.96)_74%)] shadow-[0_0_46px_rgba(96,165,250,0.26),0_0_86px_rgba(168,85,247,0.2)] transition duration-1000 ${breathIn ? "scale-105" : "scale-[0.92]"}`}>
-            <span className="text-xl font-semibold tracking-[0.28em] text-white">{breathIn ? "吸 气" : "呼 气"}</span>
-          </div>
-        </div>
-        <p className="mt-6 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
-        <div className="mt-5 rounded-2xl border border-sky-100/15 bg-sky-100/[0.06] px-4 py-3">
-          <p className="text-xs text-sky-100/55">光圈是节奏提示，不检测你的呼吸。</p>
-          <p className="mt-1 text-sm font-semibold text-sky-50">引导节拍：{exhaleCount}</p>
-        </div>
-        {countTrail.length > 0 ? <div className="mt-3 flex flex-wrap justify-center gap-1.5">{countTrail.map((count) => <span key={count} className="grid h-7 w-7 place-items-center rounded-full border border-sky-100/15 bg-sky-100/[0.06] text-xs text-sky-50">{count}</span>)}</div> : null}
-        <p className="mt-2 text-xs text-sky-100/55">重点是数呼气，不是用力控制呼吸。</p>
+      <div className="natural-breath grid flex-1 content-center justify-items-center gap-5 p-5 text-center">
+        <button type="button" aria-label="轻点记一次数" onClick={() => setExhaleTaps((value) => value + 1)}
+          className="grid h-44 w-44 place-items-center rounded-full border border-sky-100/30 bg-sky-200/10 text-xl text-sky-50 shadow-[0_0_46px_rgba(96,165,250,0.18)]">
+          {exhaleTaps > 0 ? <span aria-live="polite">轻点 {exhaleTaps}</span> : "自然呼吸"}
+        </button>
+        <p className="max-w-md text-lg leading-8 text-stone-200">{instruction}</p>
+        <p className="text-sm text-stone-400">呼气时心里数一下，也可以轻点记数。不点也可以。</p>
+        {exhaleTaps > 0 ? <button type="button" onClick={() => setExhaleTaps(0)} className="min-h-11 px-4 text-sm text-stone-400">重新数</button> : null}
       </div>
     );
   }
@@ -123,63 +128,54 @@ function FocusObjectEngine({ methodId, instruction, secondsLeft, breathingSecond
   );
 }
 
-function ThoughtBubbleEngine({ methodId, instruction, stepIndex, thoughts, trigger, cinema }: { methodId: MethodId; instruction: string; stepIndex: number; thoughts: string[]; trigger: string; cinema: CinemaPayload }) {
-  const [seen, setSeen] = useState<Record<string, "升起" | "停留" | "落下">>({});
-  const [name, setName] = useState("Will");
-  const [sentence, setSentence] = useState(trigger || "我现在很想证明自己没错。");
-  const [manualCinemaLens, setManualCinemaLens] = useState<number>();
-  const [manualLogoutMode, setManualLogoutMode] = useState<"explain" | "join" | "logout">();
-  const shifted = sentence.replaceAll("我", name || "这个人");
-  const further = `一个人正在经历：${shifted.replaceAll(name || "这个人", "").trim() || sentence.replaceAll("我", "")}`;
-  const lenses = [
-    { id: "role", label: "角色里", body: "我正在被剧情拉走" },
-    { id: "audience", label: "观众席", body: "我正在看见这一幕" },
-    { id: "witness", label: "见证位", body: "念头经过，不必进入" },
-  ] as const;
-  const activeLensIndex = manualCinemaLens ?? Math.min(stepIndex, lenses.length - 1);
-  const activeLens = lenses[activeLensIndex] ?? lenses[0];
-  function toggleSeen(thought: string) {
-    setSeen((items) => {
-      const current = items[thought];
-      const next = current === "升起" ? "停留" : current === "停留" ? "落下" : current === "落下" ? undefined : "升起";
-      const copy = { ...items };
-      if (next) copy[thought] = next; else delete copy[thought];
-      return copy;
-    });
-  }
+function ThoughtBubbleEngine({ methodId, instruction, trigger }: { methodId: MethodId; instruction: string; stepIndex: number; thoughts: string[]; trigger: string; cinema: CinemaPayload }) {
+  const [name, setName] = useState("");
+  const [sentence, setSentence] = useState(trigger);
+  const [lensIndex, setLensIndex] = useState(0);
+  const [hidden, setHidden] = useState(false);
+  const [noticed, setNoticed] = useState(false);
+  const lens = OBSERVER_LENSES[lensIndex];
+  const subject = observationText(trigger);
+
   if (methodId === "person-shift") {
-    return (
-      <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-5">
-        <p className="text-base leading-7 text-stone-300">{instruction}</p>
-        <div className="grid gap-3 sm:grid-cols-[0.42fr_1fr]"><input aria-label="用于人称替代的名字" name="observer-name" autoComplete="off" value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white focus:border-violet-200/50" placeholder="你的名字" /><textarea aria-label="需要转换为旁观语言的念头" name="observer-sentence" autoComplete="off" value={sentence} onChange={(event) => setSentence(event.target.value)} className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white placeholder:text-stone-600 focus:border-violet-200/50" placeholder="写一句脑内正在说的话" /></div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>入戏语言</span><span>旁观语言</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full w-[82%] rounded-full bg-gradient-to-r from-violet-300 to-amber-100" /></div><p className="mt-2 text-xs text-stone-500">输入时自动转换，不需要再做选择。</p></div>
-        <div className="grid gap-2 sm:grid-cols-2"><div className="rounded-2xl border border-violet-100/35 bg-violet-100/10 p-3 text-left text-white"><span className="block text-xs uppercase tracking-[0.2em] opacity-70">名字视角</span><span className="mt-2 block text-sm leading-6">{shifted}</span></div><div className="rounded-2xl border border-amber-100/35 bg-amber-100/10 p-3 text-left text-white"><span className="block text-xs uppercase tracking-[0.2em] opacity-70">再退一步</span><span className="mt-2 block text-sm leading-6">{further}</span></div></div>
-      </div>
-    );
+    return <div className="flex flex-1 flex-col justify-center gap-4 p-3">
+      <p className="text-base leading-7 text-stone-300">保留原句，试着用名字描述“注意到这句话”。</p>
+      <input aria-label="用于人称替代的名字" autoComplete="off" value={name} onChange={(event) => setName(event.target.value)} maxLength={40}
+        className="min-h-11 w-full rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-white" placeholder="昵称或代称（可不填）" />
+      <textarea aria-label="需要转换为旁观语言的念头" autoComplete="off" value={sentence} onChange={(event) => setSentence(event.target.value)} maxLength={500}
+        className="min-h-24 w-full rounded-lg border border-white/15 bg-white/5 p-4 text-white" placeholder="写一句脑内正在说的话（可不填）" />
+      {sentence.trim() ? <blockquote data-testid="observer-frame" className="border-l-2 border-amber-100/40 py-3 pl-4 text-lg leading-8 text-amber-50 [overflow-wrap:anywhere]">{observerFrame(sentence, name)}</blockquote> : <p className="text-sm text-stone-400">也可以只在心里试，不需要输入。</p>}
+    </div>;
   }
   if (methodId === "inner-cinema") {
-    const scene = cinema.scenes[Math.min(stepIndex, cinema.scenes.length - 1)];
-    return (
-      <div className="flex flex-1 flex-col justify-center rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.14),transparent_45%),#050914] p-6 text-center">
-        <p className="text-xs uppercase tracking-[0.28em] text-violet-200/55">{cinema.title} · {scene?.label ?? `Scene ${String(stepIndex + 1).padStart(2, "0")}`}</p>
-        <p className="mx-auto mt-7 max-w-2xl text-2xl font-semibold leading-snug text-white sm:text-3xl">{scene?.line ?? instruction}</p>
-        <p className="mt-6 text-xs text-stone-400">当前镜头：{activeLens.label}（不是状态测量）</p>
-        <div className="mx-auto mt-8 grid w-full max-w-2xl grid-cols-3 gap-2">{lenses.map((item, index) => <button key={item.id} type="button" aria-pressed={index === activeLensIndex} onClick={() => setManualCinemaLens(index)} className={`rounded-2xl border p-3 text-left transition ${index === activeLensIndex ? "border-violet-100/60 bg-violet-100/14 text-white shadow-[0_0_28px_rgba(168,85,247,0.16)]" : "border-white/10 bg-white/[0.035] text-stone-500 hover:border-violet-200/30 hover:text-stone-300"}`}><span className="block text-sm font-semibold">{item.label}</span><span className="mt-1 hidden text-xs leading-5 opacity-75 sm:block">{item.body}</span></button>)}</div>
+    return <div className="observer-cinema flex flex-1 flex-col justify-center gap-4 text-center" data-lens={lens.id}>
+      <div className="observer-stage" data-testid="observer-stage">
+        <div aria-hidden="true" className="observer-background" />
+        <blockquote data-testid="observer-screen" className="observer-screen" style={{ width: `${lens.width}%` }}>
+          <p className="text-xl font-semibold leading-relaxed text-white sm:text-2xl">{subject}</p>
+        </blockquote>
+        <div aria-hidden="true" className="observer-seat" />
       </div>
-    );
+      <p className="min-h-12 text-base leading-7 text-stone-300">{lens.hint}</p>
+      <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-2" role="group" aria-label="观看距离">
+        {OBSERVER_LENSES.map((item, index) => <button key={item.id} type="button" aria-pressed={index === lensIndex} onClick={() => setLensIndex(index)}
+          className={`min-h-12 rounded-lg border px-2 py-3 text-sm transition ${index === lensIndex ? "border-violet-100/60 bg-violet-100/10 text-white" : "border-white/15 text-stone-400"}`}>{item.label}</button>)}
+      </div>
+    </div>;
   }
   if (methodId === "logout-pause") {
-    const options = [
-      { id: "explain", label: "解释", body: "我在给它编故事", quiet: 18 },
-      { id: "join", label: "参与", body: "我想马上回应", quiet: 38 },
-      { id: "logout", label: "只读", body: "先不解释，不参与", quiet: 76 },
-    ] as const;
-    const activeId = manualLogoutMode ?? options[Math.min(stepIndex, options.length - 1)]?.id ?? "explain";
-    const active = options.find((item) => item.id === activeId) ?? options[0];
-    return <div className="grid flex-1 content-center gap-4 rounded-[2rem] border border-white/10 bg-slate-950/62 p-6"><p className="text-center text-xl font-semibold leading-9 text-white">{instruction}</p><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>信息互动</span><span>只读模式</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-amber-200 to-violet-300 transition-[width] duration-700" style={{ width: `${active.quiet}%` }} /></div><p className="mt-2 text-sm text-stone-300">{active.body}</p></div><div className="grid grid-cols-3 gap-2 text-center text-sm">{options.map((item) => <button key={item.id} type="button" aria-pressed={item.id === active.id} onClick={() => setManualLogoutMode(item.id)} className={`rounded-2xl border px-2 py-4 transition sm:p-4 ${item.id === active.id ? "border-amber-200/45 bg-amber-200/12 text-amber-50" : "border-white/10 bg-white/[0.035] text-stone-500 hover:border-amber-200/25 hover:text-stone-300"}`}><span className="block font-semibold">{item.label}</span><span className="mt-2 hidden text-xs leading-5 opacity-75 sm:block">{item.body}</span></button>)}</div></div>;
+    return <div className="flex flex-1 flex-col items-center justify-center gap-5 p-4 text-center">
+      <blockquote data-testid="logout-subject" className="flex min-h-40 w-full items-center justify-center border-y border-white/10 p-4 text-xl leading-8 text-stone-100 [overflow-wrap:anywhere]">{hidden ? "先看看周围，不用继续读这句话。" : subject}</blockquote>
+      <p className="text-base leading-7 text-stone-300">{hidden ? "暂时不接触这句话，也可以随时回来。" : "看见它，先不解释，也不急着回应。"}</p>
+      <button type="button" aria-pressed={hidden} onClick={() => setHidden(!hidden)} className="min-h-12 rounded-lg border border-amber-100/30 px-5 py-3 text-amber-50">{hidden ? "重新显示这句话" : "暂时收起这句话"}</button>
+    </div>;
   }
-  const seenCount = Object.keys(seen).length;
-  return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.16),transparent_55%),rgba(2,6,23,0.72)] p-6 text-center"><div className="absolute inset-10 rounded-full border border-violet-200/10" /><div className="absolute inset-20 rounded-full border border-amber-200/10" />{thoughts.map((thought, index) => <button key={thought} type="button" onClick={() => toggleSeen(thought)} className={`absolute rounded-full border px-3 py-2 text-xs shadow-lg shadow-black/20 transition ${seen[thought] === "落下" ? "border-amber-100/35 bg-amber-100/10 text-amber-50 opacity-45" : seen[thought] ? "border-violet-100/45 bg-violet-100/12 text-violet-50" : "border-white/10 bg-white/[0.055] text-stone-300 hover:border-violet-200/35"}`} style={{ left: `${16 + (index % 2) * 55}%`, top: `${18 + index * 15}%`, opacity: seen[thought] === "落下" ? 0.45 : Math.max(0.26, 0.88 - (stepIndex + index) * 0.16) }}>{thought}{seen[thought] ? ` · ${seen[thought]}` : ""}</button>)}<div className="relative grid h-36 w-36 place-items-center rounded-full border border-violet-100/20 bg-violet-200/10 shadow-[0_0_70px_rgba(168,85,247,0.22)]"><span className="text-sm font-semibold tracking-[0.26em] text-violet-100">看见 {seenCount}</span></div><p className="relative max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p><p className="relative text-xs text-stone-500">点念头表示“看见了”，不是为了处理它。</p></div>;
+  return <div className="flex flex-1 flex-col items-center justify-center gap-6 p-4 text-center">
+    <blockquote className="w-full border-y border-violet-200/15 px-4 py-8 text-xl leading-8 text-stone-100 [overflow-wrap:anywhere]">{subject}</blockquote>
+    <p className="max-w-md text-base leading-7 text-stone-300">{instruction}</p>
+    <button type="button" aria-pressed={noticed} onClick={() => setNoticed(!noticed)} className="min-h-12 rounded-lg border border-violet-200/30 px-5 py-3 text-violet-100">{noticed ? "撤销标记" : "注意到了"}</button>
+    <p aria-live="polite" className="min-h-6 text-sm text-stone-400">{noticed ? "已记下这次主动标记。" : "不需要点，也不需要让念头消失。"}</p>
+  </div>;
 }
 
 function BodySpaceEngine({ methodId, instruction, stepIndex }: { methodId: MethodId; instruction: string; stepIndex: number }) {
