@@ -1,49 +1,74 @@
-# Codex 接手说明｜Web + 原生会话修复与依赖维护
+# Codex接管：工程基准、三模块结构与未实施UX
 
-## 唯一接手入口
+更新：2026-09-07。本页是统一入口；旧聊天、旧包和历史进度不能覆盖这里明确区分的事实/规划。
 
-继续分支 `fix/native-integrity-deps-20260906`，Draft PR #3。它包含 PR #1 的完整 Web 修复，PR #3 现在直接以 main 为 base；不要再合并已分叉的 PR #1 或已关闭的 PR #4。
+## 先读五份，不用重读整个聊天
 
-- 原始 main：`b4cf885eae5105cb1266d82c040f8ecab7e168b9`。
-- Web 修复基准：`cfbbac68a4bb56b7f2fec8019bf34c832fc9dd68`，PR #1。
-- 依赖验证后提交：`3b024f3d069f5f2c1b4e1f102b88ab9273939535`。
-- 原生修复代码：`90cb8e01e8099f9db307a04cf4f8a04c8a42d58d`，最终状态须看最新 CI；不要以本文存在代替测试结果。
+1. 本页：分支、安全接手和验证。
+2. `../../.planning/stillmind-complete-product/CURRENT_STATE.md`：已完成/待实施/外部门槛。
+3. `../product/MODULES_AND_COMBINATIONS.md`：创始人新确认的A/B/C与七种组合。
+4. `../product/UX_INTERACTION_REVIEW_2026-09-06.md`：UX01–UX09证据、建议与验收，尚未实施。
+5. `HANDOFF_SYNC_2026-09-07.md`：附件、源码、私密文件、CI材料放在哪里。
 
-本轮未合并 main，未主动发布生产。GitHub/Vercel 自动 PR Preview 不等于正式发布。保护原代码指保留 main、可审阅分支与回退路径，不代表修复分支零改动或零风险。
+## 唯一工程基线
 
-此前聊天中的 `StillMind_Session_Trust_Candidate_20260906.zip` 实际只有交付说明，不是代码包，请弃用。真实代码以本分支和 Actions 的 `source-handoff` 为准；该包带源码逐文件哈希和相对原 main/PR #1 的补丁，不含 node_modules、密钥或字体文件。
+- 仓库：`williamlovecs/stillmind-inner-cinema`
+- 分支：`fix/native-integrity-deps-20260906`
+- Draft PR #3直接对main，包含此前Web和原生修复；不要再次合并分叉PR #1或关闭的PR #4。
+- 原main：`b4cf885eae5105cb1266d82c040f8ecab7e168b9`
+- 最近运行代码基准：`0ba5edf7d46a113762c56e8137725d5241e7659b`
+- 基准CI：`https://github.com/williamlovecs/stillmind-inner-cinema/actions/runs/33988224046`
+- 119项测试、17组Next Web与5组Expo Web浏览器场景、类型/lint、Next构建、Expo Doctor和bundle导出通过；该次audit0。不是医学/授权/真实iPhone证明。
+- 当前文档提交是上述基准的后续，不等于UX已开发；运行代码未改。读取实际HEAD和最新Checks区分历史/本轮，不把119项基准报告伪称一次新测试。
 
-## 第二轮新增入口
+本次已重新校验186个源码文件及完整Git tree。实际新增文档后的head与回执见PR；不在这个文件里写需要自引用的SHA。原main不自动合并、不主动发布；已有Vercel集成可能自动产生Preview。
 
-先读 `ROUND2_REVIEW_2026-09-06.md`；新增API边界、非法评分、周报归因、统计撤回和内测分析修复。此轮结果必须以最新head的CI为准，不能沿用6b944e6的100项通过。
+## 新信息：不要再误解范围
 
-执行材料：`docs/research/SEED_TEST_LAUNCH_PACK_ZH.md`、`CONTENT_RIGHTS_MATRIX.md`、`docs/app-store/PREFLIGHT_2026-09-06.md`。版权/真人/账号门槛仍未完成。
+A=沉寂小我练习（历史App1），B=复盘工具（历史App2），C=按古零书籍/文章整理的知识层。三者可独立或组合，是产品结构，不是已有三套上线产品。当前本库重点实现A；Reflection不是B的文档上传分析产品；元数据不是C完整可检索服务。核验用户本地其他成果再下结论。
 
-## 已做什么
+一分钟是A的轻入口，不是全部长期愿景。保留真实自我观察/观照/沉寂小我方向，但不把它包装成保证效果、人格标签或意识等级测量。技术独立与版权独立是两件事；不带C标记的版本也先审查脚本来源。
 
-Web 修复保留在 PR #1：可选评分、去伪测量、实际时长、暂停和后台控制、所有入口资格检查、中止/更差中性结束、存储失败退出、真实且自愿的生命周期事件。保留12种方法、原有图片、主路由和风格。
+15人计划未证明已招募。社群用户不自动等于潜催内部；每批需明确组合/内容版本、实际身份和许可范围。外部可用范围未获确认时不自动扩大，内部身份也不自动构成授权。私人老师沟通与原PDF不入公共Git。
 
-原生端已接入同类语义：可选评分、实际/计划时长、停止/放弃、顺序化保存、删除防止晚写复活、未选行动不预填、独立主观反馈、统一开始检查、AI取消与过期响应抑制、准确生成时长、实际分镜显示、暂停一致性与减少动效。详见 `NATIVE_REPAIR_2026-09-06.md`。
+## 已有代码注释与测试：保留什么
 
-依赖按正式 SDK57 清单迁移到 Expo57.0.20 / RN0.86.3。验证后的锁文件通过 clean npm ci；npm audit 在验证运行中为0项。两项 scoped overrides 和 query-string ESM桥接的理由/移除条件见原生修复文档。不要运行 audit fix --force，不要把 audit0当成安全证明。
+| 目的 | 主要入口 |
+| --- | --- |
+| 实际时长、可缺失评分、真实结束 | packages/domain/src/session.ts；src/lib/practice-attempt.ts；原生attempt/session实现 |
+| 开始资格、暂停、后台、过期生成 | packages/domain/src/routing.ts；src/app/reset/page.tsx；mobile/src/app/reset.tsx及相关lib/hooks |
+| 保存失败和删除顺序 | src/lib/safe-storage.ts；mobile/src/state/AppProvider.tsx；mobile/src/storage与serial任务 |
+| 来源诚实、请求限制、统计同意 | src/app/api/cinema/route.ts；src/app/api/events/route.ts；src/lib/server-limits.ts；两端analytics |
+| 原方法与内容来源边界 | packages/content/src/practice-catalog.ts；docs/research/source_corpus_index.json；CONTENT_RIGHTS_MATRIX.md |
+| 工程验收 | test/、packages/*/test/、scripts/smoke-web.mjs、smoke-adversarial.mjs、smoke-native-web.mjs |
 
-一次性依赖写入工作流和迁移脚本已删除。常规CI只有 contents:read；安装/构建不接触模型、Apple或部署密钥，不自动更新代码。
+依赖已在此前PR迁移到Expo57.0.20/RN0.86.3，保留lockfile和scoped兼容处理。理由见`NATIVE_REPAIR_2026-09-06.md`；不要根据旧SDK56错误重新做一次迁移。
 
-## 证据在哪里
+## 尚未实现的UX，不要报已修
 
-- 依赖候选完整验证：Actions run 33983507595；候选 job 与唯一写入 job 均通过，artifact `native-dependency-evidence` / 9974524732。
-- 原有 Web 扩展浏览器证据：run33981756042，10组；后续需在新依赖下重跑。
-- 集成修复首次运行33984301878中100项测试通过，但新增 contentVersion literal 类型未同步导致 typecheck失败；修正为1.0.0/1.1.0显式版本并重跑，不能把该次失败写成通过。
-- 最新集成运行见 PR #3 Checks，源码快照/manifest中的head必须与所引用的运行一致。
-- Chromium 实际执行 Next production UI 与 Expo Web export UI；后者不是签名iOS/App Store/真机证明。
+固定82%/18–38–76条；默认Will及全字替换；自然数息脚本对固定吸呼节拍；空输入认领负面念头；手动观影视角只改高亮而未改变主体构图；稳定按压演示、聚焦对象、阅读负担与长时长内容深度。详见UX审阅，上一轮“全部只剩外部门槛”的说法不能覆盖这些实际遗留。
 
-## 验证命令
+下一批建议：先修UX02/03/04/06明确错配，再做UX01/08一条可逆、同一内容的观影体验与轻入口/结束。不要全盘换皮或十二种方法同时重写，不为“真AI”强加模型/摄像头/穿戴。保留原有安全/同意/退出/记录语义，并加语义回归：点了主体确实变化、不点也能结束、空输入不编造负面独白、原句不误改、无动画也可用。
 
-先确认用户工作目录没有未提交修改，不要 reset --hard 或覆盖。首次取分支用 `git switch --track origin/fix/native-integrity-deps-20260906`；本地已有则 `git switch fix/native-integrity-deps-20260906`。
+## 安全接手步骤
+
+先检查用户实际工作目录，不假设它就是当前GitHub分支：
 
 ```bash
 git status --short
+git branch --show-current
+git rev-parse HEAD
+git worktree list
 git fetch origin
+```
+
+有未提交修改或本地另有B/C成果时先清点保留；禁止reset --hard、自动stash、盲目ZIP覆盖或强推。工作树干净且无冲突时，已有本地分支用`git switch fix/native-integrity-deps-20260906`，仅远端有时用`git switch --track origin/fix/native-integrity-deps-20260906`。本地落后只允许确认后的fast-forward；有分叉先报告，不自动合并。
+
+从核验后的接手head开一个可回退的小UX工作分支/新worktree，不从旧main重做；不是另建一套产品。不要在Codex线程里打印凭据或包含访问令牌的remote配置。
+
+## 验证与交付
+
+```bash
 npm ci
 npm run test
 npm run verify:release
@@ -52,16 +77,14 @@ npm run smoke:native
 npm audit
 ```
 
-浏览器回归需要 Node22 + Chrome/Chromium，可用 CHROME_BIN 指定；先完成构建。原生浏览器读取 `.expo-ci/web`，只用合成数据并阻断非本机请求。测试报告/截图只存 artifacts/ 或 Actions，不提交参与者信息。
+浏览器命令需要Node22与Chrome/Chromium，按脚本使用production build和Expo Web export。没有环境就准确记录blocked，不删检查、降级Doctor或audit fix --force。默认只用合成数据；真实付费API、账户变更、签名、发送邀请、上传源文、商业发布分别需要明确许可。
 
-## 合并前必须保留的人工门槛
+每次交付：改了什么/提交SHA、通过和未跑的检查、同版本关键截图、剩余问题；更新CURRENT_STATE和对应UX状态。不把模拟测试冒充效果、用户留存、付款或授权。
 
-1. iPhone Safari、微信内置浏览器、Android Chrome 的打开、键盘、语音、布局、停止、后台和减少动效测试。
-2. Expo/EAS项目关联、Apple签名preview安装与真机验证、TestFlight/App Store审核。
-3. 真实可选StepFun端到端调用（用户主动许可与已有服务端凭据）；模拟provider测试不是线上成功率，不打印key，不发私人材料。
-4. 版权许可、发布主体、有效支持渠道和真实种子用户反馈。前后分数下降不是因果效果证明；无变化、更差、退出、未评分也应记录。
-5. 用户明确同意后再审查合并/部署；不要自动merge任何PR。
+## 仍需人工/外部确认
 
-## 不要再反复重做
+真实Safari/微信/Android；非开发者登录态链接；私密支持渠道；EAS/Apple及签名/审核；真实可选StepFun及处理/预算/网关；内容权利与发布主体；真实15人和随访/付费访谈。具体执行文件见SEED_TEST_LAUNCH_PACK_ZH、CONTENT_RIGHTS_MATRIX、PREFLIGHT_2026-09-06与Issue #2。
 
-不改产品方向、不强加多Agent、不扩方法库、不重新设计一套UI。没有填写不等于零/无变化；默认推荐分不能当自评；画面百分比不能叫心理测量；选行动不等于做完。默认/direct练习离线，不能宣传成每次都实时调用模型。不要隐藏真实灵修意图，也不要宣称保证效果或默认已获内容授权。
+## 历史材料仍保留
+
+`AUDIT_2026-09-06.md`、`NATIVE_REPAIR_2026-09-06.md`、`ROUND2_REVIEW_2026-09-06.md`记录两轮修复依据；NATIVE_DEPENDENCY_BLOCKER保存已解决的历史问题。旧.planning日志保留，不据其complete百分比推定当前所有产品/内容成熟。旧说明-only ZIP弃用；相对main与相对PR1的两份补丁不可同时盲目应用。

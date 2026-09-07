@@ -1,5 +1,7 @@
 # StillMind: Inner Cinema
 
+> **2026-09-07 接管更新**：先读 [CODEX_HANDOFF](docs/engineering/CODEX_HANDOFF.md)、[当前进度](.planning/stillmind-complete-product/CURRENT_STATE.md)、[三模块与组合](docs/product/MODULES_AND_COMBINATIONS.md) 和 [尚未实施的UX审阅](docs/product/UX_INTERACTION_REVIEW_2026-09-06.md)。工程验收通过不等于所有互动成立；当前主要代码属于A，不表示B/C全部完成。
+
 StillMind 是一个非临床的日常自我观察练习原型，提供短时暂停、注意力与视角练习。不保证缓解效果，不诊断、治疗或替代现实中的支持。
 
 ## 当前实现
