@@ -100,7 +100,7 @@ export default function Home() {
             <h1 className="text-4xl font-semibold leading-[1.12] text-white sm:text-5xl">现在，先停一分钟。</h1>
             <p className="mt-3 text-base text-stone-400">不必先解释，跟着做就好。</p>
             <button type="button" onClick={startReset} disabled={starting} className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 text-base font-semibold text-slate-950 shadow-xl shadow-violet-950/25 transition hover:scale-[1.01] disabled:cursor-wait disabled:opacity-70">{starting ? "正在进入…" : "开始 1 分钟 Reset"}</button>
-            <details className="mt-5"><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">想说一句，或记录此刻程度（可选）</summary>
+            <details className="mt-5" onToggle={(event) => { if (!event.currentTarget.open) { recognitionRef.current?.abort(); setListening(false); } }}><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">想说一句，或记录此刻程度（可选）</summary>
             <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-medium text-stone-200">说一句，或者写一句</p>

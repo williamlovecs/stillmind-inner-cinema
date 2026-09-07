@@ -159,6 +159,17 @@ try {
   await click("跳过反馈，结束"); await screenshot("small-reduced-motion-exit");
   pass("320px reduced-motion interface retains a physically clickable stop control");
 
+  const voiceStub = await cdp("Page.addScriptToEvaluateOnNewDocument", { source: `window.__voiceAborts=0;window.SpeechRecognition=class{start(){this.onstart?.()}stop(){this.onend?.()}abort(){window.__voiceAborts++;this.onend?.()}}` });
+  await resetData();await navigate("/");
+  await waitFor(() => hasButton("开始说"), "synthetic browser speech support");
+  await evaluate("document.querySelector('details > summary').click()");
+  await click("开始说");assert.equal(await hasButton("正在听 · 停止"),true);
+  await evaluate("document.querySelector('details > summary').click()");
+  await waitFor(() => evaluate("window.__voiceAborts > 0"), "collapse aborts recognition");
+  assert.equal(await hasButton("正在听 · 停止"),false);
+  await cdp("Page.removeScriptToEvaluateOnNewDocument", { identifier: voiceStub.identifier });
+  pass("collapsing optional intake stops synthetic speech recognition; no microphone or cloud used");
+
   for(const endpoint of ["cinema","events"]) {
     const response=await fetch(`${origin}/api/${endpoint}`,{method:"POST",headers:{"Content-Type":"application/json","x-forwarded-for":`round2-browser-${endpoint}`},body:JSON.stringify({trigger:"中".repeat(4000)})});
     assert.equal(response.status,413); assert.equal(response.headers.get("cache-control"),"no-store");
