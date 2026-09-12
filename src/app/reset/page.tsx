@@ -61,12 +61,12 @@ const METHOD_GUIDANCE: Record<MethodId, MethodGuidance> = {
   "thought-watching": { anchor: "念头升起又落下", mechanism: "旁观念头的起伏，你会看见小我如何冒头，也看见它会自己变化。", reminder: "不追随，也不赶走；回来很多次也算练习。" },
   "wide-gaze": { anchor: "一束安静烛光", mechanism: "固定一个可看的对象，注意力就少一点被脑内剧情牵走。", reminder: "不是用力盯，眼睛累了就眨眼，轻轻回来。" },
   "body-scan": { anchor: "身体里的一个落点", mechanism: "把注意放回身体感受，会让解释性的念头少一点接管全局。", reminder: "哪里不舒服就跳过，回到脚底、椅子或手掌。" },
-  "person-shift": { anchor: "从“我”换成名字", mechanism: "把第一人称换成名字，反应会从“我就是这样”变成“有人正在经历”。", reminder: "这不是否认自己，只是临时拉开一点距离。" },
+  "person-shift": { anchor: "用名字观察原句", mechanism: "保留原句，在前面加上名字和“注意到”，试试从另一位置读它。", reminder: "不改变事实，不要求你产生不同感受。" },
   "logout-pause": { anchor: "暂时登出解释界面", mechanism: "解释常常会继续造剧情，先不互动，反应就少一点燃料。", reminder: "不要把登出做成麻木；一分钟后仍要回到现实行动。" },
   release: { anchor: "情绪起伏的波纹", mechanism: "允许反应出现，同时保留旁观位置，情绪就不必变成身份。", reminder: "宽恕不是替对方开脱，边界仍然可以清楚。" },
-  "open-awareness": { anchor: "更宽的空间感", mechanism: "把声音、身体和念头一起纳入，单一的“我”就不再占满全部画面。", reminder: "不追求神秘体验，只记住一点安静的质地。" },
+  "open-awareness": { anchor: "此刻的声音与空间", mechanism: "尝试同时注意几种经验，不需要选一个中心，也不需要全部注意到。", reminder: "没有连接感或安静感也可以，不要求达到某种状态。" },
   "grounded-action": { anchor: "一个很小的细节", mechanism: "把视角压缩到具体感官，脑内大剧情会被切成可处理的小片段。", reminder: "只选一个细节，不需要同时抓住所有感官。" },
-  "trigger-journal": { anchor: "让晃动画面慢下来", mechanism: "观察注意如何被带走，再轻轻稳定它，就是在训练意识稳定性。", reminder: "稳定不了也没关系，知道自己被带走就是进步。" },
+  "trigger-journal": { anchor: "一个静止的观察对象", mechanism: "用低刺激的静止对象练习观看，不通过按钮或图案移动来判断注意力。", reminder: "眨眼、放松；视觉不适就转向身边物品或停止。" },
   anchors: { anchor: "从近景拉到高空", mechanism: "把视角从眼前小事拉到更大时间线，角色会变小，空间会变大。", reminder: "拉远后要回来，选择一个现实里的小动作。" },
 };
 const METHOD_VISUALS: Record<MethodId, { src: string; alt: string }> = {
@@ -395,10 +395,10 @@ function ResetExperience() {
                 <div className="mt-3 flex flex-wrap items-end gap-3"><h2 className="text-3xl font-semibold text-white sm:text-4xl">{method.title}</h2><span className="rounded-full border border-amber-200/25 bg-amber-100/10 px-3 py-1 text-sm text-amber-100">{practice?.minutes ?? duration} 分钟</span></div>
                 {!focusMode ? <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300">{methodReason}</p> : <p className="mt-3 text-sm leading-6 text-stone-400">{focusStatusCopy}</p>}
                 {!focusMode ? <div className="mt-3 grid gap-2 text-xs text-stone-400 sm:grid-cols-3"><span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">先被看见</span><span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">退回观众席</span><span className="rounded-full border border-violet-200/15 bg-violet-200/[0.06] px-3 py-2">前后 1-5 评分</span></div> : null}
-                {!focusMode ? <p className="mt-3 text-sm leading-6 text-violet-100/70">先跟着这一分钟走完，不用先研究 12 种方法；完成后可以自愿记录感受。</p> : null}
+                {!focusMode ? <p className="mt-3 text-sm leading-6 text-violet-100/70">跟着本次引导即可，不用先研究 12 种方法；随时可停，结束后可以自愿记录感受。</p> : null}
                 {phase === "choose" ? <button type="button" onClick={requestStart} className="mt-4 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-950/25 transition hover:scale-[1.01]">开始 {practice?.minutes ?? duration} 分钟练习</button> : null}
               </div>
-              {!focusMode ? <div className="flex flex-wrap gap-2 lg:justify-end">{!showDurationOptions ? <button type="button" onClick={() => setShowDurationOptions(true)} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-300 transition hover:border-violet-200/35 hover:text-white">默认 1 分钟 · 调整</button> : [1, 3, 5, 10].map((value) => {
+              {!focusMode ? <div className="flex flex-wrap gap-2 lg:justify-end">{!showDurationOptions ? <button type="button" onClick={() => setShowDurationOptions(true)} className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-300 transition hover:border-violet-200/35 hover:text-white">{practice?.minutes ?? duration} 分钟 · 调整</button> : [1, 3, 5, 10].map((value) => {
                 const minutes = value as DurationMinutes; const available = method.durations.includes(minutes);
                 return <button key={value} type="button" disabled={!available} onClick={() => setDuration(minutes)} className={`rounded-full border px-3 py-2 text-sm transition ${duration === minutes ? "border-violet-200/70 bg-violet-200/16 text-white" : "border-white/10 bg-white/[0.04] text-stone-300 enabled:hover:border-violet-200/35 disabled:cursor-not-allowed disabled:opacity-35"}`}>{value}m</button>;
               })}</div> : null}
