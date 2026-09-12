@@ -4,7 +4,7 @@
 // The parent owns the session clock; this component only renders guided visuals and controls.
 import Image from "next/image";
 import "./observer-cinema.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { PracticeVariant } from "@stillmind/content";
 import { OBSERVER_LENSES, observationText, observerFrame, type MethodDefinition, type MethodId } from "@stillmind/domain";
 import type { CinemaPayload } from "@/lib/cinema-presets";
@@ -42,38 +42,13 @@ function MethodExperience({ methodId, instruction, secondsLeft, elapsedSeconds, 
   return <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_34%,rgba(139,92,246,0.14),transparent_45%),rgba(2,6,23,0.72)] p-6 text-center"><div>{thoughts.map((thought, index) => <span key={thought} className="m-1 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-stone-300" style={{ opacity: Math.max(0.25, 1 - (stepIndex + index) * 0.14) }}>{thought}</span>)}<p className="mx-auto mt-8 max-w-xl text-2xl font-semibold leading-10 text-white">{instruction}</p></div></div>;
 }
 
-function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, paused, elapsedSeconds }: { paused: boolean; elapsedSeconds: number; methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
+function FocusObjectEngine({ methodId, instruction, elapsedSeconds }: { paused: boolean; elapsedSeconds: number; methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
   const [returns, setReturns] = useState(0);
   const [resetAt, setResetAt] = useState(elapsedSeconds);
-  const [stability, setStability] = useState(34);
-  const [holding, setHolding] = useState(false);
-  const [detailIndex, setDetailIndex] = useState<number>();
+  const [externalObject, setExternalObject] = useState(false);
+  const [objectName, setObjectName] = useState("");
   const [exhaleTaps, setExhaleTaps] = useState(0);
   const steadySeconds = Math.floor(Math.max(0, elapsedSeconds - resetAt));
-  const detailSteps = [
-    { label: "环境", value: "这个房间", hint: "先看见大范围", x: "50%", y: "50%" },
-    { label: "对象", value: "一个杯子", hint: "把镜头推近", x: "48%", y: "48%" },
-    { label: "细节", value: "杯沿高光", hint: "只看一个小点", x: "55%", y: "38%" },
-    { label: "触感", value: "脚底压力", hint: "加入身体感官", x: "48%", y: "78%" },
-  ] as const;
-  const suggestedDetailIndex = Math.min(stepIndex, detailSteps.length - 1);
-  const activeDetailIndex = detailIndex ?? suggestedDetailIndex;
-  const activeDetail = detailSteps[activeDetailIndex] ?? detailSteps[0];
-  useEffect(() => {
-    if (methodId !== "trigger-journal" || paused) return;
-    const timer = window.setInterval(() => {
-      setStability((value) => {
-        const next = holding ? value + 5 : value - 1.4;
-        return Math.min(100, Math.max(22, next));
-      });
-    }, 320);
-    return () => window.clearInterval(timer);
-  }, [holding, methodId, paused]);
-  useEffect(() => {
-    if (!paused) return;
-    const timer = window.setTimeout(() => setHolding(false), 0);
-    return () => window.clearTimeout(timer);
-  }, [paused]);
 
   if (methodId === "paced-breath") {
     return (
@@ -105,25 +80,24 @@ function FocusObjectEngine({ methodId, instruction, secondsLeft, stepIndex, paus
     );
   }
   if (methodId === "trigger-journal") {
-    const steady = stability >= 72;
     return (
-      <div className="grid flex-1 content-center gap-5 overflow-hidden rounded-[2rem] border border-emerald-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(16,185,129,0.14),transparent_46%),rgba(2,6,23,0.76)] p-6 text-center">
-        <button type="button" onPointerDown={() => setHolding(true)} onPointerUp={() => setHolding(false)} onPointerCancel={() => setHolding(false)} onPointerLeave={() => setHolding(false)} aria-label="按住画面让它慢下来" className={`illusion-field mx-auto grid h-60 w-60 place-items-center rounded-[2rem] border border-emerald-100/15 transition duration-700 active:scale-[0.98] ${steady ? "illusion-steady scale-95 opacity-75" : "scale-100 opacity-100"}`} style={{ animationDuration: `${Math.max(2.4, 9 - stability / 14)}s` }}><span className="rounded-full bg-slate-950/75 px-4 py-2 text-sm text-emerald-50">{holding ? "正在稳定画面" : steady ? "画面慢下来了" : "按住画面"}</span></button>
-        <div className="mx-auto w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-3"><div className="flex items-center justify-between text-xs text-stone-500"><span>晃动</span><span>稳定</span></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-r from-emerald-300 to-amber-100 transition-[width]" style={{ width: `${stability}%` }} /></div><p className="mt-2 text-sm text-emerald-50">画面变化（非身体或心理测量）</p></div>
-        <p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
-        <p className="text-xs text-stone-500">按住图案让它慢下来，松开后观察它恢复移动。剩余 {secondsLeft} 秒。</p>
+      <div className="grid flex-1 content-center justify-items-center gap-5 p-4 text-center">
+        <div data-testid="steady-object" className="grid min-h-56 w-full max-w-sm place-items-center border-y border-emerald-100/20">
+          {externalObject ? <p className="px-5 text-lg leading-8 text-emerald-50">看一件身边静止的物品，或听一个平稳的声音。</p> : <span aria-label="静止的观察方框" role="img" className="h-24 w-24 border-2 border-emerald-100/60" />}
+        </div>
+        <p className="max-w-md text-lg leading-8 text-stone-200">{instruction}</p>
+        <button type="button" aria-pressed={externalObject} onClick={() => setExternalObject(!externalObject)} className="min-h-12 rounded-lg border border-white/20 px-4 py-3 text-stone-200">{externalObject ? "回到屏幕对象" : "改看身边的物品"}</button>
+        <p className="text-sm text-stone-400">画面本来就是静止的，不评判你的注意力。</p>
       </div>
     );
   }
   return (
-    <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-amber-200/15 bg-[radial-gradient(circle_at_50%_22%,rgba(245,158,11,0.12),transparent_46%),rgba(2,6,23,0.72)] p-6 text-center">
-      <div className="relative mx-auto h-56 w-56 rounded-full border border-amber-100/20 bg-amber-200/10 shadow-[0_0_60px_rgba(245,158,11,0.18)]">
-        <span className="absolute inset-10 rounded-full border border-amber-100/10" />
-        <span className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-100/25 bg-slate-950/50" />
-        {detailSteps.map((item, index) => <button key={item.label} type="button" aria-pressed={index === activeDetailIndex} onClick={() => setDetailIndex(index)} className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border px-3 py-2 text-xs font-semibold transition ${index === activeDetailIndex ? "border-amber-100/65 bg-amber-100/18 text-white" : "border-white/10 bg-slate-950/70 text-stone-400"}`} style={{ left: item.x, top: item.y }}>{item.label}</button>)}
-      </div>
-      <div className="mx-auto max-w-md rounded-2xl border border-amber-100/15 bg-amber-100/[0.07] p-4"><p className="text-xs text-amber-100/55">当前焦点</p><p className="mt-1 text-2xl font-semibold text-amber-50">{activeDetail.value}</p><p className="mt-2 text-sm text-stone-400">{activeDetail.hint}</p></div>
-      <p className="mx-auto max-w-xl text-xl font-semibold leading-9 text-white">{instruction}</p>
+    <div className="grid flex-1 content-center gap-5 p-5 text-center">
+      <p className="text-xl leading-8 text-amber-50">把手机放低，看一件身边真实的物品。</p>
+      <input aria-label="本次观察的真实物品" autoComplete="off" maxLength={60} value={objectName} onChange={event => setObjectName(event.target.value)} placeholder="可记下物品或细节，也可以不写" className="min-h-12 w-full rounded-lg border border-white/20 bg-white/5 p-3 text-white" />
+      {objectName.trim() ? <p className="text-lg text-amber-100 [overflow-wrap:anywhere]">本次对象：{objectName}</p> : null}
+      <p className="text-lg leading-8 text-stone-200">{instruction}</p>
+      <p className="text-sm text-stone-400">不需要拍照，也不需要点击来证明专注。</p>
     </div>
   );
 }
@@ -178,7 +152,7 @@ function ThoughtBubbleEngine({ methodId, instruction, trigger }: { methodId: Met
   </div>;
 }
 
-function BodySpaceEngine({ methodId, instruction, stepIndex }: { methodId: MethodId; instruction: string; stepIndex: number }) {
+function BodySpaceEngine({ methodId, instruction }: { methodId: MethodId; instruction: string; stepIndex: number }) {
   const zones = [
     { id: "feet", label: "脚底", x: "50%", y: "82%" },
     { id: "palms", label: "手掌", x: "28%", y: "54%" },
@@ -187,22 +161,29 @@ function BodySpaceEngine({ methodId, instruction, stepIndex }: { methodId: Metho
   ] as const;
   const fields = ["声音", "身体", "念头", "空间"];
   const [zoneId, setZoneId] = useState<(typeof zones)[number]["id"]>("feet");
-  const [releaseDistance, setReleaseDistance] = useState(54);
-  const [manualAwarenessFields, setManualAwarenessFields] = useState<string[]>();
+  const [contact, setContact] = useState(false);
+  const [manualAwarenessFields, setManualAwarenessFields] = useState<string[]>([]);
   const selected = zones.find((zone) => zone.id === zoneId) ?? zones[0];
-  const includedCount = Math.min(fields.length, stepIndex + 1);
-  const activeAwarenessFields = manualAwarenessFields ?? fields.slice(0, includedCount);
+  const activeAwarenessFields = manualAwarenessFields;
   function toggleAwarenessField(field: string) {
     setManualAwarenessFields((current) => {
-      const base = current ?? fields.slice(0, includedCount);
-      return base.includes(field) ? base.filter((item) => item !== field) : [...base, field];
+      return current.includes(field) ? current.filter((item) => item !== field) : [...current, field];
     });
   }
   if (methodId === "open-awareness") {
-    return <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-violet-200/15 bg-[radial-gradient(circle_at_center,rgba(216,180,254,0.13),transparent_52%),rgba(2,6,23,0.72)] p-6 text-center">{[0, 1, 2, 3].map((index) => <span key={index} className="absolute rounded-full border border-violet-100/10 transition-[width,height,opacity]" style={{ width: 110 + index * 74 + activeAwarenessFields.length * 18, height: 110 + index * 74 + activeAwarenessFields.length * 18, opacity: Math.max(0.12, 0.74 - index * 0.14) }} />)}<div className="relative grid grid-cols-2 gap-3 sm:grid-cols-4">{fields.map((field) => <button key={field} type="button" aria-pressed={activeAwarenessFields.includes(field)} onClick={() => toggleAwarenessField(field)} className={`rounded-full border px-5 py-3 text-sm transition ${activeAwarenessFields.includes(field) ? "border-violet-100/45 bg-violet-100/13 text-violet-50 shadow-[0_0_22px_rgba(216,180,254,0.12)]" : "border-white/10 bg-white/[0.04] text-stone-500 hover:border-violet-200/30 hover:text-stone-300"}`}>{field}</button>)}</div><p className="relative mt-5 text-xs text-violet-100/55">已纳入：{activeAwarenessFields.length > 0 ? activeAwarenessFields.join("、") : "暂时留白"}</p><p className="absolute bottom-16 max-w-xl px-6 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="absolute bottom-7 text-xs text-stone-500">点选要纳入的经验；这是扩展注意范围，不是在追求神秘体验。</p></div>;
+    return <div className="grid flex-1 content-center gap-6 p-5 text-center">
+      <p className="text-lg leading-8 text-stone-200">{instruction}</p>
+      <div role="group" aria-label="可选的觉察标记" className="grid grid-cols-2 gap-3">{fields.map(field => <button key={field} type="button" aria-pressed={activeAwarenessFields.includes(field)} onClick={() => toggleAwarenessField(field)} className={`min-h-12 rounded-lg border px-4 py-3 ${activeAwarenessFields.includes(field) ? "border-violet-200 bg-violet-100/10 text-white" : "border-white/20 text-stone-300"}`}>{field}</button>)}</div>
+      <p aria-live="polite" className="text-sm text-violet-100">主动标记：{activeAwarenessFields.join("、") || "暂无"}</p>
+      <p className="text-sm text-stone-400">不需要凑齐，也可以什么都不标记。</p>
+    </div>;
   }
   if (methodId === "release") {
-    return <div className="grid flex-1 place-items-center rounded-[2rem] border border-rose-200/15 bg-[radial-gradient(circle_at_50%_16%,rgba(251,113,133,0.12),transparent_42%),rgba(2,6,23,0.72)] p-6 text-center"><div className="relative h-44 w-44 rounded-full border border-rose-100/20 bg-rose-100/[0.04]"><span className="absolute inset-8 rounded-full border border-amber-100/15" style={{ transform: `scale(${releaseDistance / 64})` }} /><span className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-200/20 blur-sm" /></div><p className="mt-5 text-xl font-semibold leading-9 text-white">{instruction}</p><p className="mt-2 text-sm text-rose-100/70">拖动边界圈。宽恕不是取消边界，是让自己少重播一次。</p><input aria-label="边界距离" type="range" min="30" max="100" value={releaseDistance} onChange={(event) => setReleaseDistance(Number(event.target.value))} className="mt-4 w-full max-w-sm accent-rose-200" /><p className="text-xs text-stone-500">调整的是画面圆圈，不代表现实边界评分。</p></div>;
+    return <div className="grid flex-1 content-center gap-6 p-5 text-center">
+      <p data-testid="boundary-guidance" className="text-xl leading-9 text-rose-50">{contact ? instruction : "先不回想那件事。看一件中性物品，感受脚底的支撑。"}</p>
+      <button type="button" aria-pressed={contact} onClick={() => setContact(!contact)} className="min-h-12 rounded-lg border border-rose-100/30 px-4 py-3 text-rose-50">{contact ? "暂不接触这件事" : "愿意继续观察反应"}</button>
+      <p className="text-sm leading-7 text-stone-400">这只改变本次引导，不代表你已宽恕，也不要求和解或联系对方。</p>
+    </div>;
   }
   return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-cyan-200/15 bg-[radial-gradient(circle_at_50%_20%,rgba(34,211,238,0.12),transparent_45%),rgba(2,6,23,0.72)] p-6"><div className="grid gap-5 sm:grid-cols-[0.78fr_1fr] sm:items-center"><div className="relative mx-auto h-72 w-44 rounded-full border border-cyan-100/15 bg-[radial-gradient(ellipse_at_center,rgba(125,211,252,0.12),transparent_62%)]"><span className="absolute left-1/2 top-5 h-14 w-14 -translate-x-1/2 rounded-full border border-cyan-100/20 bg-cyan-100/[0.04]" /><span className="absolute left-1/2 top-20 h-28 w-20 -translate-x-1/2 rounded-[999px] border border-cyan-100/20 bg-cyan-100/[0.035]" />{zones.map((zone) => <button key={zone.id} type="button" onClick={() => setZoneId(zone.id)} aria-label={`标记${zone.label}`} className={`absolute grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border text-xs font-semibold transition ${zone.id === zoneId ? "border-cyan-100/70 bg-cyan-100/22 text-white shadow-[0_0_30px_rgba(34,211,238,0.24)]" : "border-cyan-100/20 bg-slate-950/72 text-cyan-100/70"}`} style={{ left: zone.x, top: zone.y }}>{zone.label.slice(0, 1)}</button>)}</div><div className="space-y-3 text-center sm:text-left"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/50">身体落点</p><p className="text-3xl font-semibold text-white">{selected.label}</p><p className="text-sm leading-7 text-stone-300">注意这里有什么感觉，也可以没有明显感觉。不需要解释原因。</p><p className="text-xl font-semibold leading-9 text-white">{instruction}</p></div></div></div>;
 }

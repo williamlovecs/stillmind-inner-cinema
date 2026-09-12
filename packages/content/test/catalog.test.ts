@@ -26,3 +26,13 @@ test("an unsupported duration falls back without pretending to match it", () => 
   assert.ok(practice);
   assert.notEqual(practice.minutes, 10);
 });
+
+test("scaled durations disclose the same guidance and use the revised content version", () => {
+  const scaled = getPracticeVariant("inner-cinema", 3);
+  assert.ok(scaled);
+  assert.match(scaled.subtitle, /同一引导/);
+  assert.equal(scaled.contentVersion, "1.1.0");
+  const open = getPracticeVariant("open-awareness", 5);
+  assert.ok(open);
+  assert.doesNotMatch(open.steps.map(step => step.instruction).join(""), /已经|曾经触到/);
+});

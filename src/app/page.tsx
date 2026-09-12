@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { containsHighRiskLanguage, detectStateModeFromText, type ActivationLevel } from "@stillmind/domain";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { PracticeOptionsPanel } from "@/components/PracticeOptionsPanel";
@@ -36,38 +36,48 @@ export default function Home() {
   const [safetyNotice, setSafetyNotice] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const voiceBaseRef = useRef("");
+  const stopVoice = useCallback(() => {
+    const recognition = recognitionRef.current;
+    recognitionRef.current = null;
+    try { recognition?.abort(); } catch { /* Already ended by the browser. */ }
+    setListening(false);
+  }, []);
   const mode = useMemo(() => detectStateModeFromText(trigger), [trigger]);
   useEffect(() => {
     router.prefetch("/reset");
     const speechWindow = window as Window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor };
     const timer = window.setTimeout(() => setVoiceSupported(Boolean(speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition)), 0);
-    return () => { window.clearTimeout(timer); recognitionRef.current?.abort(); };
-  }, [router]);
+    const onVisibility = () => { if (document.hidden) stopVoice(); };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => { window.clearTimeout(timer); document.removeEventListener("visibilitychange", onVisibility); stopVoice(); };
+  }, [router, stopVoice]);
   function updateTrigger(value: string, method: InputMethod = "typed") {
     setTrigger(value.slice(0, 500)); setInputMethod(value.trim() ? method : "state-only"); setSafetyNotice(false);
   }
   function toggleVoice() {
-    if (listening) { recognitionRef.current?.stop(); return; }
+    if (recognitionRef.current) { stopVoice(); return; }
     const speechWindow = window as Window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor };
     const Constructor = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
     if (!Constructor) return;
     const recognition = new Constructor();
     recognition.continuous = true; recognition.interimResults = true; recognition.lang = "zh-CN";
     voiceBaseRef.current = trigger.trim();
-    recognition.onstart = () => { setListening(true); setInputMethod("dictation"); };
-    recognition.onend = () => setListening(false); recognition.onerror = () => setListening(false);
+    recognition.onstart = () => { if (recognitionRef.current === recognition) { setListening(true); setInputMethod("dictation"); } };
+    recognition.onend = () => { if (recognitionRef.current === recognition) { recognitionRef.current = null; setListening(false); } };
+    recognition.onerror = () => { if (recognitionRef.current === recognition) stopVoice(); };
     recognition.onresult = (event) => {
+      if (recognitionRef.current !== recognition) return;
       let transcript = "";
       for (let index = 0; index < event.results.length; index += 1) transcript += ` ${event.results[index]?.[0]?.transcript ?? ""}`;
       updateTrigger([voiceBaseRef.current, transcript.trim()].filter(Boolean).join(" "), "dictation");
     };
     recognitionRef.current = recognition;
-    try { recognition.start(); } catch { setListening(false); }
+    try { recognition.start(); } catch { stopVoice(); }
   }
   function startReset() {
     const text = trigger.trim();
     if (text && containsHighRiskLanguage(text)) { setSafetyNotice(true); return; }
-    recognitionRef.current?.abort(); setStarting(true);
+    stopVoice(); setStarting(true);
     try {
       window.sessionStorage.setItem(PENDING_TRIGGER_KEY, text);
       window.sessionStorage.setItem(PENDING_MODE_KEY, mode);
@@ -100,7 +110,7 @@ export default function Home() {
             <h1 className="text-4xl font-semibold leading-[1.12] text-white sm:text-5xl">现在，先停一分钟。</h1>
             <p className="mt-3 text-base text-stone-400">不必先解释，跟着做就好。</p>
             <button type="button" onClick={startReset} disabled={starting} className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 text-base font-semibold text-slate-950 shadow-xl shadow-violet-950/25 transition hover:scale-[1.01] disabled:cursor-wait disabled:opacity-70">{starting ? "正在进入…" : "开始 1 分钟 Reset"}</button>
-            <details className="mt-5" onToggle={(event) => { if (!event.currentTarget.open) { recognitionRef.current?.abort(); setListening(false); } }}><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">想说一句，或记录此刻程度（可选）</summary>
+            <details className="mt-5" onToggle={(event) => { if (!event.currentTarget.open) stopVoice(); }}><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">想说一句，或记录此刻程度（可选）</summary>
             <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-medium text-stone-200">说一句，或者写一句</p>

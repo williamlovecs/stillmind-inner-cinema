@@ -29,7 +29,7 @@ export function DisclaimerModal({ onAcknowledged }: { onAcknowledged?: (ready: b
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     }}>
-    <div className="w-full max-w-md overflow-hidden rounded-3xl border border-violet-200/20 bg-[#08111f]/96 shadow-2xl shadow-violet-950/40">
+    <div className="max-h-[calc(100dvh-2.5rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-3xl border border-violet-200/20 bg-[#08111f]/96 shadow-2xl shadow-violet-950/40">
       <div className="px-6 py-6">
         <p className="text-xs uppercase tracking-[0.28em] text-violet-200/70">使用边界</p>
         <h2 id="disclaimer-title" className="mt-3 text-2xl font-semibold leading-tight text-stone-50">这是 1 分钟日常 reset，不是医疗工具。</h2>

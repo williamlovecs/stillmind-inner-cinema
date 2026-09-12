@@ -78,6 +78,17 @@ try {
   });
   server.stdout.on("data", b => logs.push(b.toString())); server.stderr.on("data", b => logs.push(b.toString()));
   await waitFor(async () => (await fetch(origin)).ok, "local production server", 40000);
+  const securityResponse = await fetch(origin);
+  assert.equal(securityResponse.headers.get("x-frame-options"), "DENY");
+  assert.equal(securityResponse.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(securityResponse.headers.get("referrer-policy"), "no-referrer");
+  assert.match(securityResponse.headers.get("content-security-policy"), /frame-ancestors 'none'/);
+  for (const path of ["/api/cinema", "/api/events"]) {
+    const denied = await fetch(origin + path, { method: "POST", headers: { origin: "https://hostile.test", "content-type": "application/json" }, body: "{}" });
+    assert.equal(denied.status, 403);
+    assert.equal(denied.headers.get("access-control-allow-origin"), null);
+  }
+  pass("production security headers and cross-origin API rejection are active");
   const binary = [process.env.CHROME_BIN, "google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]
     .filter(Boolean).find(name => existsSync(name) || spawnSync(name, ["--version"], { stdio: "ignore", timeout: 5000 }).status === 0);
   if (!binary) throw Error("Chrome/Chromium not installed; browser QA did not run.");
@@ -101,6 +112,12 @@ try {
   await cdp("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await navigate("/reset?mode=looping&activation=2&direct=1");
   await waitFor(() => evaluate(`!!document.querySelector('[role="dialog"]')`), "first-use disclaimer");
+  await cdp("Emulation.setDeviceMetricsOverride", { width: 320, height: 568, deviceScaleFactor: 1, mobile: true });
+  await evaluate("document.documentElement.style.fontSize='24px'");
+  assert.equal(await evaluate(`(()=>{const r=document.querySelector('[role="dialog"] > div').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight})()`),true);
+  await screenshot("first-use-large-text-320");
+  await evaluate("document.documentElement.style.fontSize=''");
+  await cdp("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   assert.equal(await hasButton("暂停"), false, "a practice must not start behind the disclaimer");
   await evaluate(`document.querySelector('[role="dialog"] input[type=checkbox]').click()`);
   await click("进入体验"); await waitFor(() => hasButton("暂停"), "practice after consent");
@@ -265,6 +282,51 @@ try {
   assert.equal(lateEvent.payload.reuse_intent, "unreported");
   assert.doesNotMatch(JSON.stringify(analyticsRequests), /rawTrigger|privateNote|feedbackNote/);
   pass("late consent sends feedback only; missing answers and action remain unreported");
+
+  await resetData(); await navigate("/reset?method=trigger-journal&mode=curious&activation=2&direct=1");
+  await waitFor(() => hasButton("暂停"), "static observation");
+  const steady = `document.querySelector('[data-testid="steady-object"]')`;
+  const initialObject = await evaluate(`${steady}.innerHTML`);
+  await sleep(1500);
+  assert.equal(await evaluate(`${steady}.innerHTML`), initialObject);
+  assert.equal(await evaluate(`document.querySelectorAll('[role="progressbar"]').length`), 1);
+  assert.doesNotMatch(await evaluate("document.body.innerText"), /按住|正在稳定画面/);
+  await click("改看身边的物品");
+  assert.match(await evaluate(`${steady}.textContent`), /身边静止/);
+  await click("回到屏幕对象");
+  assert.equal(await evaluate(`${steady}.innerHTML`), initialObject);
+  await screenshot("steady-mobile");
+  await click("停止"); await click("跳过反馈，结束");
+  pass("stability is a static observation with a reversible external alternative, not press-driven progress");
+
+  for (const method of ["open-awareness", "release"]) {
+    await resetData(); await navigate(`/reset?method=${method}&mode=curious&activation=2&eyes=0&direct=1`);
+    await waitFor(() => hasButton("暂停"), method);
+    if (method === "open-awareness") {
+      assert.equal(await evaluate(`document.querySelectorAll('[aria-label="可选的觉察标记"] [aria-pressed="true"]').length`), 0);
+      await click("声音"); assert.match(await evaluate("document.body.innerText"), /主动标记：声音/);
+      await click("声音"); assert.match(await evaluate("document.body.innerText"), /主动标记：暂无/);
+    } else {
+      const guidance = `document.querySelector('[data-testid="boundary-guidance"]').textContent`;
+      assert.match(await evaluate(guidance), /先不回想/);
+      await click("愿意继续观察反应"); assert.doesNotMatch(await evaluate(guidance), /先不回想/);
+      await click("暂不接触这件事"); assert.match(await evaluate(guidance), /先不回想/);
+    }
+    await screenshot(`${method}-mobile`);
+    await click("停止"); await click("跳过反馈，结束");
+  }
+  pass("awareness has no invented selections and contact choice actually changes the guidance");
+
+  await cdp("Emulation.setDeviceMetricsOverride", { width: 320, height: 740, deviceScaleFactor: 1, mobile: true });
+  for (const method of ["inner-cinema", "paced-breath", "wide-gaze", "thought-watching", "body-scan", "person-shift", "logout-pause", "release", "open-awareness", "grounded-action", "trigger-journal", "anchors"]) {
+    await resetData(); await navigate(`/reset?method=${method}&mode=curious&activation=2&eyes=0&direct=1`);
+    await waitFor(() => hasButton("暂停"), `all methods: ${method}`);
+    assert.equal(await evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), true, method);
+    await screenshot(`method-${method}-320`);
+    await click("停止"); await click("跳过反馈，结束");
+    assert.equal((await records())[0].methodId, method);
+  }
+  pass("all twelve methods start their selected method and can stop at 320px without horizontal overflow");
 
   await resetData(); await navigate("/methods");
   assert.equal(await evaluate(`new Set([...document.querySelectorAll('a[href^="/methods/"]')].map(a=>a.pathname)).size`), 12);

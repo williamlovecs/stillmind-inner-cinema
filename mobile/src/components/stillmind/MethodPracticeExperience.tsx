@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { OBSERVER_LENSES, observationText, observerFrame, type MethodId } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
@@ -10,12 +10,6 @@ const BODY_ZONES = [
   { id: "shoulders", label: "肩颈", quality: "松紧" },
 ] as const;
 const AWARENESS_FIELDS = ["声音", "身体", "念头", "空间"] as const;
-const FOCUS_LEVELS = [
-  { label: "环境", value: "看见整个房间" },
-  { label: "对象", value: "选一个普通物体" },
-  { label: "细节", value: "只看边缘与纹理" },
-  { label: "触感", value: "加入脚底或手掌" },
-] as const;
 const ZOOM_LEVELS = [
   { label: "近景", body: "刚才的一句话或一个表情", scale: 1 },
   { label: "今天", body: "它只是今天的一小段", scale: 0.82 },
@@ -47,31 +41,15 @@ export function MethodPracticeExperience({
   const [observerSentence, setObserverSentence] = useState(trigger);
   const [hidden, setHidden] = useState(false);
   const [bodyZone, setBodyZone] = useState<(typeof BODY_ZONES)[number]["id"]>("feet");
-  const [boundary, setBoundary] = useState<"靠近" | "保持距离" | "暂不接触">("保持距离");
-  const [awarenessFields, setAwarenessFields] = useState<string[]>(["声音"]);
-  const [manualFocusLevel, setManualFocusLevel] = useState<number>();
+  const [contact, setContact] = useState(false);
+  const [awarenessFields, setAwarenessFields] = useState<string[]>([]);
+  const [objectName, setObjectName] = useState("");
+  const [externalObject, setExternalObject] = useState(false);
   const [returns, setReturns] = useState(0);
-  const [holding, setHolding] = useState(false);
-  const [stability, setStability] = useState(32);
   const [manualZoomLevel, setManualZoomLevel] = useState<number>();
   const [exhaleTaps, setExhaleTaps] = useState(0);
   const [cinemaLensIndex, setCinemaLensIndex] = useState(0);
 
-  useEffect(() => {
-    if (methodId !== "trigger-journal" || paused) return;
-    const timer = setInterval(() => {
-      setStability((current) => Math.max(20, Math.min(100, current + (holding ? 4 : -1))));
-    }, 260);
-    return () => clearInterval(timer);
-  }, [holding, methodId, paused]);
-
-  useEffect(() => {
-    if (!paused) return;
-    const timer = setTimeout(() => setHolding(false), 0);
-    return () => clearTimeout(timer);
-  }, [paused]);
-
-  const focusLevel = manualFocusLevel ?? Math.min(stepIndex, FOCUS_LEVELS.length - 1);
   const zoomLevel = manualZoomLevel ?? Math.min(stepIndex, ZOOM_LEVELS.length - 1);
   const selectedZone = BODY_ZONES.find((item) => item.id === bodyZone) ?? BODY_ZONES[0];
   const subject = observationText(trigger);
@@ -176,20 +154,11 @@ export function MethodPracticeExperience({
 
   if (methodId === "release") {
     return (
-      <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <View style={styles.boundaryStage}>
-          <View style={[styles.boundaryRing, boundary === "靠近" ? styles.boundaryNear : boundary === "暂不接触" ? styles.boundaryFar : styles.boundaryMiddle]}>
-            <View style={styles.boundaryCore} />
-          </View>
-        </View>
-        <View style={styles.segmented}>
-          {(["靠近", "保持距离", "暂不接触"] as const).map((item) => (
-            <Pressable disabled={paused} key={item} onPress={() => setBoundary(item)} style={[styles.segment, boundary === item && styles.segmentWarm]}>
-              <Text style={[styles.segmentText, boundary === item && styles.segmentTextActive]}>{item}</Text>
-            </Pressable>
-          ))}
-        </View>
-        <Text style={styles.helper}>接纳情绪不等于取消边界。选一个此刻更安全的距离。</Text>
+      <ExperienceShell title={title} instruction={contact ? instruction : "先不回想那件事。看一件中性物品，感受脚底的支撑。"} stepIndex={stepIndex} stepCount={stepCount}>
+        <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: contact, disabled: paused }} onPress={() => setContact(!contact)} style={styles.segment}>
+          <Text style={styles.segmentText}>{contact ? "暂不接触这件事" : "愿意继续观察反应"}</Text>
+        </Pressable>
+        <Text style={styles.helper}>只改变本次引导，不代表已宽恕，也不要求和解或联系对方。</Text>
       </ExperienceShell>
     );
   }
@@ -201,29 +170,23 @@ export function MethodPracticeExperience({
           <View style={styles.awarenessRing} />
           <View style={styles.wrapCentered}>
             {AWARENESS_FIELDS.map((field) => (
-              <Pressable disabled={paused} key={field} onPress={() => toggleAwareness(field)} style={[styles.awarenessChip, awarenessFields.includes(field) && styles.awarenessChipActive]}>
+              <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: awarenessFields.includes(field), disabled: paused }} key={field} onPress={() => toggleAwareness(field)} style={[styles.awarenessChip, awarenessFields.includes(field) && styles.awarenessChipActive]}>
                 <Text style={[styles.awarenessText, awarenessFields.includes(field) && styles.awarenessTextActive]}>{field}</Text>
               </Pressable>
             ))}
           </View>
         </View>
-        <Text style={styles.helper}>轻点加入或放下一个经验。练习的是让它们同时存在，不选谁当中心。</Text>
+        <Text style={styles.helper}>主动标记：{awarenessFields.join("、") || "暂无"}。不需要凑齐，也可以什么都不标记。</Text>
       </ExperienceShell>
     );
   }
 
   if (methodId === "grounded-action") {
-    const active = FOCUS_LEVELS[focusLevel];
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <View style={styles.focusStage}>
-          {FOCUS_LEVELS.map((item, index) => (
-            <Pressable disabled={paused} key={item.label} onPress={() => setManualFocusLevel(index)} style={[styles.focusRing, { width: 210 - index * 38, height: 210 - index * 38, borderRadius: 120 - index * 18 }, focusLevel === index && styles.focusRingActive]}>
-              {focusLevel === index ? <Text style={styles.focusRingText}>{item.label}</Text> : null}
-            </Pressable>
-          ))}
-        </View>
-        <Metric label={active.label} value={active.value} />
+        <Text style={styles.helper}>把手机放低，看一件身边真实的物品。不需要拍照或点击来证明专注。</Text>
+        <TextInput accessibilityLabel="本次观察的真实物品" editable={!paused} value={objectName} onChangeText={setObjectName} maxLength={60} placeholder="可记下物品或细节，也可以不写" placeholderTextColor={colors.textMuted} style={styles.input} />
+        {objectName.trim() ? <Metric label="本次对象" value={objectName} /> : null}
       </ExperienceShell>
     );
   }
@@ -231,17 +194,11 @@ export function MethodPracticeExperience({
   if (methodId === "trigger-journal") {
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <Pressable disabled={paused}
-          accessibilityLabel="按住画面，让波动慢下来"
-          onPressIn={() => setHolding(true)}
-          onPressOut={() => setHolding(false)}
-          style={[styles.stabilityStage, holding && styles.stabilityHeld]}
-        >
-          <View style={[styles.stabilityPattern, { transform: [{ rotate: `${stability * 1.8}deg` }, { scale: 0.8 + stability / 500 }] }]} />
-          <Text style={styles.stageHint}>{holding ? "正在稳定" : "按住画面"}</Text>
-        </Pressable>
-        <ProgressMetric label="画面转动" endLabel="画面变慢" value={stability} />
-        <Text style={styles.helper}>这个变化来自按压操作，不代表身体或心理测量。</Text>
+        <View testID="steady-object" style={styles.stabilityStage}>
+          {externalObject ? <Text style={styles.helper}>看一件身边静止的物品，或听一个平稳的声音。</Text> : <View accessible accessibilityLabel="静止的观察方框" style={{ width: 96, height: 96, borderWidth: 2, borderColor: colors.textMuted }} />}
+        </View>
+        <Pressable disabled={paused} accessibilityRole="button" onPress={() => setExternalObject(!externalObject)} style={styles.segment}><Text style={styles.segmentText}>{externalObject ? "回到屏幕对象" : "改看身边的物品"}</Text></Pressable>
+        <Text style={styles.helper}>画面本来就是静止的，不评判你的注意力。</Text>
       </ExperienceShell>
     );
   }
@@ -291,15 +248,6 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 function Comparison({ label, value, warm = false }: { label: string; value: string; warm?: boolean }) {
   return <View style={[styles.comparison, warm && styles.comparisonWarm]}><Text style={styles.metricLabel}>{label}</Text><Text style={styles.comparisonText}>{value}</Text></View>;
-}
-
-function ProgressMetric({ label, endLabel, value }: { label: string; endLabel: string; value: number }) {
-  return (
-    <View style={styles.metric}>
-      <View style={styles.metricLabels}><Text style={styles.metricLabel}>{label}</Text><Text style={styles.metricLabel}>{endLabel}</Text></View>
-      <View style={styles.track}><View style={[styles.trackFill, { width: `${Math.max(0, Math.min(100, value))}%` }]} /></View>
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({

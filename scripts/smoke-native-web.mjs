@@ -118,6 +118,33 @@ try{
   await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',...stopPoint,button:'left',clickCount:1});
   await waitFor(()=>has('跳过反馈，结束'),'native physical stop');await click('跳过反馈，结束');
   pass('native long quoted input stays intact and small-screen stop remains physically reachable');
+  await cdp('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+  for(const [method,duration] of [['inner-cinema',1],['paced-breath',1],['wide-gaze',1],['thought-watching',3],['body-scan',5],['person-shift',1],['logout-pause',1],['release',5],['open-awareness',5],['grounded-action',1],['trigger-journal',3],['anchors',1]]) {
+    await seed({eyesOpenPreferred:false});
+    await navigate(`/reset?methodId=${method}&duration=${duration}&mode=curious&activation=2&ratingProvided=1&direct=1`);
+    await waitFor(()=>has('暂停'),`native all methods: ${method}`);
+    assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth + 1'),true,method);
+    if(method==='open-awareness') {
+      assert.match(await evaluate('document.body.innerText'),/主动标记：暂无/);
+      await click('声音');assert.match(await evaluate('document.body.innerText'),/主动标记：声音/);
+      await click('声音');assert.match(await evaluate('document.body.innerText'),/主动标记：暂无/);
+    }
+    if(method==='release') {
+      assert.match(await evaluate('document.body.innerText'),/先不回想/);
+      await click('愿意继续观察反应');assert.doesNotMatch(await evaluate('document.body.innerText'),/先不回想/);
+      await click('暂不接触这件事');assert.match(await evaluate('document.body.innerText'),/先不回想/);
+    }
+    if(method==='trigger-journal') {
+      const initial=await evaluate("document.querySelector('[data-testid=steady-object]').innerHTML");
+      await sleep(1200);assert.equal(await evaluate("document.querySelector('[data-testid=steady-object]').innerHTML"),initial);
+      await click('改看身边的物品');assert.match(await evaluate('document.body.innerText'),/身边静止/);
+      await click('回到屏幕对象');
+    }
+    await screenshot(`native-method-${method}`);
+    await click('停止');await click('跳过反馈，结束');
+    assert.equal((await records())[0].methodId,method);
+  }
+  pass('native twelve methods start and stop; static observation, voluntary awareness and contact choice are truthful');
   assert.equal(network.filter(u=>u.includes('/api/')).length,0,'default native flow must not send model or analytics requests');
   assert.deepEqual(failures,[]);complete=true;
   console.log('Native Expo Web regression PASS; physical iOS and signing are not tested.');
