@@ -11,7 +11,7 @@
   ],
   "overrides": {
     "postcss": "8.5.25",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "minimatch@3.1.5": {
       "brace-expansion": "1.1.18"
     },
@@ -66,12 +66,12 @@
     "test:native": "tsx --test test/native-session.test.ts",
     "smoke:native": "node scripts/smoke-native-web.mjs",
     "test:dependencies": "node --test test/dependency-compat.test.mjs",
-    "test:round2": "tsx --test test/round2-contracts.test.ts test/observation.test.ts && node --test test/round2-seed.test.mjs"
+    "test:round2": "tsx --test test/round2-contracts.test.ts test/observation.test.ts test/request-policy.test.ts && node --test test/round2-seed.test.mjs"
   },
   "dependencies": {
     "@stillmind/content": "*",
     "@stillmind/domain": "*",
-    "next": "^16.2.12",
+    "next": "16.3.3",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -82,8 +82,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "^16.2.12",
-    "expo-router": "~57.0.19",
+    "eslint-config-next": "16.3.3",
+    "expo-router": "~57.0.21",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5"

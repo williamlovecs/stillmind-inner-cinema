@@ -1,19 +1,11 @@
 import { isAnalyticsEnvelope } from "@stillmind/domain";
 import { readBoundedJson, requestAddress, WindowRateLimit } from "@/lib/server-limits";
+import { corsHeaders, preflight, requestPolicyError } from "@/lib/request-policy";
 
 const MAX_BODY_BYTES = 8_192;
 const rateLimit = new WindowRateLimit(30);
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Cache-Control": "no-store",
-};
-
-function json(body: unknown, status = 200) {
-  return Response.json(body, { status, headers: CORS_HEADERS });
-}
+const sinkBudget = new WindowRateLimit(120);
 
 function posthogEndpoint(): string | undefined {
   const token = process.env.POSTHOG_PROJECT_API_KEY?.trim();
@@ -28,11 +20,12 @@ function posthogEndpoint(): string | undefined {
   }
 }
 
-export function OPTIONS() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
-}
+export const OPTIONS = preflight;
 
 export async function POST(request: Request) {
+  const json = (body: unknown, status = 200) => Response.json(body, { status, headers: corsHeaders(request) });
+  const policyError = requestPolicyError(request);
+  if (policyError) return json({ accepted: false, reason: policyError.reason }, policyError.status);
   if (!rateLimit.allow(requestAddress(request))) return json({ accepted: false, reason: "rate-limited" }, 429);
 
   const read = await readBoundedJson(request, MAX_BODY_BYTES);
@@ -44,6 +37,7 @@ export async function POST(request: Request) {
   const endpoint = posthogEndpoint();
   const token = process.env.POSTHOG_PROJECT_API_KEY?.trim();
   if (!endpoint || !token) return json({ accepted: false, reason: "not-configured" }, 202);
+  if (!sinkBudget.allow("sink")) return json({ accepted: false, reason: "rate-limited" }, 429);
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3_500);

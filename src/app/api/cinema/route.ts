@@ -1,4 +1,5 @@
 import { readBoundedJson, requestAddress, WindowRateLimit } from "@/lib/server-limits";
+import { corsHeaders, requestPolicyError, preflight } from "@/lib/request-policy";
 import { containsHighRiskLanguage } from "@stillmind/domain";
 import { getPreset, type CinemaPayload } from "@/lib/cinema-presets";
 
@@ -78,8 +79,20 @@ function parseJsonContent(content: string) {
 
 // Per-instance only. Production must also enforce an infrastructure-level budget.
 const rateLimit = new WindowRateLimit(10);
+// A rotated/spoofed client IP must not create unlimited paid calls in this instance.
+const providerBudget = new WindowRateLimit(30);
+
+export const OPTIONS = preflight;
 
 export async function POST(request: Request) {
+  const response = await handlePost(request);
+  for (const [key, value] of Object.entries(corsHeaders(request))) response.headers.set(key, value);
+  return response;
+}
+
+async function handlePost(request: Request) {
+  const policyError = requestPolicyError(request);
+  if (policyError) return json({ error: policyError.reason }, policyError.status);
   const ip = requestAddress(request);
   if (!rateLimit.allow(ip)) {
     return json({ error: "rate-limit" }, 429);
@@ -89,16 +102,17 @@ export async function POST(request: Request) {
   if (!read.ok) return json({ error: read.reason }, read.status);
   const body = read.value as { trigger?: unknown } | null;
   const trigger =
-    typeof body?.trigger === "string" ? body.trigger.trim().slice(0, MAX_TRIGGER_LENGTH) : "";
+    typeof body?.trigger === "string" ? body.trigger.trim() : "";
 
   if (!trigger) {
     return json({ error: "missing-trigger" }, 400);
   }
 
   if (containsHighRiskLanguage(trigger)) return json({ error: "safety-boundary" }, 422);
+  if (trigger.length > MAX_TRIGGER_LENGTH) return json({ error: "trigger-too-long" }, 400);
 
   const apiKey = process.env.STEPFUN_API_KEY;
-  if (!apiKey) {
+  if (!apiKey || !providerBudget.allow("provider")) {
     return presetResponse(trigger);
   }
 

@@ -16,9 +16,9 @@ const safeEnvelope = {
 };
 
 test("events endpoint is CORS-ready and never caches", () => {
-  const response = OPTIONS();
+  const response = OPTIONS(new Request("http://localhost/api/events", { headers: { origin: "http://localhost" } }));
   assert.equal(response.status, 204);
-  assert.equal(response.headers.get("access-control-allow-origin"), "*");
+  assert.equal(response.headers.get("access-control-allow-origin"), "http://localhost");
   assert.equal(response.headers.get("cache-control"), "no-store");
 });
 

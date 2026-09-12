@@ -31,10 +31,11 @@ jobs:
         run: |
           mkdir -p artifacts/dependency-audit
           status=0
-          npm audit --json > artifacts/dependency-audit/npm-audit.json || status=$?
+          npm audit --audit-level=high --json > artifacts/dependency-audit/npm-audit.json || status=$?
           echo "npm audit exit code: $status"
           if [ "$status" -ne 0 ]; then
-            echo "::warning::Inspect dependency-audit. No automatic upgrades or security certification."
+            echo "::error::Dependency audit failed. Review advisories or registry availability before release."
+            exit "$status"
           fi
       - name: Run release verification
         run: npm run verify:release
