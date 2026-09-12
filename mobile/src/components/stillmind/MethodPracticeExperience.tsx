@@ -68,7 +68,7 @@ export function MethodPracticeExperience({
         </Pressable>
       </View>
       <Text style={styles.helper}>呼气时心里数一下，也可以轻点记数。不点也可以。</Text>
-      {exhaleTaps > 0 ? <Pressable disabled={paused} accessibilityRole="button" onPress={() => setExhaleTaps(0)} style={styles.segment}><Text style={styles.segmentText}>重新数</Text></Pressable> : null}
+      {exhaleTaps > 0 ? <Pressable disabled={paused} accessibilityRole="button" onPress={() => setExhaleTaps(0)} style={styles.action}><Text style={styles.actionText}>重新数</Text></Pressable> : null}
     </ExperienceShell>;
   }
 
@@ -93,8 +93,8 @@ export function MethodPracticeExperience({
   if (methodId === "thought-watching") {
     return <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
       <View style={styles.thoughtField}><Text style={styles.cinemaCopy}>{subject}</Text></View>
-      <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: noticed }} onPress={() => setNoticed(!noticed)} style={styles.segment}>
-        <Text style={styles.segmentText}>{noticed ? "撤销标记" : "注意到了"}</Text>
+      <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: noticed }} onPress={() => setNoticed(!noticed)} style={styles.action}>
+        <Text style={styles.actionText}>{noticed ? "撤销标记" : "注意到了"}</Text>
       </Pressable>
       <Text accessibilityLiveRegion="polite" style={styles.helper}>{noticed ? "已记下这次主动标记。" : "不需要点，也不需要让念头消失。"}</Text>
     </ExperienceShell>;
@@ -130,8 +130,8 @@ export function MethodPracticeExperience({
   if (methodId === "logout-pause") {
     return <ExperienceShell title={title} instruction={hidden ? "暂时不接触这句话，也可以随时回来。" : "看见它，先不解释，也不急着回应。"} stepIndex={stepIndex} stepCount={stepCount}>
       <View testID="logout-subject" style={styles.thoughtField}><Text style={styles.cinemaCopy}>{hidden ? "先看看周围，不用继续读这句话。" : subject}</Text></View>
-      <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: hidden }} onPress={() => setHidden(!hidden)} style={styles.segment}>
-        <Text style={styles.segmentText}>{hidden ? "重新显示这句话" : "暂时收起这句话"}</Text>
+      <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: hidden }} onPress={() => setHidden(!hidden)} style={styles.action}>
+        <Text style={styles.actionText}>{hidden ? "重新显示这句话" : "暂时收起这句话"}</Text>
       </Pressable>
     </ExperienceShell>;
   }
@@ -155,8 +155,8 @@ export function MethodPracticeExperience({
   if (methodId === "release") {
     return (
       <ExperienceShell title={title} instruction={contact ? instruction : "先不回想那件事。看一件中性物品，感受脚底的支撑。"} stepIndex={stepIndex} stepCount={stepCount}>
-        <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: contact, disabled: paused }} onPress={() => setContact(!contact)} style={styles.segment}>
-          <Text style={styles.segmentText}>{contact ? "暂不接触这件事" : "愿意继续观察反应"}</Text>
+        <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: contact, disabled: paused }} onPress={() => setContact(!contact)} style={styles.action}>
+          <Text style={styles.actionText}>{contact ? "暂不接触这件事" : "愿意继续观察反应"}</Text>
         </Pressable>
         <Text style={styles.helper}>只改变本次引导，不代表已宽恕，也不要求和解或联系对方。</Text>
       </ExperienceShell>
@@ -197,7 +197,7 @@ export function MethodPracticeExperience({
         <View testID="steady-object" style={styles.stabilityStage}>
           {externalObject ? <Text style={styles.helper}>看一件身边静止的物品，或听一个平稳的声音。</Text> : <View accessible accessibilityLabel="静止的观察方框" style={{ width: 96, height: 96, borderWidth: 2, borderColor: colors.textMuted }} />}
         </View>
-        <Pressable disabled={paused} accessibilityRole="button" onPress={() => setExternalObject(!externalObject)} style={styles.segment}><Text style={styles.segmentText}>{externalObject ? "回到屏幕对象" : "改看身边的物品"}</Text></Pressable>
+        <Pressable disabled={paused} accessibilityRole="button" onPress={() => setExternalObject(!externalObject)} style={styles.action}><Text style={styles.actionText}>{externalObject ? "回到屏幕对象" : "改看身边的物品"}</Text></Pressable>
         <Text style={styles.helper}>画面本来就是静止的，不评判你的注意力。</Text>
       </ExperienceShell>
     );
@@ -298,6 +298,8 @@ const styles = StyleSheet.create({
   comparisonText: { color: colors.text, fontSize: 14, lineHeight: 21, fontWeight: "700" },
   segmented: { flexDirection: "row", gap: 7 },
   segment: { flex: 1, minHeight: 46, borderRadius: radii.medium, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceSoft, alignItems: "center", justifyContent: "center", paddingHorizontal: 5 },
+  action: { flexGrow: 0, flexShrink: 0, minHeight: 48, paddingVertical: 12, paddingHorizontal: 16, borderRadius: radii.medium, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceSoft, alignItems: "center", justifyContent: "center" },
+  actionText: { color: colors.text, fontSize: 14, fontWeight: "600", textAlign: "center" },
   segmentActive: { borderColor: colors.borderStrong, backgroundColor: "rgba(155,135,245,0.16)" },
   segmentWarm: { borderColor: "rgba(244,182,106,0.34)", backgroundColor: "rgba(244,182,106,0.1)" },
   segmentText: { color: colors.textMuted, fontSize: 11, fontWeight: "700", textAlign: "center" },

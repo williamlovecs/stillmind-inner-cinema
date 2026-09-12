@@ -135,6 +135,8 @@ try{
       await click('暂不接触这件事');assert.match(await evaluate('document.body.innerText'),/先不回想/);
     }
     if(method==='trigger-journal') {
+      const actionHeight=await evaluate(`(()=>{const b=${buttons}.find(b=>b.textContent.trim()==='改看身边的物品');return b?.getBoundingClientRect().height})()`);
+      assert.ok(actionHeight>=44&&actionHeight<=80,'standalone action must not stretch into a blank panel');
       const initial=await evaluate("document.querySelector('[data-testid=steady-object]').innerHTML");
       await sleep(1200);assert.equal(await evaluate("document.querySelector('[data-testid=steady-object]').innerHTML"),initial);
       await click('改看身边的物品');assert.match(await evaluate('document.body.innerText'),/身边静止/);
