@@ -7,6 +7,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createServer } from "node:net";
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const port = Number(process.env.SMOKE_PORT || 3100);
 const debugPort = Number(process.env.SMOKE_CHROME_PORT || 9223);
@@ -73,11 +74,17 @@ async function resetData() {
 async function records() { return evaluate(`JSON.parse(localStorage.getItem('stillmind.web.sessions.v1')||'[]')`); }
 function pass(label) { passed.push(label); console.log(`PASS ${label}`); }
 try {
-  server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(port)], {
+  // Fail rather than accidentally testing an unrelated service on a shared port.
+  const probe = createServer();
+  await new Promise((resolve, reject) => {
+    probe.once("error", reject);
+    probe.listen(port, "127.0.0.1", () => probe.close(resolve));
+  });
+  server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1", "-p", String(port)], {
     env: { ...process.env, STEPFUN_API_KEY: "", POSTHOG_PROJECT_API_KEY: "" }, stdio: ["ignore", "pipe", "pipe"],
   });
   server.stdout.on("data", b => logs.push(b.toString())); server.stderr.on("data", b => logs.push(b.toString()));
-  await waitFor(async () => (await fetch(origin)).ok, "local production server", 40000);
+  await waitFor(async () => server.exitCode === null && logs.some(line => /Ready in/.test(line)) && (await fetch(origin)).ok, "owned local production server", 40000);
   const securityResponse = await fetch(origin);
   assert.equal(securityResponse.headers.get("x-frame-options"), "DENY");
   assert.equal(securityResponse.headers.get("x-content-type-options"), "nosniff");
