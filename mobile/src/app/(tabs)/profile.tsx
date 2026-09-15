@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { Alert, Linking, Platform, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/constants/theme";
-import { BrandHeader, Chip, Screen, SectionHeading, Surface, type } from "@/components/stillmind/ui";
+import { BrandHeader, Chip, Screen, SectionHeading, SecondaryButton, Surface, type } from "@/components/stillmind/ui";
 import { useApp, type Preferences } from "@/state/AppProvider";
 import { reminderHourBucket, track } from "@/lib/analytics";
 
@@ -11,16 +12,36 @@ const WEB_BASE_URL = (process.env.EXPO_PUBLIC_STILLMIND_WEB_BASE_URL || "https:/
 
 export default function ProfileScreen() {
   const { preferences, sessions, updatePreferences, deleteAllData } = useApp();
-  const toggle = (key: keyof Preferences) => updatePreferences({ [key]: !preferences[key] } as Partial<Preferences>);
+  // Alert.alert is a silent no-op on react-native-web; any feedback a web user must see renders inline.
+  const [notice, setNotice] = useState<{ title: string; body: string }>();
+  const toggle = (key: keyof Preferences) => {
+    updatePreferences({ [key]: !preferences[key] } as Partial<Preferences>).catch(() => {
+      setNotice({ title: "设置暂未保存", body: "你仍可以继续使用；本次会话内设置已生效，但未能写入本机存储。" });
+    });
+  };
 
   const exportData = async () => {
-    const file = new File(Paths.cache, `stillmind-export-${new Date().toISOString().slice(0, 10)}.json`);
-    if (file.exists) file.delete();
-    file.create();
-    file.write(JSON.stringify({ exportedAt: new Date().toISOString(), preferences, sessions }, null, 2));
-    if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(file.uri, { mimeType: "application/json" });
-    else Alert.alert("导出已生成", file.uri);
-    track("data_exported", { format: "json" });
+    try {
+      const payload = JSON.stringify({ exportedAt: new Date().toISOString(), preferences, sessions }, null, 2);
+      if (Platform.OS === "web") {
+        const url = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `stillmind-export-${new Date().toISOString().slice(0, 10)}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      } else {
+        const file = new File(Paths.cache, `stillmind-export-${new Date().toISOString().slice(0, 10)}.json`);
+        if (file.exists) file.delete();
+        file.create();
+        file.write(payload);
+        if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(file.uri, { mimeType: "application/json" });
+        else Alert.alert("导出已生成", file.uri);
+      }
+      track("data_exported", { format: "json" });
+    } catch {
+      setNotice({ title: "导出未完成", body: "本机数据没有改动。你可以稍后再试，或直接结束使用。" });
+    }
   };
 
   const scheduleReminder = async (hour: number) => {
@@ -37,7 +58,8 @@ export default function ProfileScreen() {
 
   const toggleReminder = async (enabled: boolean) => {
     if (Platform.OS === "web") {
-      return Alert.alert("请在 iPhone 中设置", "本地觉察提醒会在原生 App 中启用。 ");
+      setNotice({ title: "请在 iPhone 中设置", body: "本地觉察提醒会在原生 App 中启用。网页版不发送提醒通知。" });
+      return;
     }
     if (enabled) {
       if (!await scheduleReminder(preferences.reminderHour)) return Alert.alert("没有通知权限", "你可以稍后在系统设置中开启。 ");
@@ -55,11 +77,24 @@ export default function ProfileScreen() {
     track("reminder_changed", { enabled: preferences.reminderEnabled, hour_bucket: reminderHourBucket(hour) });
   };
 
-  const confirmDelete = () => Alert.alert("清除本机数据？", "练习记录、偏好和引导状态都会被删除。此操作无法撤销。", [{ text: "取消", style: "cancel" }, { text: "清除", style: "destructive", onPress: deleteAllData }]);
+  const confirmDelete = () => {
+    if (Platform.OS === "web") {
+      // react-native-web Alert is a no-op; deletion must actually be reachable in web builds.
+      if (window.confirm("清除本机数据？练习记录、偏好和引导状态都会被删除。此操作无法撤销。")) {
+        deleteAllData().catch(() => setNotice({ title: "清除未完成", body: "本机数据可能仍保留了一部分。你可以稍后再试。" }));
+      }
+      return;
+    }
+    Alert.alert("清除本机数据？", "练习记录、偏好和引导状态都会被删除。此操作无法撤销。", [{ text: "取消", style: "cancel" }, { text: "清除", style: "destructive", onPress: () => { deleteAllData().catch(() => setNotice({ title: "清除未完成", body: "本机数据可能仍保留了一部分。你可以稍后再试。" })); } }]);
+  };
 
   return (
     <Screen>
       <BrandHeader eyebrow="设置与隐私" title="你决定什么被保存，什么被发送。" />
+      {notice ? <Surface style={styles.notice}>
+        <View accessibilityRole="alert" style={styles.flex}><Text style={type.bodyStrong}>{notice.title}</Text><Text style={type.caption}>{notice.body}</Text></View>
+        <SecondaryButton label="知道了" onPress={() => setNotice(undefined)} />
+      </Surface> : null}
       <View style={styles.section}><SectionHeading title="练习偏好" />
         <SettingRow title="优先睁眼练习" subtitle="推荐时避开必须闭眼的方法" value={preferences.eyesOpenPreferred} onValueChange={() => toggle("eyesOpenPreferred")} />
         <SettingRow title="允许身体关注" subtitle="关闭后不推荐身体扫描" value={preferences.bodyFocusAllowed} onValueChange={() => toggle("bodyFocusAllowed")} />
@@ -89,9 +124,9 @@ export default function ProfileScreen() {
 }
 
 function SettingRow({ title, subtitle, value, onValueChange }: { title: string; subtitle: string; value: boolean; onValueChange: (value: boolean) => void }) {
-  return <Surface style={styles.row}><View style={styles.flex}><Text style={type.bodyStrong}>{title}</Text><Text style={type.caption}>{subtitle}</Text></View><Switch value={value} onValueChange={onValueChange} trackColor={{ false: "#293146", true: colors.violet }} thumbColor={colors.white} /></Surface>;
+  return <Surface style={styles.row}><View style={styles.flex}><Text style={type.bodyStrong}>{title}</Text><Text style={type.caption}>{subtitle}</Text></View><Switch value={value} onValueChange={onValueChange} accessibilityLabel={title} trackColor={{ false: "#293146", true: colors.violet }} thumbColor={colors.white} /></Surface>;
 }
 function ActionRow({ icon, title, danger, onPress }: { icon: keyof typeof Ionicons.glyphMap; title: string; danger?: boolean; onPress: () => void }) {
-  return <Pressable onPress={onPress}><Surface style={styles.row}><Ionicons name={icon} size={21} color={danger ? colors.danger : colors.lavender} /><Text style={[type.bodyStrong, styles.flex, danger && { color: colors.danger }]}>{title}</Text><Ionicons name="chevron-forward" size={19} color={colors.textFaint} /></Surface></Pressable>;
+  return <Pressable accessibilityRole="button" accessibilityLabel={title} onPress={onPress}><Surface style={styles.row}><Ionicons name={icon} size={21} color={danger ? colors.danger : colors.lavender} /><Text style={[type.bodyStrong, styles.flex, danger && { color: colors.danger }]}>{title}</Text><Ionicons name="chevron-forward" size={19} color={colors.textFaint} /></Surface></Pressable>;
 }
-const styles = StyleSheet.create({ section: { gap: 10 }, row: { minHeight: 68, flexDirection: "row", alignItems: "center", gap: 12 }, flex: { flex: 1 }, boundary: { gap: 8 }, reminderTimes: { flexDirection: "row", flexWrap: "wrap", gap: 8 } });
+const styles = StyleSheet.create({ section: { gap: 10 }, row: { minHeight: 68, flexDirection: "row", alignItems: "center", gap: 12 }, flex: { flex: 1 }, boundary: { gap: 8 }, reminderTimes: { flexDirection: "row", flexWrap: "wrap", gap: 8 }, notice: { flexDirection: "row", alignItems: "center", gap: 12, padding: 13 } });

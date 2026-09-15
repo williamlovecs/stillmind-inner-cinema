@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createDatabaseOpener } from "../mobile/src/storage/database";
+import { createDatabaseOpener } from "../mobile/src/storage/database-opener";
 
 type FakeDb = { id: number };
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -14,7 +14,7 @@ import {
   type StateMode,
 } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
-import { BrandHeader, Chip, PrimaryButton, Screen, Surface, type } from "@/components/stillmind/ui";
+import { BrandHeader, Chip, PrimaryButton, Screen, SecondaryButton, Surface, type } from "@/components/stillmind/ui";
 import { useApp, type ResetDraft } from "@/state/AppProvider";
 import { buildMethodHistory } from "@/lib/recommendation";
 import { track } from "@/lib/analytics";
@@ -33,6 +33,8 @@ export default function TodayScreen() {
   const [showStates, setShowStates] = useState(false);
   const [showIntake, setShowIntake] = useState(false);
   const [starting, setStarting] = useState(false);
+  // Alert.alert is a silent no-op on react-native-web, so boundary notices render inline on every platform.
+  const [notice, setNotice] = useState<{ title: string; body: string }>();
   const { preferences, sessions, setPendingResetDraft } = useApp();
 
   const detectedMode = detectStateModeFromText(trigger);
@@ -70,16 +72,15 @@ export default function TodayScreen() {
     const text = trigger.trim();
     if (text && containsHighRiskLanguage(text)) {
       track("safety_boundary_shown", { reason_code: "high-risk-language" });
-      Alert.alert(
-        "先联系现实中的支持",
-        "StillMind 不处理危机或医疗紧急情况。如果你无法保证自己的安全，请立即联系当地紧急服务、前往急诊，或让可信任的人陪在身边。",
-        [{ text: "知道了" }],
-      );
+      setNotice({
+        title: "先联系现实中的支持",
+        body: "StillMind 不处理危机或医疗紧急情况。如果你无法保证自己的安全，请立即联系当地紧急服务、前往急诊，或让可信任的人陪在身边。",
+      });
       return;
     }
 
     if (recommendation.kind !== "practice") {
-      Alert.alert("当前没有匹配的练习", recommendation.explanation);
+      setNotice({ title: "当前没有匹配的练习", body: recommendation.explanation });
       return;
     }
     setStarting(true);
@@ -108,12 +109,19 @@ export default function TodayScreen() {
         <Text style={type.body}>不必先解释，跟着做就好。</Text>
       </View>
 
-        <PrimaryButton
-          label={starting ? "正在准备…" : "开始 1 分钟 Reset"}
-          disabled={starting}
-          icon={<Ionicons name="play" size={18} color={colors.white} />}
-          onPress={start}
-        />
+      <PrimaryButton
+        label={starting ? "正在准备…" : "开始 1 分钟 Reset"}
+        disabled={starting}
+        icon={<Ionicons name="play" size={18} color={colors.white} />}
+        onPress={start}
+      />
+      {notice ? <Surface style={styles.noticeCard}>
+        <View accessibilityRole="alert" style={styles.noticeCopy}>
+          <Text style={type.bodyStrong}>{notice.title}</Text>
+          <Text style={type.body}>{notice.body}</Text>
+        </View>
+        <SecondaryButton label="知道了" onPress={() => setNotice(undefined)} />
+      </Surface> : null}
       <Pressable accessibilityRole="button" accessibilityState={{ expanded: showIntake }} onPress={() => setShowIntake(!showIntake)} style={styles.secondaryLink}><Text style={styles.secondaryLinkText}>{showIntake ? "收起输入" : "想说一句，或记录此刻程度（可选）"}</Text></Pressable>
       {showIntake ? <Surface style={styles.intakeCard}>
         <View style={styles.dictationHint}>
@@ -191,6 +199,8 @@ export default function TodayScreen() {
 const styles = StyleSheet.create({
   screen: { gap: spacing.md },
   heroCopy: { gap: 7, paddingTop: spacing.md },
+  noticeCard: { gap: 12, padding: 16 },
+  noticeCopy: { gap: 7 },
   intakeCard: { gap: 16, padding: 16 },
   dictationHint: { flexDirection: "row", alignItems: "center", gap: 7 },
   dictationText: { color: colors.textMuted, fontSize: 12, fontWeight: "600" },

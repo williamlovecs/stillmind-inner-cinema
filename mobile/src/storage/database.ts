@@ -2,13 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import * as SQLite from "expo-sqlite";
 import { validPracticeSessions, type PracticeSession } from "@stillmind/domain";
+import { createDatabaseOpener } from "./database-opener";
 
 const WEB_SESSIONS_KEY = "stillmind.sessions.v1";
-let databasePromise: ReturnType<typeof SQLite.openDatabaseAsync> | undefined;
+
+const openDatabase = createDatabaseOpener(() => SQLite.openDatabaseAsync("stillmind.db"));
 
 async function getDatabase() {
-  databasePromise ??= SQLite.openDatabaseAsync("stillmind.db");
-  const db = await databasePromise;
+  const db = await openDatabase();
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
     CREATE TABLE IF NOT EXISTS practice_sessions (
