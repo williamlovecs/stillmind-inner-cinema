@@ -126,6 +126,14 @@ try {
   await evaluate("document.documentElement.style.fontSize=''");
   await cdp("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   assert.equal(await hasButton("暂停"), false, "a practice must not start behind the disclaimer");
+  // Keyboard-only users must stay captured in the boundary dialog: initial focus plus a full Tab cycle.
+  assert.equal(await evaluate(`document.querySelector('[role="dialog"]').contains(document.activeElement)`), true, "initial focus inside dialog");
+  for (let tab = 0; tab < 6; tab += 1) {
+    await cdp("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    await cdp("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    await sleep(60);
+    assert.equal(await evaluate(`document.querySelector('[role="dialog"]').contains(document.activeElement)`), true, `tab ${tab} stays inside the dialog`);
+  }
   await evaluate(`document.querySelector('[role="dialog"] input[type=checkbox]').click()`);
   await click("进入体验"); await waitFor(() => hasButton("暂停"), "practice after consent");
   await click("停止"); await click("跳过反馈，结束");

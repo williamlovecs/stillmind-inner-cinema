@@ -9,7 +9,8 @@ import {resolve,join,extname,sep} from 'node:path';
 import {tmpdir} from 'node:os';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const root=resolve('.expo-ci/web'), artifacts='artifacts/native-web-smoke';mkdirSync(artifacts,{recursive:true});
-const port=3200,debugPort=9224,origin=`http://127.0.0.1:${port}`;
+// Overridable like the web smokes; the owned-server guard below fails loudly on a busy port.
+const port=Number(process.env.SMOKE_PORT||3200),debugPort=Number(process.env.SMOKE_CHROME_PORT||9224),origin=`http://127.0.0.1:${port}`;
 const profile=mkdtempSync(join(tmpdir(),'stillmind-native-'));
 const failures=[],passed=[],network=[];let complete=false,chrome,socket,nextId=0,acceptDialog=false;
 const pending=new Map();
@@ -37,7 +38,7 @@ async function screenshot(name){const d=await cdp('Page.captureScreenshot',{form
 function pass(label){passed.push(label);console.log('PASS '+label);}
 try{
   if(!existsSync(join(root,'index.html')))throw Error('Build the Expo web export first');
-  await new Promise(r=>server.listen(port,'127.0.0.1',r));
+  await new Promise((r,j)=>{server.once('error',j);server.listen(port,'127.0.0.1',()=>r());});
   const binary=[process.env.CHROME_BIN,'google-chrome','google-chrome-stable','chromium'].filter(Boolean).find(b=>existsSync(b)||spawnSync(b,['--version'],{stdio:'ignore',timeout:5000}).status===0);
   if(!binary)throw Error('Chrome not available; tests did not run');
   chrome=spawn(binary,['--headless=new','--no-sandbox','--disable-dev-shm-usage',`--remote-debugging-port=${debugPort}`,`--user-data-dir=${profile}`,'about:blank'],{stdio:'ignore'});
@@ -172,4 +173,4 @@ try{
   assert.deepEqual(failures,[]);complete=true;
   console.log('Native Expo Web regression PASS; physical iOS and signing are not tested.');
 }catch(error){console.error(error);try{if(socket?.readyState===1){await screenshot('failure');writeFileSync(join(artifacts,'failure-dom.txt'),await evaluate('document.body.innerText'));}}catch{}process.exitCode=1;}
-finally{writeFileSync(join(artifacts,'summary.json'),JSON.stringify({complete,passed,failures,blockedExternalRequests:network},null,2));socket?.close();chrome?.kill('SIGTERM');server.close();await sleep(300);try{rmSync(profile,{recursive:true,force:true});}catch{}}
+finally{writeFileSync(join(artifacts,'summary.json'),JSON.stringify({complete,passed,failures,blockedExternalRequests:network,testedGitSha:spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout?.trim()||null,scope:'Local Expo Web export automation; not a physical iOS validation'},null,2));socket?.close();chrome?.kill('SIGTERM');server.close();await sleep(300);try{rmSync(profile,{recursive:true,force:true});}catch{}}
