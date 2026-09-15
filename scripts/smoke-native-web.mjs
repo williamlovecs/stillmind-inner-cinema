@@ -11,7 +11,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const root=resolve('.expo-ci/web'), artifacts='artifacts/native-web-smoke';mkdirSync(artifacts,{recursive:true});
 const port=3200,debugPort=9224,origin=`http://127.0.0.1:${port}`;
 const profile=mkdtempSync(join(tmpdir(),'stillmind-native-'));
-const failures=[],passed=[],network=[];let complete=false,chrome,socket,nextId=0;
+const failures=[],passed=[],network=[];let complete=false,chrome,socket,nextId=0,acceptDialog=false;
 const pending=new Map();
 const mime={'.html':'text/html','.js':'application/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2','.ttf':'font/ttf','.wasm':'application/wasm'};
 const server=createServer((req,res)=>{
@@ -46,6 +46,7 @@ try{
   socket=new WebSocket(target.webSocketDebuggerUrl);await new Promise((r,j)=>{socket.addEventListener('open',r,{once:true});socket.addEventListener('error',j,{once:true});});
   socket.addEventListener('message',event=>{const d=JSON.parse(event.data);if(d.id){const q=pending.get(d.id);if(q){pending.delete(d.id);d.error?q.reject(Error(JSON.stringify(d.error))):q.resolve(d.result);}}
     else if(d.method==='Runtime.exceptionThrown')failures.push(d.params.exceptionDetails.exception?.description??d.params.exceptionDetails.text);
+    else if(d.method==='Page.javascriptDialogOpening'&&acceptDialog)void cdp('Page.handleJavaScriptDialog',{accept:true});
     else if(d.method==='Fetch.requestPaused'){
       const r=d.params.request;
       if(/^https?:/.test(r.url)&&!r.url.startsWith(origin+'/')){network.push(r.url);void cdp('Fetch.failRequest',{requestId:d.params.requestId,errorReason:'BlockedByClient'});}
@@ -99,6 +100,25 @@ try{
   await click('近一点');assert.ok(Math.abs(await evaluate(`${screen}.getBoundingClientRect().width`)-nearWidth)<1);
   await click('停止');await click('跳过反馈，结束');
   pass('native observer changes the same central object and restores the near composition');
+  // Web builds must keep the safety boundary visible and data deletion usable;
+  // react-native-web Alert is a no-op, so these flows cannot rely on Alert.
+  await seed();await navigate('/');
+  await evaluate(`(()=>{const el=document.querySelector('textarea[aria-label="写下刚才发生了什么"]')??document.querySelector('textarea');if(!el)throw Error('home textarea missing');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(el,'我现在无法保证自己的安全');el.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await click('开始 1 分钟 Reset');
+  await waitFor(()=>evaluate(`document.body.innerText.includes('先联系现实中的支持')`),'web-build safety boundary');
+  assert.equal(await has('暂停'),false,'high-risk input must not start a practice');
+  await screenshot('native-web-safety-boundary');
+  await evaluate(`(()=>{const el=document.querySelector('textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(el,'');el.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  pass('web builds show the crisis boundary inline when high-risk language is entered');
+  await seed();await navigate('/profile');
+  await waitFor(()=>has('清除所有本机数据'),'profile delete control');
+  await waitFor(()=>evaluate(`localStorage.getItem('stillmind.preferences.v1')!==null`),'seeded preferences visible');
+  acceptDialog=true;
+  await click('清除所有本机数据');
+  await waitFor(()=>evaluate(`localStorage.getItem('stillmind.preferences.v1')===null`),'preferences cleared');
+  acceptDialog=false;
+  await screenshot('native-web-delete-all');
+  pass('web builds can actually delete all local data through a real confirmation');
   await seed();await navigate('/reset?mode=tense&methodId=paced-breath&activation=2&ratingProvided=1&direct=1');await waitFor(()=>has('暂停'),'native natural breath');
   await sleep(6200);assert.equal(await evaluate("document.body.innerText.includes('自然呼吸')"),true);
   await click('轻点记一次数');assert.equal(await evaluate("document.body.innerText.includes('轻点 1')"),true);
@@ -124,6 +144,7 @@ try{
     await navigate(`/reset?methodId=${method}&duration=${duration}&mode=curious&activation=2&ratingProvided=1&direct=1`);
     await waitFor(()=>has('暂停'),`native all methods: ${method}`);
     assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth + 1'),true,method);
+    if(method==='inner-cinema') assert.match(await evaluate('document.body.innerText'),/看见刚才那一幕/,'authored step guidance must be visible');
     if(method==='open-awareness') {
       assert.match(await evaluate('document.body.innerText'),/主动标记：暂无/);
       await click('声音');assert.match(await evaluate('document.body.innerText'),/主动标记：声音/);

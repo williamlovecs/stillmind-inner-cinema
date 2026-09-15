@@ -29,6 +29,26 @@ test("origins are exact; native clients need no Origin; hostile browsers cannot 
     else process.env.STILLMIND_ALLOWED_ORIGINS = previous;
   }
 });
+test("malformed, non-http and allowlisted origins follow the exact-match policy", () => {
+  const previous = process.env.STILLMIND_ALLOWED_ORIGINS;
+  process.env.STILLMIND_ALLOWED_ORIGINS = "https://a.test, https://b.test";
+  try {
+    for (const origin of ["chrome-extension://abcdef", "http://[::1", "ftp://stillmind.test", "https://stillmind.test:443", " about:blank //"]) {
+      assert.equal(allowedOrigin(request({ origin })), false, origin);
+      assert.equal(corsHeaders(request({ origin }))["Access-Control-Allow-Origin"], undefined, origin);
+    }
+    for (const origin of ["https://a.test", "https://b.test"]) {
+      assert.equal(allowedOrigin(request({ origin })), true, origin);
+      assert.equal(corsHeaders(request({ origin }))["Access-Control-Allow-Origin"], origin, origin);
+    }
+    const headers = corsHeaders(request({ origin: "https://a.test" }));
+    assert.equal(headers.Vary, "Origin");
+    assert.equal(headers["Cache-Control"], "no-store");
+  } finally {
+    if (previous === undefined) delete process.env.STILLMIND_ALLOWED_ORIGINS;
+    else process.env.STILLMIND_ALLOWED_ORIGINS = previous;
+  }
+});
 test("both APIs reject hostile origins and simple form bodies before any upstream I/O", async () => {
   const oldFetch = globalThis.fetch; let calls = 0;
   globalThis.fetch = async () => { calls++; throw Error("no upstream"); };

@@ -63,7 +63,7 @@
     "test:audit": "tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs",
     "smoke:web": "node scripts/smoke-web.mjs && node scripts/smoke-adversarial.mjs",
     "postinstall": "node scripts/patch-query-string-cjs.mjs",
-    "test:native": "tsx --test test/native-session.test.ts",
+    "test:native": "tsx --test test/native-session.test.ts test/native-database.test.ts",
     "smoke:native": "node scripts/smoke-native-web.mjs",
     "test:dependencies": "node --test test/dependency-compat.test.mjs",
     "test:round2": "tsx --test test/round2-contracts.test.ts test/observation.test.ts test/request-policy.test.ts && node --test test/round2-seed.test.mjs"

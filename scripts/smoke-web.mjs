@@ -176,6 +176,7 @@ try {
   // Presentation semantics: the same subject moves; no click is required for completion.
   await resetData(); await navigate("/reset?method=inner-cinema&mode=looping&activation=2&direct=1");
   await waitFor(() => hasButton("暂停"), "observer practice");
+  assert.match(await evaluate("document.body.innerText"), /看见刚才那一幕/, "the authored first-step guidance must be on screen");
   const screen = `document.querySelector('[data-testid="observer-screen"]')`;
   const subject = await evaluate(`${screen}.textContent`);
   assert.equal(subject.trim(), "有一个念头");
