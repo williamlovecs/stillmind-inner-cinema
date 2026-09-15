@@ -8,7 +8,8 @@
 | --- | --- | --- | --- | --- |
 | N1 | mobile/Expo Web | `mobile/src/app/(tabs)/profile.tsx:58` 用 `Alert.alert` 确认"清除所有本机数据"；react-native-web 的 `Alert.alert()` 为空实现（node_modules/react-native-web/dist/exports/Alert/index.js 仅 `static alert() {}`）；mobile/app.json 配置了 web 输出 | Expo Web 构建上隐私删除控制完全失效 | 跨平台确认（web 用 window.confirm） |
 | N2 | mobile/Expo Web | `mobile/src/app/(tabs)/index.tsx:73` 高危语言安全提示走 Alert；`:82` 无匹配练习提示同理 | Web 构建上危机边界提示不可见，开始按钮表现为死按钮 | web 内联 Surface 呈现 |
-| N3 | mobile 原生 | `mobile/src/storage/database.ts:10` `databasePromise ??= openDatabaseAsync(...)`，reject 后永久缓存 | 一次瞬时打开失败 → 本 App 生命周期内所有读写失败，全部记录显示未保存 | 失败时重置缓存 |
+| N3 | mobile 原生 | `mobile/src/storage/database.ts:10` `databasePromise ??= openDatabaseAsync(...)`，reject 后永久缓存 | 一次瞬时打开失败 → 本 App 生命周期内所有读写失败，全部记录显示未保存 | 失败时重置缓存（database-opener.ts，node 测试覆盖） |
+| S1 | 共享 domain（双端） | `packages/domain/src/safety.ts:3` 高危正则要求"安全"紧跟"无法保证(自己)?"；"我现在无法保证自己**的**安全"（含"的"）不命中 → 危机边界被绕过、练习照常开始；"没办法/不能/保证不了…安全"同样漏检 | 最自然求助表述绕过安全门（由新 native smoke 场景在 Expo 导出上捕获，见 progress 阶段 5） | 正则扩展同语义族表述；负例（"这个方法保证有效"）不命中；测试先行（routing.test.ts 先失败后通过），commit `06052b9` |
 | T1 | QA harness | `scripts/smoke-adversarial.mjs:75-79` 无端口预检、无 `--hostname 127.0.0.1`、ready 仅凭 `fetch().ok`；smoke-web 已在 2a2a2a6 修复同类问题但 adversarial 未同步 | 端口被占用时可能测到无关服务，结果不可归属 | 镜像 smoke-web 的归属防护 |
 | T2 | QA harness | `scripts/smoke-native-web.mjs:40` 固定 3200/9224 无 error 处理（EADDRINUSE 崩溃）、summary.json 不记录被测 SHA | 结果无法追溯到代码版本；冲突时未捕获异常 | 端口可配置 + error 处理 + 记录 testedGitSha |
 

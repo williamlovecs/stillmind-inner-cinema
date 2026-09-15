@@ -104,6 +104,8 @@ try{
   // Web builds must keep the safety boundary visible and data deletion usable;
   // react-native-web Alert is a no-op, so these flows cannot rely on Alert.
   await seed();await navigate('/');
+  await click('想说一句，或记录此刻程度（可选）');
+  await waitFor(()=>evaluate(`!!document.querySelector('textarea')`),'home intake expanded');
   await evaluate(`(()=>{const el=document.querySelector('textarea[aria-label="写下刚才发生了什么"]')??document.querySelector('textarea');if(!el)throw Error('home textarea missing');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(el,'我现在无法保证自己的安全');el.dispatchEvent(new Event('input',{bubbles:true}));})()`);
   await click('开始 1 分钟 Reset');
   await waitFor(()=>evaluate(`document.body.innerText.includes('先联系现实中的支持')`),'web-build safety boundary');
