@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
   containsHighRiskLanguage,
@@ -36,6 +36,16 @@ export default function TodayScreen() {
   // Alert.alert is a silent no-op on react-native-web, so boundary notices render inline on every platform.
   const [notice, setNotice] = useState<{ title: string; body: string }>();
   const { preferences, sessions, setPendingResetDraft } = useApp();
+  const startingTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const startedRef = useRef(false);
+  // A finished flow must not leave the previous sentence in the box: returning users
+  // could accidentally resubmit it (and, with AI enabled, send it to the server again).
+  useFocusEffect(useCallback(() => {
+    if (!startedRef.current) return;
+    startedRef.current = false;
+    setTrigger(""); setActivation(undefined); setManualMode(undefined); setInputMethod("typed");
+  }, []));
+  useEffect(() => () => clearTimeout(startingTimerRef.current), []);
 
   const detectedMode = detectStateModeFromText(trigger);
   const mode = manualMode ?? detectedMode;
@@ -98,7 +108,9 @@ export default function TodayScreen() {
         direct: "1",
       },
     });
-    setTimeout(() => setStarting(false), 700);
+    startedRef.current = true;
+    clearTimeout(startingTimerRef.current);
+    startingTimerRef.current = setTimeout(() => setStarting(false), 700);
   }
 
   return (
@@ -146,7 +158,7 @@ export default function TodayScreen() {
         />
         <View style={styles.examples}>
           {EXAMPLES.map((example) => (
-            <Pressable key={example} onPress={() => chooseExample(example)} style={({ pressed }) => [styles.example, pressed && styles.pressed]}>
+            <Pressable key={example} accessibilityRole="button" onPress={() => chooseExample(example)} style={({ pressed }) => [styles.example, pressed && styles.pressed]}>
               <Text numberOfLines={1} style={styles.exampleText}>{example.replace(/。$/, "")}</Text>
             </Pressable>
           ))}
@@ -177,7 +189,7 @@ export default function TodayScreen() {
         <Text style={styles.matchCopy}>将使用：{method.title}</Text>
       </Surface> : null}
 
-      <Pressable onPress={() => setShowStates((value) => !value)} style={styles.secondaryLink}>
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: showStates }} onPress={() => setShowStates((value) => !value)} style={styles.secondaryLink}>
         <Text style={styles.secondaryLinkText}>{showStates ? "收起状态选择" : "不想描述？直接选状态"}</Text>
         <Ionicons name={showStates ? "chevron-up" : "chevron-down"} size={16} color={colors.textMuted} />
       </Pressable>

@@ -41,7 +41,7 @@ export function OnboardingGate() {
               {[{ key: "eyesOpenPreferred", label: "优先睁眼练习" }, { key: "bodyFocusAllowed", label: "允许身体关注" }, { key: "breathChangeAllowed", label: "允许调整呼吸" }].map((choice) => {
                 const key = choice.key as "eyesOpenPreferred" | "bodyFocusAllowed" | "breathChangeAllowed";
                 const selected = preferences[key];
-                return <Pressable key={key} onPress={() => { void updatePreferences({ [key]: !selected }).catch(() => Alert.alert("设置暂未保存", "本次使用仍会遵守你的选择。")); }} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.lavender : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
+                return <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => { void updatePreferences({ [key]: !selected }).catch(() => Alert.alert("设置暂未保存", "本次使用仍会遵守你的选择。")); }} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.lavender : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
               })}
             </View>
           ) : null}

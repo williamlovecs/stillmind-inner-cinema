@@ -364,6 +364,8 @@ function ResetExperience() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#050914] text-stone-50">
       <DisclaimerModal onAcknowledged={setBoundaryReady} />
+      {/* In focus modes the intro aside (and its h1) is hidden; keep a page heading for assistive tech. */}
+      {focusMode ? <h1 className="sr-only">StillMind 练习</h1> : null}
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_22%_12%,rgba(139,92,246,0.28),transparent_32%),radial-gradient(circle_at_82%_18%,rgba(96,165,250,0.16),transparent_28%),radial-gradient(circle_at_72%_78%,rgba(245,158,11,0.18),transparent_34%),linear-gradient(135deg,#050914_0%,#07111f_46%,#0b1020_100%)]" />
       <div className="pointer-events-none fixed inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:64px_64px]" />
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 lg:px-10">

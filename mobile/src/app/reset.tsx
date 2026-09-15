@@ -250,7 +250,7 @@ export default function ResetScreen() {
       <Text style={type.label}>也可以换一种</Text>
       {[recommendation.primary, ...recommendation.alternatives].filter(item => item.id !== methodId).map(item => <MethodCard key={item.id} method={item} onPress={() => changeInput(() => setSelectedMethodId(item.id))} />)}
     </View>}
-    <Pressable onPress={() => { requestLifetime.cancel(); setGenerating(false); setPhase("support"); }}><Text style={styles.supportLink}>如果你现在无法保证安全，点这里</Text></Pressable>
+    <Pressable accessibilityRole="button" onPress={() => { requestLifetime.cancel(); setGenerating(false); setPhase("support"); }}><Text style={styles.supportLink}>如果你现在无法保证安全，点这里</Text></Pressable>
   </Screen>;
 }
 

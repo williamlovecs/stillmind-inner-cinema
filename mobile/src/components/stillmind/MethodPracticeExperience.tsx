@@ -75,8 +75,7 @@ export function MethodPracticeExperience({
   if (methodId === "wide-gaze") {
     return (
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-        <Pressable disabled={paused}
-          accessibilityLabel="走神了，点一下回到烛光"
+        <Pressable disabled={paused} accessibilityRole="button" accessibilityLabel="走神了，点一下回到烛光"
           onPress={() => setReturns((value) => value + 1)}
           style={({ pressed }) => [styles.candleStage, pressed && styles.pressed]}
         >
@@ -101,13 +100,14 @@ export function MethodPracticeExperience({
   }
 
   if (methodId === "inner-cinema") {
-    return <ExperienceShell title={title} instruction={cinemaLens.hint} stepIndex={stepIndex} stepCount={stepCount}>
+    return <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
       <View testID="observer-stage" style={styles.cinema}>
         <View testID="observer-screen" style={[styles.cinemaScreen, { width: `${cinemaLens.width}%`, marginBottom: cinemaLensIndex * 18 }]}>
           <Text style={styles.cinemaCopy}>{subject}</Text>
         </View>
         {cinemaLensIndex > 0 ? <View accessible={false} style={[styles.observerSeat, { height: cinemaLensIndex === 1 ? 38 : 58 }]} /> : null}
       </View>
+      <Text style={styles.helper}>{cinemaLens.hint}</Text>
       <View style={styles.segmented}>
         {OBSERVER_LENSES.map((item, index) => <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: index === cinemaLensIndex }}
           key={item.id} onPress={() => setCinemaLensIndex(index)} style={[styles.segment, cinemaLensIndex === index && styles.segmentActive]}>
@@ -213,7 +213,7 @@ export function MethodPracticeExperience({
         </View>
         <View style={styles.segmented}>
           {ZOOM_LEVELS.map((item, index) => (
-            <Pressable disabled={paused} key={item.label} onPress={() => setManualZoomLevel(index)} style={[styles.segment, zoomLevel === index && styles.segmentActive]}>
+            <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: zoomLevel === index }} key={item.label} onPress={() => setManualZoomLevel(index)} style={[styles.segment, zoomLevel === index && styles.segmentActive]}>
               <Text style={[styles.segmentText, zoomLevel === index && styles.segmentTextActive]}>{item.label}</Text>
             </Pressable>
           ))}
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   track: { height: 7, borderRadius: 4, backgroundColor: "rgba(255,255,255,0.08)", overflow: "hidden" },
   trackFill: { height: 7, borderRadius: 4, backgroundColor: colors.lavender },
   bodyMap: { minHeight: 245, borderRadius: 130, borderWidth: 1, borderColor: "rgba(103,183,232,0.2)", backgroundColor: "rgba(103,183,232,0.05)", padding: 24, justifyContent: "space-around" },
-  bodyZone: { minHeight: 40, borderRadius: radii.round, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" },
+  bodyZone: { minHeight: 44, borderRadius: radii.round, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" },
   bodyZoneActive: { borderColor: "rgba(103,183,232,0.6)", backgroundColor: "rgba(103,183,232,0.16)" },
   bodyZoneText: { color: colors.textMuted, fontSize: 12, fontWeight: "700" },
   bodyZoneTextActive: { color: "#D9F3FF" },

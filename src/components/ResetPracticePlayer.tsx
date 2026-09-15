@@ -42,13 +42,11 @@ function MethodExperience({ methodId, instruction, secondsLeft, elapsedSeconds, 
   return <div className="grid flex-1 place-items-center rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_34%,rgba(139,92,246,0.14),transparent_45%),rgba(2,6,23,0.72)] p-6 text-center"><div>{thoughts.map((thought, index) => <span key={thought} className="m-1 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-stone-300" style={{ opacity: Math.max(0.25, 1 - (stepIndex + index) * 0.14) }}>{thought}</span>)}<p className="mx-auto mt-8 max-w-xl text-2xl font-semibold leading-10 text-white">{instruction}</p></div></div>;
 }
 
-function FocusObjectEngine({ methodId, instruction, elapsedSeconds }: { paused: boolean; elapsedSeconds: number; methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
+function FocusObjectEngine({ methodId, instruction }: { paused: boolean; elapsedSeconds: number; methodId: MethodId; instruction: string; secondsLeft: number; stepIndex: number }) {
   const [returns, setReturns] = useState(0);
-  const [resetAt, setResetAt] = useState(elapsedSeconds);
   const [externalObject, setExternalObject] = useState(false);
   const [objectName, setObjectName] = useState("");
   const [exhaleTaps, setExhaleTaps] = useState(0);
-  const steadySeconds = Math.floor(Math.max(0, elapsedSeconds - resetAt));
 
   if (methodId === "paced-breath") {
     return (
@@ -64,7 +62,7 @@ function FocusObjectEngine({ methodId, instruction, elapsedSeconds }: { paused: 
     );
   }
   if (methodId === "wide-gaze") {
-    function markWandered() { setReturns((value) => value + 1); setResetAt(elapsedSeconds); }
+    function markWandered() { setReturns((value) => value + 1); }
     return (
       <div className="relative grid flex-1 place-items-center overflow-hidden rounded-[2rem] border border-sky-200/15 bg-[radial-gradient(circle_at_50%_24%,rgba(125,211,252,0.12),transparent_44%),rgba(2,6,23,0.76)] p-6 text-center">
         <button type="button" onClick={markWandered} aria-label="走神了，回到烛光" className="relative grid h-64 w-full max-w-md place-items-center overflow-hidden rounded-[1.6rem] border border-sky-100/15 bg-slate-950/72 text-left shadow-[0_24px_70px_rgba(0,0,0,0.28)] transition active:scale-[0.99]">
@@ -75,7 +73,7 @@ function FocusObjectEngine({ methodId, instruction, elapsedSeconds }: { paused: 
           <span className="absolute right-4 top-4 rounded-full border border-sky-100/20 bg-slate-950/72 px-3 py-2 text-xs text-sky-50 backdrop-blur-md">回归 {returns}</span>
         </button>
         <p className="mt-4 max-w-md text-base leading-8 text-stone-300">{instruction}</p>
-        <div className="mt-3 grid w-full max-w-md grid-cols-2 gap-2"><div className="rounded-2xl border border-sky-100/15 bg-sky-100/[0.07] p-3"><p className="text-xs text-sky-100/55">距上次点击</p><p className="mt-1 text-2xl font-semibold text-sky-50">{steadySeconds}s</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p className="text-xs text-stone-500">主动点击次数</p><p className="mt-1 text-2xl font-semibold text-white">{returns}</p></div></div>
+        <div className="mt-3 w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p className="text-xs text-stone-500">主动点击次数</p><p className="mt-1 text-2xl font-semibold text-white">{returns}</p></div>
       </div>
     );
   }
@@ -130,10 +128,13 @@ function ThoughtBubbleEngine({ methodId, instruction, trigger }: { methodId: Met
         </blockquote>
         <div aria-hidden="true" className="observer-seat" />
       </div>
-      <p className="min-h-12 text-base leading-7 text-stone-300">{lens.hint}</p>
-      <div className="mx-auto grid w-full max-w-md grid-cols-3 gap-2" role="group" aria-label="观看距离">
-        {OBSERVER_LENSES.map((item, index) => <button key={item.id} type="button" aria-pressed={index === lensIndex} onClick={() => setLensIndex(index)}
-          className={`min-h-12 rounded-lg border px-2 py-3 text-sm transition ${index === lensIndex ? "border-violet-100/60 bg-violet-100/10 text-white" : "border-white/15 text-stone-400"}`}>{item.label}</button>)}
+      <p data-testid="step-instruction" className="min-h-12 text-2xl font-semibold leading-10 text-white">{instruction}</p>
+      <div className="mx-auto flex w-full max-w-md flex-col gap-2">
+        <p className="text-sm text-stone-400">{lens.hint}</p>
+        <div className="grid grid-cols-3 gap-2" role="group" aria-label="观看距离">
+          {OBSERVER_LENSES.map((item, index) => <button key={item.id} type="button" aria-pressed={index === lensIndex} onClick={() => setLensIndex(index)}
+            className={`min-h-12 rounded-lg border px-2 py-3 text-sm transition ${index === lensIndex ? "border-violet-100/60 bg-violet-100/10 text-white" : "border-white/15 text-stone-400"}`}>{item.label}</button>)}
+        </div>
       </div>
     </div>;
   }
@@ -185,7 +186,7 @@ function BodySpaceEngine({ methodId, instruction }: { methodId: MethodId; instru
       <p className="text-sm leading-7 text-stone-400">这只改变本次引导，不代表你已宽恕，也不要求和解或联系对方。</p>
     </div>;
   }
-  return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-cyan-200/15 bg-[radial-gradient(circle_at_50%_20%,rgba(34,211,238,0.12),transparent_45%),rgba(2,6,23,0.72)] p-6"><div className="grid gap-5 sm:grid-cols-[0.78fr_1fr] sm:items-center"><div className="relative mx-auto h-72 w-44 rounded-full border border-cyan-100/15 bg-[radial-gradient(ellipse_at_center,rgba(125,211,252,0.12),transparent_62%)]"><span className="absolute left-1/2 top-5 h-14 w-14 -translate-x-1/2 rounded-full border border-cyan-100/20 bg-cyan-100/[0.04]" /><span className="absolute left-1/2 top-20 h-28 w-20 -translate-x-1/2 rounded-[999px] border border-cyan-100/20 bg-cyan-100/[0.035]" />{zones.map((zone) => <button key={zone.id} type="button" onClick={() => setZoneId(zone.id)} aria-label={`标记${zone.label}`} className={`absolute grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border text-xs font-semibold transition ${zone.id === zoneId ? "border-cyan-100/70 bg-cyan-100/22 text-white shadow-[0_0_30px_rgba(34,211,238,0.24)]" : "border-cyan-100/20 bg-slate-950/72 text-cyan-100/70"}`} style={{ left: zone.x, top: zone.y }}>{zone.label.slice(0, 1)}</button>)}</div><div className="space-y-3 text-center sm:text-left"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/50">身体落点</p><p className="text-3xl font-semibold text-white">{selected.label}</p><p className="text-sm leading-7 text-stone-300">注意这里有什么感觉，也可以没有明显感觉。不需要解释原因。</p><p className="text-xl font-semibold leading-9 text-white">{instruction}</p></div></div></div>;
+  return <div className="grid flex-1 content-center gap-5 rounded-[2rem] border border-cyan-200/15 bg-[radial-gradient(circle_at_50%_20%,rgba(34,211,238,0.12),transparent_45%),rgba(2,6,23,0.72)] p-6"><div className="grid gap-5 sm:grid-cols-[0.78fr_1fr] sm:items-center"><div className="relative mx-auto h-72 w-44 rounded-full border border-cyan-100/15 bg-[radial-gradient(ellipse_at_center,rgba(125,211,252,0.12),transparent_62%)]"><span className="absolute left-1/2 top-5 h-14 w-14 -translate-x-1/2 rounded-full border border-cyan-100/20 bg-cyan-100/[0.04]" /><span className="absolute left-1/2 top-20 h-28 w-20 -translate-x-1/2 rounded-[999px] border border-cyan-100/20 bg-cyan-100/[0.035]" />{zones.map((zone) => <button key={zone.id} type="button" onClick={() => setZoneId(zone.id)} aria-label={`标记${zone.label}`} aria-pressed={zone.id === zoneId} className={`absolute grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border text-xs font-semibold transition ${zone.id === zoneId ? "border-cyan-100/70 bg-cyan-100/22 text-white shadow-[0_0_30px_rgba(34,211,238,0.24)]" : "border-cyan-100/20 bg-slate-950/72 text-cyan-100/70"}`} style={{ left: zone.x, top: zone.y }}>{zone.label.slice(0, 1)}</button>)}</div><div className="space-y-3 text-center sm:text-left"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/50">身体落点</p><p className="text-3xl font-semibold text-white">{selected.label}</p><p className="text-sm leading-7 text-stone-300">注意这里有什么感觉，也可以没有明显感觉。不需要解释原因。</p><p className="text-xl font-semibold leading-9 text-white">{instruction}</p></div></div></div>;
 }
 
 function PerspectiveZoomEngine({ instruction, stepIndex }: { instruction: string; stepIndex: number }) {
