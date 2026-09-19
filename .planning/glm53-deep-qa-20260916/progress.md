@@ -23,7 +23,7 @@
 - [x] commit `403265b` fix: Alert 在 react-native-web 空实现 → 全平台行内提示/浏览器确认（危机边界、清除数据、单条删除、提醒、导出反馈）+ database-opener 失败重试
 - [x] commit `e983d77` fix: 双端渲染内观法步骤引导、凝视法移除"距上次点击"成绩感统计、内观落点 44px、focusMode sr-only h1、native role/label/深链时长派生/timer 清理/草稿清空
 - [x] commit `3c2bfba` fix: smoke-adversarial owned-server 防护、native smoke 端口可配置 + EADDRINUSE 处理 + testedGitSha、smoke-web 焦点陷阱覆盖
-- [ ] commit 5 docs: GLM53 报告 + CURRENT_STATE + closeout（等验证数字落定）
+- [x] commit 5 docs: `31fe39a` GLM53 报告 + CURRENT_STATE + closeout
 
 ## 阶段 5：验证（完成）
 
@@ -40,5 +40,4 @@
 - 已实际查看截图：web `home-mobile.png`、`practice-mobile.png`（步骤引导在屏）、`observer-audience-390.png`；native `native-practice.png`（步骤引导在屏）、`native-web-safety-boundary.png`（行内危机卡片、练习未开始）、`native-web-delete-all.png`（删除后回到首次使用状态）。
 - Chrome 定位说明：本机脚本探测列表为 Unix 命名，Windows 上需 `CHROME_BIN="C:\Program Files\Google\Chrome\Application\chrome.exe"`；首轮无 CHROME_BIN 的失败（"Chrome/Chromium not installed"）属环境问题，非产品缺陷。
 - 日志归档于被忽略的 `artifacts/qa-logs/`。
-
 

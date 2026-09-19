@@ -63,6 +63,7 @@ try{
   pass('native direct entry waits for onboarding and allows skipping feedback');
   await seed();await navigate('/');await screenshot('native-home');
   await click('开始 1 分钟 Reset');await waitFor(()=>has('暂停'),'unrated practice');
+  assert.equal(await has('关闭'),false,'active practice exposes one explicit stop action, not an ambiguous duplicate close');
   await click('暂停');const frozen=await evaluate(`document.querySelector('[data-testid="native-session-timer"]').textContent`);
   await sleep(2000);assert.equal(await evaluate(`document.querySelector('[data-testid="native-session-timer"]').textContent`),frozen);
   await click('继续');await sleep(8100);await click('停止');await click('跳过反馈，结束');

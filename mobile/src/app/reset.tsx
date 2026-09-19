@@ -257,7 +257,7 @@ export default function ResetScreen() {
 function PracticePlayer({ methodTitle, practice, stepIndex, seconds, elapsedSeconds, paused, trigger, onPause, onStop }: { methodTitle: string; practice: PracticeVariant; stepIndex: number; seconds: number; elapsedSeconds: number; paused: boolean; trigger: string; onPause: () => void; onStop: () => void }) {
   const step = practice.steps[stepIndex];
   return <Screen scroll={false} contentStyle={styles.player}>
-    <TopBar title={methodTitle} meta={`${seconds} 秒${paused ? " · 已暂停" : ""}`} onClose={onStop} />
+    <TopBar title={methodTitle} meta={`${seconds} 秒${paused ? " · 已暂停" : ""}`} />
     <View style={styles.progressRow}>{practice.steps.map((item, index) => <View key={item.id} style={[styles.progressSegment, index <= stepIndex && styles.progressActive]} />)}</View>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled"><View style={styles.playerCenter}><MethodPracticeExperience methodId={practice.methodId} title={step.title} instruction={step.instruction} stepIndex={stepIndex} stepCount={practice.steps.length} seconds={seconds} elapsedSeconds={elapsedSeconds} paused={paused} trigger={trigger} /><Text style={styles.alternative}>{step.alternative ?? "不舒服就停止，不需要完成。"}</Text></View></ScrollView>
     <View style={styles.controls}><SecondaryButton label={paused ? "继续" : "暂停"} icon={<Ionicons name={paused ? "play" : "pause"} size={18} color={colors.text} />} onPress={onPause} style={styles.control} /><SecondaryButton label="停止" onPress={onStop} style={styles.control} /></View>
@@ -292,13 +292,13 @@ function DoneView({ record, storageWarning, historyEnabled, onReturn, methodAdju
 }
 function PreparingView({ onClose }: { onClose: () => void }) { return <Screen scroll={false} contentStyle={styles.preparing}><BreathingOrb compact paused /><Text style={type.h2}>正在准备练习…</Text><SecondaryButton label="结束并返回" onPress={onClose} /></Screen>; }
 function SupportView({ onBack }: { onBack: () => void }) { return <Screen><TopBar title="先保证现实中的安全" onClose={onBack} /><View style={styles.centerCopy}><Text style={type.display}>先联系现实中的支持。</Text><Text style={type.body}>如果你有即时危险、医疗紧急情况，或无法保证自己的安全，请联系当地紧急服务、前往急诊，或让可信任的人陪在你身边。</Text></View><Surface style={styles.supportCard}><Text style={type.body}>StillMind 只提供一般性的短暂停顿与定向提示，不提供诊断、治疗或危机处置。</Text></Surface><PrimaryButton label="结束并返回" onPress={onBack} /></Screen>; }
-function TopBar({ title, meta, onClose }: { title: string; meta?: string; onClose: () => void }) {
-  return <View style={styles.topBar}><Text style={styles.topTitle}>{title}</Text><View style={styles.topActions}>{meta ? <Text testID="native-session-timer" style={styles.topMeta}>{meta}</Text> : null}<Pressable accessibilityLabel="关闭" hitSlop={12} onPress={onClose}><Ionicons name="close" size={26} color={colors.textMuted} /></Pressable></View></View>;
+function TopBar({ title, meta, onClose }: { title: string; meta?: string; onClose?: () => void }) {
+  return <View style={styles.topBar}><Text style={styles.topTitle}>{title}</Text><View style={styles.topActions}>{meta ? <Text testID="native-session-timer" style={styles.topMeta}>{meta}</Text> : null}{onClose ? <Pressable accessibilityRole="button" accessibilityLabel="关闭" hitSlop={12} onPress={onClose}><Ionicons name="close" size={26} color={colors.textMuted} /></Pressable> : null}</View></View>;
 }
 
 const styles = StyleSheet.create({
   topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 50 }, topTitle: { color: colors.textMuted, fontSize: 14, fontWeight: "700" },
-  topActions: { flexDirection: "row", alignItems: "center", gap: 12 }, topMeta: { color: colors.lavender, fontSize: 12, fontWeight: "800", fontVariant: ["tabular-nums"] },
+  topActions: { flexDirection: "row", alignItems: "center", gap: 12 }, topMeta: { color: colors.textFaint, fontSize: 12, fontWeight: "600", fontVariant: ["tabular-nums"] },
   routeBlock: { gap: 12 }, row: { flexDirection: "row", flexWrap: "wrap", gap: 9 }, input: { minHeight: 92, borderWidth: 1, borderColor: colors.border, borderRadius: radii.medium, color: colors.text, backgroundColor: colors.surface, padding: 15, fontSize: 15, textAlignVertical: "top" },
   recommendBlock: { gap: 13 }, supportLink: { color: colors.textFaint, textAlign: "center", fontSize: 12, textDecorationLine: "underline" },
   player: { paddingBottom: 28 }, progressRow: { flexDirection: "row", gap: 6 }, progressSegment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.12)" }, progressActive: { backgroundColor: colors.lavender },

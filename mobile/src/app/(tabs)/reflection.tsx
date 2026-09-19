@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +18,7 @@ function weekStart(now = new Date()) {
 
 export default function ReflectionScreen() {
   const { sessions, deleteSession } = useApp();
+  const [deleteNotice, setDeleteNotice] = useState("");
   const review = useMemo(() => buildWeeklyReview(sessions, weekStart()), [sessions]);
   const topMethod = Object.entries(review.methodCounts).sort((a, b) => b[1] - a[1])[0];
   const topMode = Object.entries(review.modeCounts).sort((a, b) => b[1] - a[1])[0];
@@ -49,6 +50,10 @@ export default function ReflectionScreen() {
   return (
     <Screen>
       <BrandHeader eyebrow="本周回看" title="看见重复，不把重复变成身份。" />
+      {deleteNotice ? <Surface style={styles.notice}>
+        <View accessibilityRole="alert" style={styles.flex}><Text style={type.bodyStrong}>删除未完成</Text><Text style={type.caption}>{deleteNotice}</Text></View>
+        <Pressable accessibilityRole="button" onPress={() => setDeleteNotice("")}><Text style={styles.noticeAction}>知道了</Text></Pressable>
+      </Surface> : null}
       <View style={styles.metrics}>
         <Surface style={styles.metric}><Text style={styles.metricValue}>{review.sessions}</Text><Text style={type.caption}>次暂停</Text></Surface>
         <Surface style={styles.metric}><Text style={styles.metricValue}>{review.results.better}</Text><Text style={type.caption}>次多了一点选择</Text></Surface>
@@ -83,7 +88,10 @@ export default function ReflectionScreen() {
           <Surface key={session.id} style={styles.row}>
             <View style={styles.flex}><Text style={type.bodyStrong}>{METHOD_BY_ID.get(session.methodId)?.title ?? session.methodId}</Text><Text style={type.caption}>{new Date(session.startedAt).toLocaleString("zh-CN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })} · {modeLabel(session.mode)}</Text></View>
             <Text style={[styles.result, session.result === "better" && styles.better, session.result === "worse" && styles.worse]}>{resultLabel(session.result, session.status)}</Text>
-            <Pressable accessibilityRole="button" accessibilityLabel="删除这条记录" hitSlop={13} onPress={() => confirmDeleteSession(() => deleteSession(session.id))}><Ionicons name="trash-outline" size={18} color={colors.textFaint} /></Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="删除这条记录" hitSlop={13} onPress={() => confirmDeleteSession(async () => {
+              try { await deleteSession(session.id); }
+              catch { setDeleteNotice("这条记录可能仍保留在本机。你可以稍后再试。"); }
+            })}><Ionicons name="trash-outline" size={18} color={colors.textFaint} /></Pressable>
           </Surface>
         ))}
       </View>
@@ -97,13 +105,13 @@ function resultLabel(result?: string, status?: string) {
   // An unended attempt is not a completed record; only finished sessions may read "已记录".
   return status === "completed" ? "已记录" : "未完成";
 }
-function confirmDeleteSession(remove: () => void) {
+function confirmDeleteSession(remove: () => Promise<void>) {
   if (Platform.OS === "web") {
     // react-native-web Alert is a no-op; use the browser dialog so deletion stays reachable.
-    if (window.confirm("删除这条记录？只会删除本机上的这一条练习。")) remove();
+    if (window.confirm("删除这条记录？只会删除本机上的这一条练习。")) void remove();
     return;
   }
-  Alert.alert("删除这条记录？", "只会删除本机上的这一条练习。", [{ text: "取消", style: "cancel" }, { text: "删除", style: "destructive", onPress: remove }]);
+  Alert.alert("删除这条记录？", "只会删除本机上的这一条练习。", [{ text: "取消", style: "cancel" }, { text: "删除", style: "destructive", onPress: () => { void remove(); } }]);
 }
 
 const styles = StyleSheet.create({
@@ -116,5 +124,6 @@ const styles = StyleSheet.create({
   nextButtonText: { color: colors.text, fontSize: 16, fontWeight: "800" },
   nextButtonMeta: { color: colors.textFaint, fontSize: 12, fontWeight: "600", marginTop: 3 },
   pressed: { opacity: 0.78, transform: [{ scale: 0.99 }] },
+  notice: { flexDirection: "row", alignItems: "center", gap: 12 }, noticeAction: { color: colors.lavender, fontSize: 14, fontWeight: "700" },
   list: { gap: 11 }, row: { flexDirection: "row", alignItems: "center", gap: 12 }, flex: { flex: 1 }, result: { color: colors.textMuted, fontSize: 12, fontWeight: "700" }, better: { color: colors.mint }, worse: { color: colors.danger },
 });

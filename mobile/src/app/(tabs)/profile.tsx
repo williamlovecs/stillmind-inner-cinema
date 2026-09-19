@@ -29,7 +29,8 @@ export default function ProfileScreen() {
         link.href = url;
         link.download = `stillmind-export-${new Date().toISOString().slice(0, 10)}.json`;
         link.click();
-        URL.revokeObjectURL(url);
+        // Give the browser a turn to begin the download before releasing the blob.
+        setTimeout(() => URL.revokeObjectURL(url), 0);
       } else {
         const file = new File(Paths.cache, `stillmind-export-${new Date().toISOString().slice(0, 10)}.json`);
         if (file.exists) file.delete();
@@ -61,20 +62,34 @@ export default function ProfileScreen() {
       setNotice({ title: "请在 iPhone 中设置", body: "本地觉察提醒会在原生 App 中启用。网页版不发送提醒通知。" });
       return;
     }
-    if (enabled) {
-      if (!await scheduleReminder(preferences.reminderHour)) return Alert.alert("没有通知权限", "你可以稍后在系统设置中开启。 ");
-    } else {
-      const Notifications = await import("expo-notifications");
-      await Notifications.cancelAllScheduledNotificationsAsync();
+    try {
+      if (enabled) {
+        if (!await scheduleReminder(preferences.reminderHour)) {
+          setNotice({ title: "没有通知权限", body: "你可以稍后在系统设置中开启通知，再回来设置提醒。" });
+          return;
+        }
+      } else {
+        const Notifications = await import("expo-notifications");
+        await Notifications.cancelAllScheduledNotificationsAsync();
+      }
+      await updatePreferences({ reminderEnabled: enabled });
+      track("reminder_changed", { enabled, hour_bucket: reminderHourBucket(preferences.reminderHour) });
+    } catch {
+      setNotice({ title: "提醒未完整更新", body: "请在系统通知设置中确认当前状态，再稍后重试。" });
     }
-    await updatePreferences({ reminderEnabled: enabled });
-    track("reminder_changed", { enabled, hour_bucket: reminderHourBucket(preferences.reminderHour) });
   };
 
   const changeReminderHour = async (hour: number) => {
-    if (preferences.reminderEnabled && !await scheduleReminder(hour)) return;
-    await updatePreferences({ reminderHour: hour });
-    track("reminder_changed", { enabled: preferences.reminderEnabled, hour_bucket: reminderHourBucket(hour) });
+    try {
+      if (preferences.reminderEnabled && !await scheduleReminder(hour)) {
+        setNotice({ title: "没有通知权限", body: "提醒时间没有改动。你可以稍后在系统设置中开启通知。" });
+        return;
+      }
+      await updatePreferences({ reminderHour: hour });
+      track("reminder_changed", { enabled: preferences.reminderEnabled, hour_bucket: reminderHourBucket(hour) });
+    } catch {
+      setNotice({ title: "时间未完整更新", body: "请在系统通知设置中确认当前提醒，再稍后重试。" });
+    }
   };
 
   const confirmDelete = () => {
