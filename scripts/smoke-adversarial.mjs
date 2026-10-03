@@ -123,6 +123,16 @@ try {
   assert.equal((await records()).length, 1);
   pass("rapid duplicate start/stop clicks produce one attempt");
 
+  await resetData();await navigate("/");
+  await evaluate(`sessionStorage.setItem('stillmind.pendingResetDraft.v1',JSON.stringify({id:'obsolete-id',trigger:'obsolete synthetic private input',mode:'impulsive',inputMethod:'typed',activation:5,options:{shareAnonymous:true}}));sessionStorage.setItem('stillmind.pendingTrigger.v1','obsolete legacy input');sessionStorage.setItem('stillmind.pendingPracticeOptions.v1',JSON.stringify({shareAnonymous:true}));const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='stillmind.pendingResetDraft.v1')throw Error('synthetic draft quota');return set.call(this,k,v)};`);
+  await click("开始 1 分钟 Reset");await waitFor(()=>hasButton("暂停"),"fresh route with failed draft write");
+  assert.equal(await evaluate(`document.body.innerText.includes('obsolete')`),false,'new navigation never reuses either draft format');
+  assert.equal((await records())[0].activationBefore,undefined,'old rating is not a new self-report');
+  assert.equal(await evaluate(`sessionStorage.getItem('stillmind.pendingResetDraft.v1')`),null);
+  await click("停止");await click("跳过反馈，结束");
+  await screenshot("draft-write-failure");
+  pass("failed draft writes cannot carry stale text, scores or old analytics consent into a new practice");
+
   await resetData();
   const malicious = '<img src=x onerror="window.__injected=1"> synthetic trigger';
   await evaluate(`sessionStorage.setItem('stillmind.pendingTrigger.v1',${JSON.stringify(malicious)})`);
@@ -183,6 +193,16 @@ try {
   assert.equal(await hasButton("正在听 · 停止"),true);
   await evaluate("Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'))");
   assert.equal(await hasButton("正在听 · 停止"),false);
+  await navigate("/");await evaluate("document.querySelector('details > summary').click()");
+  await click("开始说");
+  await evaluate(`(()=>{const el=document.querySelector('textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(el,'manually corrected synthetic input');el.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  assert.equal(await hasButton("正在听 · 停止"),false);
+  await evaluate(`window.__recognitions[0].onresult({results:[{0:{transcript:'late stale dictation'}}]})`);
+  assert.equal(await evaluate("document.querySelector('textarea').value"),"manually corrected synthetic input");
+  await click("开始说");await click("我被批评了");
+  await evaluate(`window.__recognitions[1].onresult({results:[{0:{transcript:'late stale example overwrite'}}]})`);
+  assert.equal(await evaluate("document.querySelector('textarea').value"),"我被批评了");
+  pass("manual edits and example selection stop dictation before late results can overwrite them");
   await cdp("Page.removeScriptToEvaluateOnNewDocument", { identifier: voiceStub.identifier });
   pass("collapse/background stop dictation and late callbacks cannot overwrite current input; no microphone or cloud used");
 

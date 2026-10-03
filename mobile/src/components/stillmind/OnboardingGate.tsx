@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, gradients, radii, spacing } from "@/constants/theme";
@@ -15,7 +15,7 @@ const PAGES = [
 ];
 
 export function OnboardingGate() {
-  const { ready, preferences, updatePreferences } = useApp();
+  const { ready, preferences, storageNotice, updatePreferences } = useApp();
   const [page, setPage] = useState(0);
 
   if (!ready) {
@@ -25,14 +25,14 @@ export function OnboardingGate() {
   const item = PAGES[page];
   const completeOnboarding = () => {
     track("onboarding_completed", { eyes_open: preferences.eyesOpenPreferred, body_focus: preferences.bodyFocusAllowed, breath_change: preferences.breathChangeAllowed });
-    void updatePreferences({ onboardingComplete: true }).catch(() => Alert.alert("本次设置暂未保存", "本次仍可使用；下次打开可能需要重新确认。"));
+    void updatePreferences({ onboardingComplete: true }).catch(() => undefined);
   };
 
   return (
-    <Modal visible animationType="fade" statusBarTranslucent>
+    <Modal visible animationType="fade" statusBarTranslucent onRequestClose={() => { if (page > 0) setPage(page - 1); }}>
       <LinearGradient colors={gradients.background} style={styles.modal}>
         <View style={styles.top}><Text style={styles.brand}>STILLMIND</Text><Text style={styles.step}>{page + 1} / {PAGES.length}</Text></View>
-        <View style={styles.content}>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
           {page === 0 ? <BreathingOrb compact /> : <View style={styles.iconWrap}><Ionicons name={item.icon} size={34} color={colors.lavender} /></View>}
           <Text style={type.h1}>{item.title}</Text>
           <Text style={[type.body, styles.center]}>{item.body}</Text>
@@ -41,11 +41,12 @@ export function OnboardingGate() {
               {[{ key: "eyesOpenPreferred", label: "优先睁眼练习" }, { key: "bodyFocusAllowed", label: "允许身体关注" }, { key: "breathChangeAllowed", label: "允许调整呼吸" }].map((choice) => {
                 const key = choice.key as "eyesOpenPreferred" | "bodyFocusAllowed" | "breathChangeAllowed";
                 const selected = preferences[key];
-                return <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => { void updatePreferences({ [key]: !selected }).catch(() => Alert.alert("设置暂未保存", "本次使用仍会遵守你的选择。")); }} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.lavender : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
+                return <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => { void updatePreferences({ [key]: !selected }).catch(() => undefined); }} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.lavender : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
               })}
             </View>
           ) : null}
-        </View>
+          {storageNotice ? <Text accessibilityRole="alert" style={type.caption}>{storageNotice}</Text> : null}
+        </ScrollView>
         <View style={styles.footer}>
           {page > 0 ? <SecondaryButton label="上一步" onPress={() => setPage((value) => value - 1)} style={styles.half} /> : null}
           <PrimaryButton label={page === PAGES.length - 1 ? "进入 StillMind" : "继续"} onPress={() => page === PAGES.length - 1 ? completeOnboarding() : setPage((value) => value + 1)} style={page > 0 ? styles.half : undefined} />
@@ -62,7 +63,8 @@ const styles = StyleSheet.create({
   top: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   brand: { color: colors.text, fontSize: 14, fontWeight: "800", letterSpacing: 4 },
   step: { color: colors.textFaint, fontSize: 13 },
-  content: { flex: 1, justifyContent: "center", alignItems: "center", gap: spacing.lg },
+  scroll: { flex: 1 },
+  content: { flexGrow: 1, justifyContent: "center", alignItems: "center", gap: spacing.lg, paddingVertical: 20 },
   center: { textAlign: "center", maxWidth: 330 },
   iconWrap: { width: 76, height: 76, borderRadius: 38, backgroundColor: "rgba(116,87,216,0.2)", borderWidth: 1, borderColor: colors.borderStrong, alignItems: "center", justifyContent: "center" },
   choices: { alignSelf: "stretch", gap: 10, marginTop: 4 },

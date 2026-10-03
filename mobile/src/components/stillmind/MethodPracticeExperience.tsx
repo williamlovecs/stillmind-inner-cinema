@@ -141,7 +141,7 @@ export function MethodPracticeExperience({
       <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
         <View style={styles.bodyMap}>
           {BODY_ZONES.map((zone) => (
-            <Pressable disabled={paused} key={zone.id} onPress={() => setBodyZone(zone.id)} style={[styles.bodyZone, bodyZone === zone.id && styles.bodyZoneActive]}>
+            <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: bodyZone === zone.id, disabled: paused }} key={zone.id} onPress={() => setBodyZone(zone.id)} style={[styles.bodyZone, bodyZone === zone.id && styles.bodyZoneActive]}>
               <Text style={[styles.bodyZoneText, bodyZone === zone.id && styles.bodyZoneTextActive]}>{zone.label}</Text>
             </Pressable>
           ))}

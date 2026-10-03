@@ -11,7 +11,7 @@ import { reminderHourBucket, track } from "@/lib/analytics";
 const WEB_BASE_URL = (process.env.EXPO_PUBLIC_STILLMIND_WEB_BASE_URL || "https://stillmind-inner-cinema.vercel.app").replace(/\/$/, "");
 
 export default function ProfileScreen() {
-  const { preferences, sessions, updatePreferences, deleteAllData } = useApp();
+  const { preferences, sessions, updatePreferences, runReminderTask, deleteAllData } = useApp();
   // Alert.alert is a silent no-op on react-native-web; any feedback a web user must see renders inline.
   const [notice, setNotice] = useState<{ title: string; body: string }>();
   const toggle = (key: keyof Preferences) => {
@@ -21,6 +21,7 @@ export default function ProfileScreen() {
   };
 
   const exportData = async () => {
+    let temporaryFile: File | undefined;
     try {
       const payload = JSON.stringify({ exportedAt: new Date().toISOString(), preferences, sessions }, null, 2);
       if (Platform.OS === "web") {
@@ -33,16 +34,29 @@ export default function ProfileScreen() {
         setTimeout(() => URL.revokeObjectURL(url), 0);
       } else {
         const file = new File(Paths.cache, `stillmind-export-${new Date().toISOString().slice(0, 10)}.json`);
+        temporaryFile = file;
         if (file.exists) file.delete();
         file.create();
         file.write(payload);
         if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(file.uri, { mimeType: "application/json" });
-        else Alert.alert("导出已生成", file.uri);
+        else {
+          setNotice({ title: "当前无法分享导出", body: "这台设备暂不支持分享文件，本机记录没有改动。" });
+          return;
+        }
       }
       track("data_exported", { format: "json" });
     } catch {
       setNotice({ title: "导出未完成", body: "本机数据没有改动。你可以稍后再试，或直接结束使用。" });
+    } finally {
+      try { if (temporaryFile?.exists) temporaryFile.delete(); }
+      catch { setNotice({ title: "导出临时文件未清理", body: "设备缓存中可能仍留有导出文件，请在设备文件管理中确认。" }); }
     }
+  };
+
+  const openPage = (url: string) => {
+    void Linking.openURL(url).catch(() => {
+      setNotice({ title: "页面暂未打开", body: "请检查网络连接后再试。" });
+    });
   };
 
   const scheduleReminder = async (hour: number) => {
@@ -63,17 +77,19 @@ export default function ProfileScreen() {
       return;
     }
     try {
-      if (enabled) {
-        if (!await scheduleReminder(preferences.reminderHour)) {
-          setNotice({ title: "没有通知权限", body: "你可以稍后在系统设置中开启通知，再回来设置提醒。" });
-          return;
+      await runReminderTask(async (current) => {
+        if (enabled) {
+          if (!await scheduleReminder(current.reminderHour)) {
+            setNotice({ title: "没有通知权限", body: "你可以稍后在系统设置中开启通知，再回来设置提醒。" });
+            return;
+          }
+        } else {
+          const Notifications = await import("expo-notifications");
+          await Notifications.cancelAllScheduledNotificationsAsync();
         }
-      } else {
-        const Notifications = await import("expo-notifications");
-        await Notifications.cancelAllScheduledNotificationsAsync();
-      }
-      await updatePreferences({ reminderEnabled: enabled });
-      track("reminder_changed", { enabled, hour_bucket: reminderHourBucket(preferences.reminderHour) });
+        await updatePreferences({ reminderEnabled: enabled });
+        track("reminder_changed", { enabled, hour_bucket: reminderHourBucket(current.reminderHour) });
+      });
     } catch {
       setNotice({ title: "提醒未完整更新", body: "请在系统通知设置中确认当前状态，再稍后重试。" });
     }
@@ -81,12 +97,14 @@ export default function ProfileScreen() {
 
   const changeReminderHour = async (hour: number) => {
     try {
-      if (preferences.reminderEnabled && !await scheduleReminder(hour)) {
-        setNotice({ title: "没有通知权限", body: "提醒时间没有改动。你可以稍后在系统设置中开启通知。" });
-        return;
-      }
-      await updatePreferences({ reminderHour: hour });
-      track("reminder_changed", { enabled: preferences.reminderEnabled, hour_bucket: reminderHourBucket(hour) });
+      await runReminderTask(async (current) => {
+        if (current.reminderEnabled && !await scheduleReminder(hour)) {
+          setNotice({ title: "没有通知权限", body: "提醒时间没有改动。你可以稍后在系统设置中开启通知。" });
+          return;
+        }
+        await updatePreferences({ reminderHour: hour });
+        track("reminder_changed", { enabled: current.reminderEnabled, hour_bucket: reminderHourBucket(hour) });
+      });
     } catch {
       setNotice({ title: "时间未完整更新", body: "请在系统通知设置中确认当前提醒，再稍后重试。" });
     }
@@ -128,10 +146,10 @@ export default function ProfileScreen() {
         {preferences.reminderEnabled ? <View style={styles.reminderTimes}>{[8, 12, 18, 21].map((hour) => <Chip key={hour} label={`${String(hour).padStart(2, "0")}:00`} selected={preferences.reminderHour === hour} onPress={() => changeReminderHour(hour)} />)}</View> : null}
       </View>
       <View style={styles.section}><SectionHeading title="关于" />
-        <ActionRow icon="clipboard-outline" title="种子测试说明" onPress={() => Linking.openURL(`${WEB_BASE_URL}/support/seed-test`)} />
-        <ActionRow icon="help-circle-outline" title="支持与反馈" onPress={() => Linking.openURL(`${WEB_BASE_URL}/support`)} />
-        <ActionRow icon="shield-checkmark-outline" title="隐私政策" onPress={() => Linking.openURL(`${WEB_BASE_URL}/privacy`)} />
-        <ActionRow icon="document-text-outline" title="服务条款" onPress={() => Linking.openURL(`${WEB_BASE_URL}/terms`)} />
+        <ActionRow icon="clipboard-outline" title="种子测试说明" onPress={() => openPage(`${WEB_BASE_URL}/support/seed-test`)} />
+        <ActionRow icon="help-circle-outline" title="支持与反馈" onPress={() => openPage(`${WEB_BASE_URL}/support`)} />
+        <ActionRow icon="shield-checkmark-outline" title="隐私政策" onPress={() => openPage(`${WEB_BASE_URL}/privacy`)} />
+        <ActionRow icon="document-text-outline" title="服务条款" onPress={() => openPage(`${WEB_BASE_URL}/terms`)} />
         <Surface style={styles.boundary}><Text style={type.bodyStrong}>产品边界</Text><Text style={type.body}>StillMind 是一般觉察与状态切换工具，不提供诊断、治疗或紧急支持。如有即时危险，请联系当地紧急服务或可信任的人。</Text></Surface>
       </View>
     </Screen>

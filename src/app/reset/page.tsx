@@ -12,6 +12,7 @@ import { PracticeOptionsPanel } from "@/components/PracticeOptionsPanel";
 import { PENDING_PRACTICE_OPTIONS_KEY, readPracticeOptions, practiceOptionsFromQuery, type PracticeOptions } from "@/lib/practice-options";
 import { beginAttempt, endAttempt, saveAttemptFeedback, type PracticeAttempt } from "@/lib/practice-attempt";
 import { browserLocalStorage, readStoredArray, writeStoredJson } from "@/lib/safe-storage";
+import { browserSessionStorage, consumeResetDraft } from "@/lib/reset-draft";
 import {
   PENDING_ACTIVATION_KEY, PENDING_INPUT_METHOD_KEY, PENDING_INTENSITY_KEY, PENDING_MODE_KEY, PENDING_TRIGGER_KEY,
   detectStateModeFromText, isStateMode, resolveResetActivation,
@@ -169,11 +170,15 @@ function ResetExperience() {
     /* eslint-disable react-hooks/set-state-in-effect -- Consume the entry draft once before starting the practice. */
     try {
       const params = new URLSearchParams(window.location.search);
-      const storedTrigger = window.sessionStorage.getItem(PENDING_TRIGGER_KEY) ?? "";
-      const storedMode = window.sessionStorage.getItem(PENDING_MODE_KEY);
-      const storedActivation = window.sessionStorage.getItem(PENDING_ACTIVATION_KEY);
-      const storedInputMethod = window.sessionStorage.getItem(PENDING_INPUT_METHOD_KEY);
-      const legacyStoredIntensity = window.sessionStorage.getItem(PENDING_INTENSITY_KEY);
+      const draftId = params.get("draft");
+      const draft = draftId ? consumeResetDraft(browserSessionStorage(), draftId) : undefined;
+      // A new entry never falls back to unrelated legacy text or analytics consent.
+      const legacyStorage = draftId ? undefined : browserSessionStorage();
+      const storedTrigger = draft?.trigger ?? legacyStorage?.getItem(PENDING_TRIGGER_KEY) ?? "";
+      const storedMode = draft?.mode ?? legacyStorage?.getItem(PENDING_MODE_KEY) ?? null;
+      const storedActivation = draft?.activation === undefined ? legacyStorage?.getItem(PENDING_ACTIVATION_KEY) ?? null : String(draft.activation);
+      const storedInputMethod = draft?.inputMethod ?? legacyStorage?.getItem(PENDING_INPUT_METHOD_KEY);
+      const legacyStoredIntensity = legacyStorage?.getItem(PENDING_INTENSITY_KEY) ?? null;
       const queryMethod = params.get("method") as MethodId | null;
       const queryMethodDef = queryMethod ? METHOD_BY_ID.get(queryMethod) : undefined;
       const queryMode = params.get("mode");
@@ -186,8 +191,8 @@ function ResetExperience() {
       setIntensityBefore(incomingRating.supplied ? incomingRating.value : undefined);
       setIntensityAfter(undefined);
       setLockedBeforeScore(incomingRating.supplied);
-      const storedOptions = window.sessionStorage.getItem(PENDING_PRACTICE_OPTIONS_KEY);
-      setOptions(storedOptions ? readPracticeOptions(storedOptions) : practiceOptionsFromQuery(params));
+      const storedOptions = legacyStorage?.getItem(PENDING_PRACTICE_OPTIONS_KEY);
+      setOptions(draft?.options ?? (storedOptions ? readPracticeOptions(storedOptions) : practiceOptionsFromQuery(params)));
       if (storedInputMethod === "typed" || storedInputMethod === "dictation" || storedInputMethod === "example" || storedInputMethod === "state-only") setInputMethod(storedInputMethod);
       if (queryMethodDef) {
         setSelectedMethodId(queryMethodDef.id);
@@ -195,7 +200,7 @@ function ResetExperience() {
         setShowAdvancedMethods(true);
         setDuration(queryMethodDef.durations[0]);
       }
-      for (const key of [PENDING_TRIGGER_KEY, PENDING_MODE_KEY, PENDING_ACTIVATION_KEY, PENDING_INPUT_METHOD_KEY, PENDING_INTENSITY_KEY, PENDING_PRACTICE_OPTIONS_KEY]) window.sessionStorage.removeItem(key);
+      for (const key of [PENDING_TRIGGER_KEY, PENDING_MODE_KEY, PENDING_ACTIVATION_KEY, PENDING_INPUT_METHOD_KEY, PENDING_INTENSITY_KEY, PENDING_PRACTICE_OPTIONS_KEY]) browserSessionStorage()?.removeItem(key);
     } catch {
       // No storage access: safe URL parameters still work; no raw text or consent is invented.
     } finally {

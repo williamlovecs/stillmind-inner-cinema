@@ -6,8 +6,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { containsHighRiskLanguage, detectStateModeFromText, type ActivationLevel } from "@stillmind/domain";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { PracticeOptionsPanel } from "@/components/PracticeOptionsPanel";
-import { DEFAULT_PRACTICE_OPTIONS, PENDING_PRACTICE_OPTIONS_KEY, type PracticeOptions } from "@/lib/practice-options";
-import { PENDING_ACTIVATION_KEY, PENDING_INPUT_METHOD_KEY, PENDING_MODE_KEY, PENDING_TRIGGER_KEY } from "@/lib/reset-routing";
+import { DEFAULT_PRACTICE_OPTIONS, type PracticeOptions } from "@/lib/practice-options";
+import { browserSessionStorage, storeResetDraft } from "@/lib/reset-draft";
 
 type InputMethod = "typed" | "dictation" | "example" | "state-only";
 type SpeechRecognitionAlternativeLike = { transcript: string };
@@ -75,20 +75,14 @@ export default function Home() {
     try { recognition.start(); } catch { stopVoice(); }
   }
   function startReset() {
+    if (starting) return;
     const text = trigger.trim();
     if (text && containsHighRiskLanguage(text)) { setSafetyNotice(true); return; }
     stopVoice(); setStarting(true);
-    try {
-      window.sessionStorage.setItem(PENDING_TRIGGER_KEY, text);
-      window.sessionStorage.setItem(PENDING_MODE_KEY, mode);
-      if (activation === undefined) window.sessionStorage.removeItem(PENDING_ACTIVATION_KEY);
-      else window.sessionStorage.setItem(PENDING_ACTIVATION_KEY, String(activation));
-      window.sessionStorage.setItem(PENDING_INPUT_METHOD_KEY, text ? inputMethod : "state-only");
-      window.sessionStorage.setItem(PENDING_PRACTICE_OPTIONS_KEY, JSON.stringify(options));
-    } catch {
-      // Safe query fields preserve opt-outs if browser storage is unavailable; never include text or consent.
-    }
-    const params = new URLSearchParams({ mode, direct: "1", eyes: options.eyesOpenPreferred ? "1" : "0",
+    const draftId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+    storeResetDraft(browserSessionStorage(), { id: draftId, trigger: text, mode, activation,
+      inputMethod: text ? inputMethod : "state-only", options });
+    const params = new URLSearchParams({ mode, direct: "1", draft: draftId, eyes: options.eyesOpenPreferred ? "1" : "0",
       body: options.bodyFocusAllowed ? "1" : "0", breath: options.breathChangeAllowed ? "1" : "0" });
     if (activation !== undefined) params.set("activation", String(activation));
     router.push(`/reset?${params}`);
@@ -120,9 +114,9 @@ export default function Home() {
                 </button>
               </div>
               {voiceSupported ? <p className="mt-2 text-xs text-stone-500">语音由浏览器识别，可能使用云端服务。可改用文字或不输入。</p> : null}
-              <textarea aria-label="现在发生了什么" value={trigger} onChange={(event) => updateTrigger(event.target.value)} maxLength={500} autoComplete="off" placeholder="比如：我被批评了，现在很想反击。"
+              <textarea aria-label="现在发生了什么" value={trigger} onChange={(event) => { stopVoice(); updateTrigger(event.target.value); }} maxLength={500} autoComplete="off" placeholder="比如：我被批评了，现在很想反击。"
                 className="mt-4 min-h-28 w-full resize-none rounded-[1.25rem] border border-white/10 bg-slate-950/65 p-4 text-base leading-7 text-white outline-none placeholder:text-stone-600 focus:border-violet-200/45" />
-              <div className="mt-3 flex flex-wrap gap-2">{EXAMPLES.map((example) => <button key={example} type="button" onClick={() => updateTrigger(example, "example")} className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-sm text-stone-400 transition hover:border-violet-200/35 hover:text-white">{example}</button>)}</div>
+              <div className="mt-3 flex flex-wrap gap-2">{EXAMPLES.map((example) => <button key={example} type="button" onClick={() => { stopVoice(); updateTrigger(example, "example"); }} className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-sm text-stone-400 transition hover:border-violet-200/35 hover:text-white">{example}</button>)}</div>
             </div>
             <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-4">
               <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-200">现在被带走的程度（可选）</p><span className="text-sm font-semibold text-amber-100">{activation === undefined ? "未填写" : `${activation} · ${ACTIVATION_LABELS[activation]}`}</span></div>

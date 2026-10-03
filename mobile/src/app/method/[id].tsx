@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { METHOD_BY_ID, type DurationMinutes, type MethodId } from "@stillmind/domain";
@@ -30,12 +30,12 @@ export default function MethodDetailScreen() {
   const toggleHidden = () => {
     const hiddenMethodIds = hidden ? preferences.hiddenMethodIds.filter((item) => item !== method.id) : [...preferences.hiddenMethodIds, method.id];
     track("method_preference_changed", { method_id: method.id, preference: "hidden", enabled: !hidden });
-    updatePreferences({ hiddenMethodIds }).catch(() => Alert.alert("设置暂未保存", "本次使用仍会遵守你的选择。"));
+    void updatePreferences({ hiddenMethodIds }).catch(() => undefined);
   };
 
   return (
     <Screen>
-      <BrandHeader action={<Pressable accessibilityRole="button" accessibilityLabel={favorite ? "取消收藏" : "收藏"} hitSlop={12} onPress={() => toggleFavorite(method.id).catch(() => Alert.alert("设置暂未保存", "本次使用仍会遵守你的选择。"))}><Ionicons name={favorite ? "bookmark" : "bookmark-outline"} size={24} color={favorite ? colors.lavender : colors.textMuted} /></Pressable>} />
+      <BrandHeader action={<Pressable accessibilityRole="button" accessibilityLabel={favorite ? "取消收藏" : "收藏"} hitSlop={12} onPress={() => { void toggleFavorite(method.id).catch(() => undefined); }}><Ionicons name={favorite ? "bookmark" : "bookmark-outline"} size={24} color={favorite ? colors.lavender : colors.textMuted} /></Pressable>} />
       <Pressable accessibilityRole="button" accessibilityLabel="返回方法库" hitSlop={12} onPress={() => router.back()} style={styles.back}><Ionicons name="chevron-back" size={20} color={colors.textMuted} /><Text style={styles.backText}>方法库</Text></Pressable>
       <View style={styles.heading}><Text style={type.display}>{method.title}</Text><Text style={type.h2}>{method.subtitle}</Text><Text style={type.body}>{method.summary}</Text></View>
       <Surface style={styles.detail}>
@@ -59,5 +59,5 @@ function modeLabel(mode: string) { return ({ looping: "念头循环", tense: "�
 
 const styles = StyleSheet.create({
   back: { flexDirection: "row", alignItems: "center", marginTop: -8, alignSelf: "flex-start" }, backText: { color: colors.textMuted, fontSize: 14, fontWeight: "600" },
-  heading: { gap: 12 }, detail: { gap: 10 }, divider: { height: 1, backgroundColor: colors.border, marginVertical: 4 }, duration: { gap: 12 }, chips: { flexDirection: "row", gap: 9 },
+  heading: { gap: 12 }, detail: { gap: 10 }, divider: { height: 1, backgroundColor: colors.border, marginVertical: 4 }, duration: { gap: 12 }, chips: { flexDirection: "row", flexWrap: "wrap", gap: 9 },
 });

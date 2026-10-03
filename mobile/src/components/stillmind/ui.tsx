@@ -3,13 +3,21 @@ import { Pressable, ScrollView, StyleSheet, Text, View, type PressableProps, typ
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, gradients, radii, spacing } from "@/constants/theme";
+import { useApp } from "@/state/AppProvider";
 
 export function Screen({ children, scroll = true, contentStyle }: PropsWithChildren<{ scroll?: boolean; contentStyle?: ViewStyle }>) {
+  const { storageNotice, clearStorageNotice } = useApp();
+  const notice = storageNotice ? <View accessibilityRole="alert" style={styles.storageNotice}>
+    <Text style={[type.caption, styles.flex]}>{storageNotice}</Text>
+    <Pressable accessibilityRole="button" accessibilityLabel="关闭存储提示" onPress={clearStorageNotice} style={styles.noticeDismiss}>
+      <Text style={type.bodyStrong}>知道了</Text>
+    </Pressable>
+  </View> : null;
   const content = scroll ? (
     <ScrollView contentContainerStyle={[styles.screenContent, contentStyle]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-      {children}
+      {notice}{children}
     </ScrollView>
-  ) : <View style={[styles.screenContent, styles.flex, contentStyle]}>{children}</View>;
+  ) : <View style={[styles.screenContent, styles.flex, contentStyle]}>{notice}{children}</View>;
   return (
     <LinearGradient colors={gradients.background} style={styles.flex}>
       <SafeAreaView style={styles.flex} edges={["top", "left", "right"]}>{content}</SafeAreaView>
@@ -89,6 +97,8 @@ export const type = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+  storageNotice: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12, backgroundColor: colors.surfaceSoft },
+  noticeDismiss: { minHeight: 44, justifyContent: "center", paddingHorizontal: 8 },
   flex: { flex: 1 },
   screenContent: { paddingHorizontal: 20, paddingBottom: 120, gap: spacing.lg },
   header: { paddingTop: spacing.sm, gap: spacing.lg },
