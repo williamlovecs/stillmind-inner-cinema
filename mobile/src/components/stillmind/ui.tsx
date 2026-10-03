@@ -7,20 +7,20 @@ import { useApp } from "@/state/AppProvider";
 
 export function Screen({ children, scroll = true, contentStyle }: PropsWithChildren<{ scroll?: boolean; contentStyle?: ViewStyle }>) {
   const { storageNotice, clearStorageNotice } = useApp();
-  const notice = storageNotice ? <View accessibilityRole="alert" style={styles.storageNotice}>
-    <Text style={[type.caption, styles.flex]}>{storageNotice}</Text>
+  const notice = storageNotice ? <View accessibilityRole="alert" testID="native-storage-notice" style={styles.storageNotice}>
+    <Text style={[type.caption, styles.flex, { color: colors.textMuted }]}>{storageNotice}</Text>
     <Pressable accessibilityRole="button" accessibilityLabel="关闭存储提示" onPress={clearStorageNotice} style={styles.noticeDismiss}>
       <Text style={type.bodyStrong}>知道了</Text>
     </Pressable>
   </View> : null;
   const content = scroll ? (
-    <ScrollView contentContainerStyle={[styles.screenContent, contentStyle]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-      {notice}{children}
+    <ScrollView style={styles.flex} contentContainerStyle={[styles.screenContent, contentStyle]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      {children}
     </ScrollView>
-  ) : <View style={[styles.screenContent, styles.flex, contentStyle]}>{notice}{children}</View>;
+  ) : <View style={[styles.screenContent, styles.flex, contentStyle]}>{children}</View>;
   return (
     <LinearGradient colors={gradients.background} style={styles.flex}>
-      <SafeAreaView style={styles.flex} edges={["top", "left", "right"]}>{content}</SafeAreaView>
+      <SafeAreaView style={styles.flex} edges={["top", "left", "right"]}>{notice}{content}</SafeAreaView>
     </LinearGradient>
   );
 }

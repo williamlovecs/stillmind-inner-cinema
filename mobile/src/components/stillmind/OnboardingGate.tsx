@@ -45,8 +45,8 @@ export function OnboardingGate() {
               })}
             </View>
           ) : null}
-          {storageNotice ? <Text accessibilityRole="alert" style={type.caption}>{storageNotice}</Text> : null}
         </ScrollView>
+        {storageNotice ? <Text accessibilityRole="alert" style={[type.caption, { color: colors.textMuted }]}>{storageNotice}</Text> : null}
         <View style={styles.footer}>
           {page > 0 ? <SecondaryButton label="上一步" onPress={() => setPage((value) => value - 1)} style={styles.half} /> : null}
           <PrimaryButton label={page === PAGES.length - 1 ? "进入 StillMind" : "继续"} onPress={() => page === PAGES.length - 1 ? completeOnboarding() : setPage((value) => value + 1)} style={page > 0 ? styles.half : undefined} />

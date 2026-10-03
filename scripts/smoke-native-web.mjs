@@ -35,6 +35,7 @@ async function navigate(path){await cdp('Page.navigate',{url:origin+path});await
 async function seed(extra={}){await evaluate(`localStorage.clear();sessionStorage.clear();localStorage.setItem('stillmind.preferences.v1',${JSON.stringify(JSON.stringify({schemaVersion:2,onboardingComplete:true,historyEnabled:true,aiEnabled:false,anonymousAnalyticsEnabled:false,eyesOpenPreferred:true,bodyFocusAllowed:true,breathChangeAllowed:true,hapticsEnabled:false,reminderEnabled:false,reminderHour:21,favoriteMethodIds:[],hiddenMethodIds:[],...extra}))});`);}
 async function records(){return evaluate(`JSON.parse(localStorage.getItem('stillmind.sessions.v1')||'[]')`);}
 async function screenshot(name){const d=await cdp('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});writeFileSync(join(artifacts,name+'.png'),Buffer.from(d.data,'base64'));}
+async function assertStorageNoticeVisible(message){assert.equal(await evaluate(`Array.from(document.querySelectorAll('[data-testid="native-storage-notice"]')).some(el=>{const r=el.getBoundingClientRect();return el.textContent.includes(${JSON.stringify(message)})&&r.width>0&&r.height>0&&r.top>=0&&r.bottom<=innerHeight&&el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))})`),true,'storage warning must remain physically visible after scrolling to the action');}
 function pass(label){passed.push(label);console.log('PASS '+label);}
 try{
   if(!existsSync(join(root,'index.html')))throw Error('Build the Expo web export first');
@@ -127,6 +128,7 @@ try{
   const historyFailure=await cdp('Page.addScriptToEvaluateOnNewDocument',{source:`const get=Storage.prototype.getItem;Storage.prototype.getItem=function(k){if(k==='stillmind.sessions.v1')throw Error('synthetic read failure');return get.call(this,k)}`});
   await navigate('/');
   await waitFor(()=>evaluate(`document.body.innerText.includes('本机历史暂未读取')`),'history-read notice');
+  await assertStorageNoticeVisible('本机历史暂未读取');
   assert.equal(await has('进入 StillMind'),false,'history failure must not reset acknowledged onboarding');
   await navigate('/reset?mode=tense&methodId=paced-breath&activation=2&ratingProvided=1&direct=1');
   await waitFor(()=>evaluate(`document.body.innerText.includes('不符合')`),'saved breath opt-out despite failed history');
@@ -143,11 +145,13 @@ try{
   await waitFor(()=>evaluate(`Boolean(${cinemaCard}?.querySelector('[aria-label="收藏"]'))`),'cinema library card');
   await evaluate(`(()=>{const b=${cinemaCard}.querySelector('[aria-label="收藏"]');b.scrollIntoView();b.click()})()`);
   await waitFor(()=>evaluate(`document.body.innerText.includes('设置暂未保存')`),'library settings notice');
+  await assertStorageNoticeVisible('设置暂未保存');
   assert.equal(await evaluate(`Boolean(${cinemaCard}?.querySelector('[aria-label="取消收藏"]'))`),true,'library selection still applies when persistence fails');
   await evaluate(`(()=>{const b=${cinemaCard};b.scrollIntoView();b.click()})()`);
   await waitFor(()=>evaluate(`location.pathname==='/method/inner-cinema'`),'client method navigation');
   await click('取消收藏');await click('收藏');
   await waitFor(()=>evaluate(`document.body.innerText.includes('设置暂未保存')`),'method settings notice');
+  await assertStorageNoticeVisible('设置暂未保存');
   assert.equal(await has('取消收藏'),true,'the current-session preference remains honored');
   assert.deepEqual(await evaluate(`JSON.parse(localStorage.getItem('stillmind.preferences.v1')).favoriteMethodIds`),[],'failed persistence is not reported as stored');
   await screenshot('native-settings-write-failure');
@@ -159,6 +163,7 @@ try{
   const deleteFailure=await cdp('Page.addScriptToEvaluateOnNewDocument',{source:`const remove=Storage.prototype.removeItem;Storage.prototype.removeItem=function(k){if(k==='stillmind.sessions.v1')throw Error('synthetic deletion failure');return remove.call(this,k)}`});
   await navigate('/profile');acceptDialog=true;await click('清除所有本机数据');
   await waitFor(()=>evaluate(`document.body.innerText.includes('清除未完成')`),'partial deletion notice');acceptDialog=false;
+  await assertStorageNoticeVisible('清除未完成');
   assert.equal(await evaluate(`localStorage.getItem('stillmind.preferences.v1')`),null);
   assert.equal(await evaluate(`localStorage.getItem('stillmind.analytics.id.v1')`),null,'independent identity cleanup still runs');
   assert.equal(await has('继续'),false,'failure notice must not disappear behind reset onboarding');
