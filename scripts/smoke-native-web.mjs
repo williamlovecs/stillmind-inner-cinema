@@ -137,14 +137,23 @@ try{
 
   await seed();
   const settingsFailure=await cdp('Page.addScriptToEvaluateOnNewDocument',{source:`const set=Storage.prototype.setItem;window.__restoreSettingsStorage=()=>{Storage.prototype.setItem=set};Storage.prototype.setItem=function(k,v){if(k==='stillmind.preferences.v1')throw Error('synthetic settings quota');return set.call(this,k,v)}`});
-  await navigate('/method/inner-cinema');await click('收藏');
+  // The export server has no dynamic-route fallback; use the actual library navigation.
+  await navigate('/practices');
+  const cinemaCard=`${buttons}.find(b=>b.textContent.includes('观电影法'))`;
+  await waitFor(()=>evaluate(`Boolean(${cinemaCard}?.querySelector('[aria-label="收藏"]'))`),'cinema library card');
+  await evaluate(`(()=>{const b=${cinemaCard}.querySelector('[aria-label="收藏"]');b.scrollIntoView();b.click()})()`);
+  await waitFor(()=>evaluate(`document.body.innerText.includes('设置暂未保存')`),'library settings notice');
+  assert.equal(await evaluate(`Boolean(${cinemaCard}?.querySelector('[aria-label="取消收藏"]'))`),true,'library selection still applies when persistence fails');
+  await evaluate(`(()=>{const b=${cinemaCard};b.scrollIntoView();b.click()})()`);
+  await waitFor(()=>evaluate(`location.pathname==='/method/inner-cinema'`),'client method navigation');
+  await click('取消收藏');await click('收藏');
   await waitFor(()=>evaluate(`document.body.innerText.includes('设置暂未保存')`),'method settings notice');
   assert.equal(await has('取消收藏'),true,'the current-session preference remains honored');
   assert.deepEqual(await evaluate(`JSON.parse(localStorage.getItem('stillmind.preferences.v1')).favoriteMethodIds`),[],'failed persistence is not reported as stored');
   await screenshot('native-settings-write-failure');
   await evaluate('window.__restoreSettingsStorage()');
   await cdp('Page.removeScriptToEvaluateOnNewDocument',{identifier:settingsFailure.identifier});
-  pass('method preference persistence failure is visible without an unhandled promise');
+  pass('library and detail preference persistence failures are visible without unhandled promises');
 
   await seed();await evaluate(`localStorage.setItem('stillmind.analytics.id.v1','synthetic_identity')`);
   const deleteFailure=await cdp('Page.addScriptToEvaluateOnNewDocument',{source:`const remove=Storage.prototype.removeItem;Storage.prototype.removeItem=function(k){if(k==='stillmind.sessions.v1')throw Error('synthetic deletion failure');return remove.call(this,k)}`});

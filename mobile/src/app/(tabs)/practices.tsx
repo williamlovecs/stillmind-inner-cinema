@@ -36,7 +36,7 @@ export default function PracticesScreen() {
       <View style={styles.filters}>{FILTERS.map((item) => <Chip key={item.id} label={item.label} selected={filter === item.id} onPress={() => setFilter(item.id)} />)}</View>
       <View style={styles.list}>
         <SectionHeading title={`${methods.length} 种方法`} caption="核心版本均可离线" />
-        {methods.map((method) => <MethodCard key={method.id} method={method} favorite={preferences.favoriteMethodIds.includes(method.id)} onFavorite={() => toggleFavorite(method.id)} onPress={() => router.push({ pathname: "/method/[id]", params: { id: method.id } })} />)}
+        {methods.map((method) => <MethodCard key={method.id} method={method} favorite={preferences.favoriteMethodIds.includes(method.id)} onFavorite={() => { void toggleFavorite(method.id).catch(() => undefined); }} onPress={() => router.push({ pathname: "/method/[id]", params: { id: method.id } })} />)}
       </View>
     </Screen>
   );
