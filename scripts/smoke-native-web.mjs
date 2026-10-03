@@ -139,7 +139,7 @@ try{
   const settingsFailure=await cdp('Page.addScriptToEvaluateOnNewDocument',{source:`const set=Storage.prototype.setItem;window.__restoreSettingsStorage=()=>{Storage.prototype.setItem=set};Storage.prototype.setItem=function(k,v){if(k==='stillmind.preferences.v1')throw Error('synthetic settings quota');return set.call(this,k,v)}`});
   // The export server has no dynamic-route fallback; use the actual library navigation.
   await navigate('/practices');
-  const cinemaCard=`${buttons}.find(b=>b.textContent.includes('观电影法'))`;
+  const cinemaCard=`${buttons}.find(b=>b.textContent.includes('观电影法')&&b.querySelector('[aria-label="收藏"],[aria-label="取消收藏"]'))`;
   await waitFor(()=>evaluate(`Boolean(${cinemaCard}?.querySelector('[aria-label="收藏"]'))`),'cinema library card');
   await evaluate(`(()=>{const b=${cinemaCard}.querySelector('[aria-label="收藏"]');b.scrollIntoView();b.click()})()`);
   await waitFor(()=>evaluate(`document.body.innerText.includes('设置暂未保存')`),'library settings notice');
