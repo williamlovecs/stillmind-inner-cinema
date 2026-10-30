@@ -15,7 +15,7 @@ const artifacts = `artifacts/experience-v2/${platform}/product-paths`;
 mkdirSync(artifacts, { recursive: true });
 const profile = mkdtempSync(join(tmpdir(), `stillmind-path-${platform}-`));
 const passed = [], failures = [], externalRequests = [], serverLogs = [];
-let complete = false, chrome, socket, nextId = 0, nextServer;
+let complete = false, chrome, socket, nextId = 0, nextServer, performanceRecord;
 const pending = new Map();
 const nativeRoot = resolve(".expo-ci/web");
 const mime = { ".html": "text/html", ".js": "application/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".ttf": "font/ttf", ".wasm": "application/wasm" };
@@ -63,7 +63,22 @@ try {
   await navigate("/"); await seed(); await navigate("/"); await screenshot("empty-home-390");
   assert.equal(await bodyIncludes("接着上一次"), false, "empty data must not fabricate shortcuts");
   const libraryPath = platform === "web" ? "/methods" : "/practices";
-  await navigate(libraryPath); await screenshot("library-390");
+  await navigate(libraryPath);
+  performanceRecord = {
+    scope: "Local production build in headless Chrome; not Lighthouse or public-network measurement",
+    metrics: await evaluate(`(()=>{
+      const navigation=performance.getEntriesByType('navigation')[0];
+      const resources=performance.getEntriesByType('resource');
+      return {
+        domContentLoadedMs:navigation?.domContentLoadedEventEnd??null,
+        loadMs:navigation?.loadEventEnd??null,
+        resourceCount:resources.length,
+        transferBytes:resources.reduce((total,entry)=>total+entry.transferSize,0),
+        decodedBytes:resources.reduce((total,entry)=>total+entry.decodedBodySize,0)
+      };
+    })()`)
+  };
+  await screenshot("library-390");
   if (platform === "web") assert.equal(await evaluate(`new Set([...document.querySelectorAll('a[href^="/methods/"]')].map(a=>a.getAttribute('href'))).size`), 12);
   else assert.equal(await bodyIncludes("12 种方法"), true);
   if (platform === "web") await click("收藏观电影法");
@@ -111,6 +126,6 @@ try {
   assert.deepEqual(failures, []); assert.deepEqual(externalRequests, []); complete = true;
 } catch (error) { console.error(error); failures.push(String(error)); process.exitCode = 1; try { if (socket?.readyState === 1) await screenshot("failure"); } catch {} }
 finally {
-  writeFileSync(join(artifacts, "summary.json"), JSON.stringify({ complete, platform, passed, failures, externalRequests, testedGitSha: spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).stdout?.trim(), scope: platform === "web" ? "Local Next production browser automation" : "Local Expo Web export; not a physical device" }, null, 2));
+  writeFileSync(join(artifacts, "summary.json"), JSON.stringify({ complete, platform, passed, failures, externalRequests, performance: performanceRecord, testedGitSha: spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).stdout?.trim(), scope: platform === "web" ? "Local Next production browser automation" : "Local Expo Web export; not a physical device" }, null, 2));
   writeFileSync(join(artifacts, "server.log"), serverLogs.join("")); socket?.close(); chrome?.kill("SIGTERM"); nextServer?.kill("SIGTERM"); nativeServer.close(); await sleep(250); try { rmSync(profile, { recursive: true, force: true }); } catch {}
 }
