@@ -7,6 +7,7 @@ import { containsHighRiskLanguage, detectStateModeFromText, type ActivationLevel
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { AppHeader } from "@/components/ui";
 import { PracticeOptionsPanel } from "@/components/PracticeOptionsPanel";
+import { TodayShortcuts } from "@/components/TodayShortcuts";
 import { DEFAULT_PRACTICE_OPTIONS, type PracticeOptions } from "@/lib/practice-options";
 import { browserSessionStorage, storeResetDraft } from "@/lib/reset-draft";
 
@@ -99,6 +100,7 @@ export default function Home() {
             <h1 className="sm-title">现在，先停一分钟。</h1>
             <p className="sm-copy mt-3">给自己一点观察与选择的空间，跟着做就好。</p>
             <button type="button" onClick={startReset} disabled={starting} className="sm-button sm-button-primary mt-7 min-h-14 w-full text-base">{starting ? "正在进入…" : "开始 1 分钟 Reset"}</button>
+            <TodayShortcuts />
             <details className="mt-5" onToggle={(event) => { if (!event.currentTarget.open) stopVoice(); }}><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">想说一句，或记录此刻程度（可选）</summary>
             <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
               <div className="flex items-center justify-between gap-3">

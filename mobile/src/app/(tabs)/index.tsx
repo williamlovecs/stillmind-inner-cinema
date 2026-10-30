@@ -18,6 +18,7 @@ import { BrandHeader, Chip, PrimaryButton, Screen, SecondaryButton, Surface, typ
 import { useApp, type ResetDraft } from "@/state/AppProvider";
 import { buildMethodHistory } from "@/lib/recommendation";
 import { track } from "@/lib/analytics";
+import { NativePracticeShortcuts } from "@/components/stillmind/NativePracticeShortcuts";
 
 const EXAMPLES = [
   "我被批评了，现在很想反击。",
@@ -127,6 +128,7 @@ export default function TodayScreen() {
         icon={<Ionicons name="play" size={18} color={colors.accentInk} />}
         onPress={start}
       />
+      <NativePracticeShortcuts />
       {notice ? <Surface style={styles.noticeCard}>
         <View accessibilityRole="alert" style={styles.noticeCopy}>
           <Text style={type.bodyStrong}>{notice.title}</Text>

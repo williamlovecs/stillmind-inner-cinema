@@ -129,10 +129,10 @@ export default function ProfileScreen() {
         <SecondaryButton label="知道了" onPress={() => setNotice(undefined)} />
       </Surface> : null}
       <View style={styles.section}><SectionHeading title="练习偏好" />
-        <SettingRow title="优先睁眼练习" subtitle="推荐时避开必须闭眼的方法" value={preferences.eyesOpenPreferred} onValueChange={() => toggle("eyesOpenPreferred")} />
+        <SettingRow title="优先睁眼练习" subtitle="推荐时优先选择可睁眼完成的方法" value={preferences.eyesOpenPreferred} onValueChange={() => toggle("eyesOpenPreferred")} />
         <SettingRow title="允许身体关注" subtitle="关闭后不推荐身体扫描" value={preferences.bodyFocusAllowed} onValueChange={() => toggle("bodyFocusAllowed")} />
-        <SettingRow title="允许调整呼吸" subtitle="关闭后呼吸法只提供视觉跟随" value={preferences.breathChangeAllowed} onValueChange={() => toggle("breathChangeAllowed")} />
-        <SettingRow title="触感节奏" subtitle="呼吸和步骤切换时轻触提示" value={preferences.hapticsEnabled} onValueChange={() => toggle("hapticsEnabled")} />
+        <SettingRow title="允许调整呼吸" subtitle="关闭后不推荐需要主动调整呼吸的方法" value={preferences.breathChangeAllowed} onValueChange={() => toggle("breathChangeAllowed")} />
+        <SettingRow title="触感节奏" subtitle="支持的设备在步骤切换时轻触提示" value={preferences.hapticsEnabled} onValueChange={() => toggle("hapticsEnabled")} />
       </View>
       <View style={styles.section}><SectionHeading title="数据" caption="默认本地优先" />
         <SettingRow title="保存本机历史" subtitle="关闭后新练习不会进入回看" value={preferences.historyEnabled} onValueChange={() => toggle("historyEnabled")} />
