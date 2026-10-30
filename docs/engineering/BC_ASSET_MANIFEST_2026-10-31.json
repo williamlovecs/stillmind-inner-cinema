@@ -1,0 +1,633 @@
+{
+  "date": "2026-10-31",
+  "source_files": [
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/AssemblyInfo.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/AssemblyInfo.cs",
+      "source_sha256": "e51987fe501c206a5e57e5aca85554a647e4f554c3db13a08b54093f899b33da",
+      "uploaded_sha256": "e51987fe501c206a5e57e5aca85554a647e4f554c3db13a08b54093f899b33da",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/FormMain.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/FormMain.cs",
+      "source_sha256": "44e12e3bf42d11f7a0f84db9919630f49533b9ec1b1115120a7b7cf1b3561189",
+      "uploaded_sha256": "44e12e3bf42d11f7a0f84db9919630f49533b9ec1b1115120a7b7cf1b3561189",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Program.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Program.cs",
+      "source_sha256": "c073aaef09f0f5a8f25b1db9152592a1edb5fd1ece13e89f1b5c0e5a4713c963",
+      "uploaded_sha256": "c073aaef09f0f5a8f25b1db9152592a1edb5fd1ece13e89f1b5c0e5a4713c963",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/bll.Adapter/Tencent.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/bll.Adapter/Tencent.cs",
+      "source_sha256": "c005454c6793ece6f0dbf5c8c7f46ace5d97c0ac77dab5babf2cfeea521cfcab",
+      "uploaded_sha256": "c005454c6793ece6f0dbf5c8c7f46ace5d97c0ac77dab5babf2cfeea521cfcab",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/BatchV33Runner.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/BatchV33Runner.cs",
+      "source_sha256": "8390badc4f091a98769dfa5f4c2d4dc151ee22159bbcce751cabfd6483da2f99",
+      "uploaded_sha256": "8390badc4f091a98769dfa5f4c2d4dc151ee22159bbcce751cabfd6483da2f99",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/Config.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/Config.cs",
+      "source_sha256": "96db2be9776819869409bb5c8380e07e5ef04fdf58e45ddcae4ad8d5c33acf55",
+      "uploaded_sha256": "96db2be9776819869409bb5c8380e07e5ef04fdf58e45ddcae4ad8d5c33acf55",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/ConsciousnessAppendixHelper.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/ConsciousnessAppendixHelper.cs",
+      "source_sha256": "e5c04de4ef5bf479f52e1c6cbc5aa486d96e829f93bf63a71cf5d2a04f62d1ac",
+      "uploaded_sha256": "e5c04de4ef5bf479f52e1c6cbc5aa486d96e829f93bf63a71cf5d2a04f62d1ac",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/HypnosisCaseOrganizer.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/HypnosisCaseOrganizer.cs",
+      "source_sha256": "f5586b3e3e4754526bdf98201a5e63845e1313c539b89f5305d07e13505d68c8",
+      "uploaded_sha256": "f5586b3e3e4754526bdf98201a5e63845e1313c539b89f5305d07e13505d68c8",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/PohuanSemanticPolicy.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/PohuanSemanticPolicy.cs",
+      "source_sha256": "ae5f5819a1126abd1e1d87f0475d91f5e6a0daf3734f8e6e1a1074c24c9f59bb",
+      "uploaded_sha256": "ae5f5819a1126abd1e1d87f0475d91f5e6a0daf3734f8e6e1a1074c24c9f59bb",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/Theme.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/Theme.cs",
+      "source_sha256": "c0981b975b46646dd6c770f54732b26a746b40e342efd7cc22346f280dfbe60d",
+      "uploaded_sha256": "c0981b975b46646dd6c770f54732b26a746b40e342efd7cc22346f280dfbe60d",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/Utils.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/Utils.cs",
+      "source_sha256": "d736677ccd18ac9e94115e3536c319e3971384997b16a7a13130632a204bc66f",
+      "uploaded_sha256": "d736677ccd18ac9e94115e3536c319e3971384997b16a7a13130632a204bc66f",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/V33DocumentPolicy.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/V33DocumentPolicy.cs",
+      "source_sha256": "1cba725a8cda409431861039619ad29588bf4daf814cff24114e56f0a13ee245",
+      "uploaded_sha256": "1cba725a8cda409431861039619ad29588bf4daf814cff24114e56f0a13ee245",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/WillAsrSemanticPolicy.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/WillAsrSemanticPolicy.cs",
+      "source_sha256": "ed68096e916a02d2dbcc901bf94f15c2dbbcdb7cd5919a099ec0b4d909e240af",
+      "uploaded_sha256": "ed68096e916a02d2dbcc901bf94f15c2dbbcdb7cd5919a099ec0b4d909e240af",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/libs/WordDocumentHelper.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/libs/WordDocumentHelper.cs",
+      "source_sha256": "091f6a996d9b172f8a26ad733ef31180f833579460d2f3eab2763649399a1bb4",
+      "uploaded_sha256": "54838e72347e2a7c5e677462b388b60a6b349a508e5a98b1046c1dabb73050ee",
+      "changes": [
+        "removed personal alias normalization table"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/AiPlugin.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/AiPlugin.cs",
+      "source_sha256": "200d631a7e24bd0acdfc5f57c569f11f1c52d62c61501ea5fd688f49d36ffd7d",
+      "uploaded_sha256": "200d631a7e24bd0acdfc5f57c569f11f1c52d62c61501ea5fd688f49d36ffd7d",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/DocumentTemplate.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/DocumentTemplate.cs",
+      "source_sha256": "d49e87b5127a8689b929f9328ba0c9f500096d0eb3c7e67b4440b96ed8562797",
+      "uploaded_sha256": "d49e87b5127a8689b929f9328ba0c9f500096d0eb3c7e67b4440b96ed8562797",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/ErrorCorrection.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/ErrorCorrection.cs",
+      "source_sha256": "7527f13306819c27ef87e0de79d0e911170a428b01bd9aafa3663d0e2f53b40c",
+      "uploaded_sha256": "7527f13306819c27ef87e0de79d0e911170a428b01bd9aafa3663d0e2f53b40c",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/ErrorCorrectionWord.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/ErrorCorrectionWord.cs",
+      "source_sha256": "bee043428664664a784e9a8a68c07e84a09c7c3a777360a746a2bf10893aca79",
+      "uploaded_sha256": "bee043428664664a784e9a8a68c07e84a09c7c3a777360a746a2bf10893aca79",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/People.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/People.cs",
+      "source_sha256": "315f044fd7c4d19f741f089257c3b5475d1bf85d58a51b3166b4fb43f964e19d",
+      "uploaded_sha256": "315f044fd7c4d19f741f089257c3b5475d1bf85d58a51b3166b4fb43f964e19d",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/Version.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/Version.cs",
+      "source_sha256": "bdd04760797b0ae1d8fb728be661e45507a83317d25a38a1284438a76193dc7b",
+      "uploaded_sha256": "bdd04760797b0ae1d8fb728be661e45507a83317d25a38a1284438a76193dc7b",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/FileSysSetting.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/FileSysSetting.cs",
+      "source_sha256": "115a6f8b85b51daddbb53921a5688de7ed7372d8cf4bfc280ffef93dff6f666d",
+      "uploaded_sha256": "115a6f8b85b51daddbb53921a5688de7ed7372d8cf4bfc280ffef93dff6f666d",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/HelpAbout.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/HelpAbout.cs",
+      "source_sha256": "f2efc1a21518a0d4ba55cf412f8a1a63bc743dceac001c29cb6a5ee4f46218ae",
+      "uploaded_sha256": "f2efc1a21518a0d4ba55cf412f8a1a63bc743dceac001c29cb6a5ee4f46218ae",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/HypnosisCaseOrganizerForm.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/HypnosisCaseOrganizerForm.cs",
+      "source_sha256": "fbee407adbcd5a2437d2672d18c94573b16777f78203502533bca9454cf6cc5f",
+      "uploaded_sha256": "ac08981a14600107b9458ac0e84b47025b26e2c321ea5572fd9045211af1a264",
+      "changes": [
+        "removed personal default directory"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/ToolIncorrectWordCreate.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/ToolIncorrectWordCreate.cs",
+      "source_sha256": "445c3960b9e3e48936a42d97e4c32e8b19efd0d7bedc7f9575d0d3390e0ee1f7",
+      "uploaded_sha256": "445c3960b9e3e48936a42d97e4c32e8b19efd0d7bedc7f9575d0d3390e0ee1f7",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/ToolIncorrectWordList.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/ToolIncorrectWordList.cs",
+      "source_sha256": "3afa78b8a6b4328a287c081e307906e8bd3197c7395b3bd5992bad3f7604c2a5",
+      "uploaded_sha256": "3afa78b8a6b4328a287c081e307906e8bd3197c7395b3bd5992bad3f7604c2a5",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/ToolWriterTempleCreate.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/ToolWriterTempleCreate.cs",
+      "source_sha256": "1a3302ed004906e26b3ba57f46516aa07fa49d673730362ef29c3214c5407f2d",
+      "uploaded_sha256": "1a3302ed004906e26b3ba57f46516aa07fa49d673730362ef29c3214c5407f2d",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/Consciousness/ConsciousnessReferenceRule.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/Consciousness/ConsciousnessReferenceRule.cs",
+      "source_sha256": "e816718c6ca2688973022dc147246c9a4f46df0353a790eb33a8e749d2289b4c",
+      "uploaded_sha256": "e816718c6ca2688973022dc147246c9a4f46df0353a790eb33a8e749d2289b4c",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/Organizer/HypnosisCaseDocument.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/Organizer/HypnosisCaseDocument.cs",
+      "source_sha256": "f8e49366f201b2a9879ab70107d955d0ff0201220ea812117a74d37abb969a45",
+      "uploaded_sha256": "f8e49366f201b2a9879ab70107d955d0ff0201220ea812117a74d37abb969a45",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/Organizer/HypnosisCaseGroup.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/Organizer/HypnosisCaseGroup.cs",
+      "source_sha256": "9170e92f7d236d11f66cfaf573e725468138506e5dc25bdf7707b2ebc8e9ce68",
+      "uploaded_sha256": "9170e92f7d236d11f66cfaf573e725468138506e5dc25bdf7707b2ebc8e9ce68",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/System/ChangeConfigDelegate.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/System/ChangeConfigDelegate.cs",
+      "source_sha256": "f3caa3467252ecac41eefb7ebf39f3e58128bc0c79c001030496e0744f7504e4",
+      "uploaded_sha256": "f3caa3467252ecac41eefb7ebf39f3e58128bc0c79c001030496e0744f7504e4",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/System/IdentificationStrategy.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/System/IdentificationStrategy.cs",
+      "source_sha256": "520f5e7ba9e55e0e0ce7cfc50e7ce9dd4792abefa14f90f35b95f31a7c990fdb",
+      "uploaded_sha256": "520f5e7ba9e55e0e0ce7cfc50e7ce9dd4792abefa14f90f35b95f31a7c990fdb",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/System/Settings.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/System/Settings.cs",
+      "source_sha256": "f5b08336376a137eaa66afdea59eb9084938c754ba2dd606115a26147836f97d",
+      "uploaded_sha256": "f5b08336376a137eaa66afdea59eb9084938c754ba2dd606115a26147836f97d",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/Model/System/UserType.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/Model/System/UserType.cs",
+      "source_sha256": "c2fcb061fe23985b3c999ef8d53656a4efa554f168085fc2dfcaebc8119c3c54",
+      "uploaded_sha256": "c2fcb061fe23985b3c999ef8d53656a4efa554f168085fc2dfcaebc8119c3c54",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/File/FileSystemPolicyCreate.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/File/FileSystemPolicyCreate.cs",
+      "source_sha256": "617e3b5f198178612b8c240aeccf49a384a79056232c2ff42e108b918c3444c2",
+      "uploaded_sha256": "617e3b5f198178612b8c240aeccf49a384a79056232c2ff42e108b918c3444c2",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/Tool/incorrect/WordEditFrm.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/Tool/incorrect/WordEditFrm.cs",
+      "source_sha256": "aa29675e5ce7191f55ab9052c7337a98e648dd2de14f16ba817afb8e4c5b760e",
+      "uploaded_sha256": "aa29675e5ce7191f55ab9052c7337a98e648dd2de14f16ba817afb8e4c5b760e",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper/View/Tool/template/ToolWriterTemplateList.cs",
+      "source_root": "B",
+      "source_relative": "WakeupHelper/View/Tool/template/ToolWriterTemplateList.cs",
+      "source_sha256": "da1e85d46daa1f9929fc4875646fdc16175c1f6bd6dcd488ae4ce0cd1029217e",
+      "uploaded_sha256": "da1e85d46daa1f9929fc4875646fdc16175c1f6bd6dcd488ae4ce0cd1029217e",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper.csproj",
+      "source_root": "B",
+      "source_relative": "WakeupHelper.csproj",
+      "source_sha256": "2120ddf01585893a4048becb91b5678039653c1752a5f60239596d6447b7b62b",
+      "uploaded_sha256": "2120ddf01585893a4048becb91b5678039653c1752a5f60239596d6447b7b62b",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/WakeupHelper.ico",
+      "source_root": "B",
+      "source_relative": "WakeupHelper.ico",
+      "source_sha256": "984fe9d3044c85a9e16107976020cb394720abe01c3a918309fd4ee2e9200906",
+      "uploaded_sha256": "984fe9d3044c85a9e16107976020cb394720abe01c3a918309fd4ee2e9200906",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/LICENSE",
+      "source_root": "upstream-license",
+      "source_relative": "LICENSE",
+      "source_sha256": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+      "uploaded_sha256": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/config/setting/513df0b0d991411a92e7aa339ac9aa61.json",
+      "source_root": "B",
+      "source_relative": "config/setting/513df0b0d991411a92e7aa339ac9aa61.json",
+      "source_sha256": "24311595f86a209a60f3320b3b48d052b979b6c47e6cb97e386792f258d89ebe",
+      "uploaded_sha256": "24311595f86a209a60f3320b3b48d052b979b6c47e6cb97e386792f258d89ebe",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/config/setting/71449c137a414e4ba8f1343416c15ea4.json",
+      "source_root": "B",
+      "source_relative": "config/setting/71449c137a414e4ba8f1343416c15ea4.json",
+      "source_sha256": "a09dff942132e5c0dc11cd7e3809a028c3938cfa10f651d47c2f5c8b30dc28f3",
+      "uploaded_sha256": "a09dff942132e5c0dc11cd7e3809a028c3938cfa10f651d47c2f5c8b30dc28f3",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/config/setting/88b45dd732884c71bc5ff87afedaa630.json",
+      "source_root": "B",
+      "source_relative": "config/setting/88b45dd732884c71bc5ff87afedaa630.json",
+      "source_sha256": "957f97af97c4dc969dd747f6f37202d31250a69bff85989b51945d94719277e7",
+      "uploaded_sha256": "957f97af97c4dc969dd747f6f37202d31250a69bff85989b51945d94719277e7",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/config/template/65a5449e8f8044b8b36da99e8e4bd194.json",
+      "source_root": "B",
+      "source_relative": "config/template/65a5449e8f8044b8b36da99e8e4bd194.json",
+      "source_sha256": "65c55e4cfacd25884aeedd3ef7668b8a716dbc54a87fa46d9e1b04063ac3b834",
+      "uploaded_sha256": "4b60da64347deca6b8cd9f2890ef9f555609e5e9f4b7f1823a96e4f5499a58b5",
+      "changes": [
+        "cleared saved speaker selections"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/config/template/7718240324854070abb2498af185fe5c.json",
+      "source_root": "B",
+      "source_relative": "config/template/7718240324854070abb2498af185fe5c.json",
+      "source_sha256": "1833683ca7d0dc2ec337ca168c6b033a4510faadbe4554bb794322679c4aff54",
+      "uploaded_sha256": "a54a90a8bcf56cd72089cbb60dcff36245bb456df8c3b89e763bb38923ebda14",
+      "changes": [
+        "cleared saved speaker selections"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/config/template/ab4d542e53114f1ab6d155f01cc28800.json",
+      "source_root": "B",
+      "source_relative": "config/template/ab4d542e53114f1ab6d155f01cc28800.json",
+      "source_sha256": "973724350cf85efe40db10be361419c4cf6b229ab7f7092a314d2785dd32b9e7",
+      "uploaded_sha256": "4a1af14c81e892fd10009e2f17e677195dd1df6f9ad8d623bbc8bc3319dd6e9f",
+      "changes": [
+        "cleared saved speaker selections"
+      ]
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/analyze_consciousness_corpus.py",
+      "source_root": "C",
+      "source_relative": "analyze_consciousness_corpus.py",
+      "source_sha256": "286c9867210cf93cfb20fceaeef6c4475692d927cf04909e646ac145a93a5065",
+      "uploaded_sha256": "286c9867210cf93cfb20fceaeef6c4475692d927cf04909e646ac145a93a5065",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/build_consciousness_knowledge_base.py",
+      "source_root": "C",
+      "source_relative": "build_consciousness_knowledge_base.py",
+      "source_sha256": "52901461af8c4deca2c2bc8b402ef41b57a64138f0b61a937aca5b7b76c64b5a",
+      "uploaded_sha256": "52901461af8c4deca2c2bc8b402ef41b57a64138f0b61a937aca5b7b76c64b5a",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/build_consciousness_knowledge_pack.py",
+      "source_root": "C",
+      "source_relative": "build_consciousness_knowledge_pack.py",
+      "source_sha256": "aedcb9b9a417cecd2deda8dee2146a79a852ae3079772239f0f68a4dc79acb7c",
+      "uploaded_sha256": "aedcb9b9a417cecd2deda8dee2146a79a852ae3079772239f0f68a4dc79acb7c",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/audit_consciousness_knowledge_pack.py",
+      "source_root": "C",
+      "source_relative": "audit_consciousness_knowledge_pack.py",
+      "source_sha256": "e1a1b95522fbaa07e9cfaecb597fb3a570afc6d10d6e7ca6b7d11acca6a7df29",
+      "uploaded_sha256": "e1a1b95522fbaa07e9cfaecb597fb3a570afc6d10d6e7ca6b7d11acca6a7df29",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/test_build_consciousness_knowledge_pack.py",
+      "source_root": "C",
+      "source_relative": "test_build_consciousness_knowledge_pack.py",
+      "source_sha256": "6085c05f04ba4240d1c248ca8b1a6b49d6d05f905381706c834cd8768b9f1eeb",
+      "uploaded_sha256": "6085c05f04ba4240d1c248ca8b1a6b49d6d05f905381706c834cd8768b9f1eeb",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/build_consciousness_deep_framework.ps1",
+      "source_root": "C",
+      "source_relative": "build_consciousness_deep_framework.ps1",
+      "source_sha256": "ed5dfa7fb973508682a248ad1ad6e632109b86aa859c578dfc27410eb782875f",
+      "uploaded_sha256": "ed5dfa7fb973508682a248ad1ad6e632109b86aa859c578dfc27410eb782875f",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/test_consciousness_framework.ps1",
+      "source_root": "C",
+      "source_relative": "test_consciousness_framework.ps1",
+      "source_sha256": "5dceacfa45479fb06c928b61051b74935124a6ad170498e331db22675d919bd2",
+      "uploaded_sha256": "5dceacfa45479fb06c928b61051b74935124a6ad170498e331db22675d919bd2",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/test_consciousness_deep_framework.ps1",
+      "source_root": "C",
+      "source_relative": "test_consciousness_deep_framework.ps1",
+      "source_sha256": "1e308d3227d75bc05a9871a46940bb1952df4db8162aea245d9d0ddd7e0f9e53",
+      "uploaded_sha256": "1e308d3227d75bc05a9871a46940bb1952df4db8162aea245d9d0ddd7e0f9e53",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/scripts/test_consciousness_framework_v2.ps1",
+      "source_root": "C",
+      "source_relative": "test_consciousness_framework_v2.ps1",
+      "source_sha256": "7773b75de80075481249507ff432ff259b7037df040b8e9712bcb2dac93b00e5",
+      "uploaded_sha256": "7773b75de80075481249507ff432ff259b7037df040b8e9712bcb2dac93b00e5",
+      "changes": []
+    },
+    {
+      "path": "modules/C-knowledge-tools/schema/record.schema.json",
+      "source_root": "C",
+      "source_relative": "record.schema.json",
+      "source_sha256": "e2782850ecf9dafe782aef785921f1fb40fdce3550ba29e771dc4d685abe5ce3",
+      "uploaded_sha256": "e2782850ecf9dafe782aef785921f1fb40fdce3550ba29e771dc4d685abe5ce3",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/DEBUG-REPORT.md",
+      "source_root": "B",
+      "source_relative": "DEBUG-REPORT.md",
+      "source_sha256": "cedd71950255eaeda57cc14c80754ef3ffd78ca5cc16d9b80fee869aa02cab33",
+      "uploaded_sha256": "3277ea4b548932c150d7ec11b9683c8f236590e5cb3c877c3894f283d9b2037f",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/DESIGN-AUDIT.md",
+      "source_root": "B",
+      "source_relative": "DESIGN-AUDIT.md",
+      "source_sha256": "27faaf5c4b935bdc9615f06b2b6037765ee1f1f4e41cc9e5041d8a642bb453af",
+      "uploaded_sha256": "35d591a63d3e835f5a4b85c1837e7042373019946aebb2086e08fddf1d068ee3",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/NOTICE.md",
+      "source_root": "B",
+      "source_relative": "NOTICE.md",
+      "source_sha256": "38a52debc8ba8aef2d4bb8a96002a412157a3242d69842c98f145f9f474ab188",
+      "uploaded_sha256": "13ecf5fb98afe5106c78128475229b4bc009857a48e4c2295ce7fc1110eec2bc",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/RELEASE-README.md",
+      "source_root": "B",
+      "source_relative": "RELEASE-README.md",
+      "source_sha256": "ba3b9bccbbe77aa283c7de961b575af6bd41f64e9d0a78051b01bfd7ef2ef7c1",
+      "uploaded_sha256": "2ae027b48b61f39650affd5cbc23c43880d2b7970e6d66bcccf726280e9460b2",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/UI-REFRESH-20260629.md",
+      "source_root": "B",
+      "source_relative": "UI-REFRESH-20260629.md",
+      "source_sha256": "8b645a783f92db54938715b4739f4490e788c74c101ac4741d54e027d15db406",
+      "uploaded_sha256": "7a9897703d361e4a9028be0ff8d0ec19db4bb076becbb0d6e5bdc5280450b9e2",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/V2.3-vs-V3.1-compare.md",
+      "source_root": "B",
+      "source_relative": "V2.3-vs-V3.1-compare.md",
+      "source_sha256": "7e8395ea1f4c78fac3fa69b512df6398242d49947d05ca59cd12edbd5b10bee9",
+      "uploaded_sha256": "937434f214b70be257ca2f848806ed382f715b90fbb5446f072005b09ab4cdc6",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/V3.2-CONSCIOUSNESS-APPENDIX.md",
+      "source_root": "B",
+      "source_relative": "V3.2-CONSCIOUSNESS-APPENDIX.md",
+      "source_sha256": "fa4419c648303ae3c1cb8ab48da97baee7ba9eb3e7e790c1efe51027ce70a1fd",
+      "uploaded_sha256": "8e759290045161ab25014d0efbdc3c895e014ab04b5557fdc537a43c2ca9358d",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/docs/historical/V3.2-HOLD-REVIEW.md",
+      "source_root": "B",
+      "source_relative": "V3.2-HOLD-REVIEW.md",
+      "source_sha256": "a71f3d3ec5031119ac4c701a7aad332f7c1fa2864f8078e2f64879eebfccdb73",
+      "uploaded_sha256": "61de2f0000fda0780b8c84c49616618682f8d411c1ef8243729f26c9f1c1a7cd",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/C-knowledge-tools/docs/historical/BUSINESS_MODEL.md",
+      "source_root": "C",
+      "source_relative": "BUSINESS_MODEL.md",
+      "source_sha256": "0844ba5996d67415504f1224a29e39b1251802924ad23ed2935398aa170688c2",
+      "uploaded_sha256": "1fb08f5c76c116b52e47697b0ae7bd3d970a3f441fae889135e86bc4c001000a",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/C-knowledge-tools/docs/historical/CORPUS_SYNTHESIS.md",
+      "source_root": "C",
+      "source_relative": "CORPUS_SYNTHESIS.md",
+      "source_sha256": "0e6f5b1bc6ee95b5a1001215ee06ddd8ae76c1d62d12e4bfee6bed5fe7a5e2ad",
+      "uploaded_sha256": "3645728c2a9fa28f252ff0dd2c9bc1ec3d01290de3aa315cc42afaad427248de",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/C-knowledge-tools/docs/historical/GTM_90_DAY.md",
+      "source_root": "C",
+      "source_relative": "GTM_90_DAY.md",
+      "source_sha256": "4691a4579ffea9543831dcf219756521cecc41fa1a4ee6de09621aab2135e467",
+      "uploaded_sha256": "87b0a6b69ec605642747cc7761684ba79bab863eb7c6dda6bcbc21609660dadb",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/C-knowledge-tools/docs/historical/MARKET_RESEARCH.md",
+      "source_root": "C",
+      "source_relative": "MARKET_RESEARCH.md",
+      "source_sha256": "c5803150e1a8e3546f9dd3157a3eb0acae4bcc7e41f4dd377117e796ca00ef84",
+      "uploaded_sha256": "b6bd670a973dd8791e1821196ac56cda162223c66c4e881fbd514d49e714f840",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/C-knowledge-tools/docs/historical/OPPORTUNITY_SCORECARD.md",
+      "source_root": "C",
+      "source_relative": "OPPORTUNITY_SCORECARD.md",
+      "source_sha256": "6dd2577b483c1172ace7579c16a7f98c2e5bb05fc5ecfeccb421c4d94aa15913",
+      "uploaded_sha256": "200d85db4d7c5715c4e0c54a098a82f13131a248b9736a653340b91809e5d211",
+      "changes": [
+        "normalized Markdown whitespace"
+      ]
+    },
+    {
+      "path": "modules/B-wakeuphelper/scripts/package_wakeuphelper_public_core.ps1",
+      "source_root": "C",
+      "source_relative": "package_wakeuphelper_public_core.ps1",
+      "source_sha256": "d7b313f30a206b62347e5b7a9ff25c5776f69c5a8a53194396b53427f57ed720",
+      "uploaded_sha256": "d7b313f30a206b62347e5b7a9ff25c5776f69c5a8a53194396b53427f57ed720",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/scripts/audit_wakeuphelper_asr_rules.py",
+      "source_root": "C",
+      "source_relative": "audit_wakeuphelper_asr_rules.py",
+      "source_sha256": "4a3a589c6c8fa4ee5cdf864f18bf14c76a0e8a31bfff7b4ddf52203918190767",
+      "uploaded_sha256": "4a3a589c6c8fa4ee5cdf864f18bf14c76a0e8a31bfff7b4ddf52203918190767",
+      "changes": []
+    },
+    {
+      "path": "modules/B-wakeuphelper/scripts/update_wakeuphelper_feishu_policy.py",
+      "source_root": "C",
+      "source_relative": "update_wakeuphelper_feishu_policy.py",
+      "source_sha256": "ad90f62f045e2e9e57f63c16dd40fb9e68c002425debb534a45c6b5a93100213",
+      "uploaded_sha256": "ad90f62f045e2e9e57f63c16dd40fb9e68c002425debb534a45c6b5a93100213",
+      "changes": []
+    }
+  ],
+  "inventory_counts": {
+    "B-current": 595,
+    "B-legacy-v3": 67,
+    "C-generated": 164,
+    "C-original": 2,
+    "related-scripts": 152,
+    "supplemental-originals": 3
+  },
+  "decision_counts": {
+    "uploaded-source-snapshot": 71,
+    "held: personal identifier or local case context": 7,
+    "excluded: build/release/test output or rollback snapshot": 531,
+    "held: tests mix personal case identifiers, source-dependent assertions and fixtures": 2,
+    "excluded: local lexicon, source-derived reference data or backup": 5,
+    "held: legacy rollback tree; independent provenance/content review required": 66,
+    "excluded: corpus/derived excerpts, research snapshots or generated source-bound content": 158,
+    "excluded: copyrighted original book": 2,
+    "held: case-specific operations or source-embedded framework; not reviewed for public use": 138,
+    "excluded: private plan, copyrighted article or source-derived mapping": 3
+  },
+  "empty_checked_roots": [
+    "B-legacy-v3.1"
+  ],
+  "limits": "Inventory is exhaustive for named roots, not a whole-computer discovery or content-rights certification. Local paths/case files are excluded. Held means unresolved, not absent."
+}

@@ -1,0 +1,37 @@
+{
+  "Id": "ab4d542e53114f1ab6d155f01cc28800",
+  "Name": "飞书妙记模板",
+  "PolicyId": "513df0b0d991411a92e7aa339ac9aa61",
+  "PolicyName": "飞书妙记(docx格式)",
+  "Description": "",
+  "FontName": "微软雅黑",
+  "FontSize": 12,
+  "IsGenerateOverview": true,
+  "IsRemoveDatetime": true,
+  "RemoveDatetimeRegex": "(?:\\d{4}-\\d{2}-\\d{2}\\s+)?\\d{1,2}:\\d{2}(?::\\d{2})?",
+  "IsConvertDatetimeToTimer": true,
+  "IsNickNewLine": false,
+  "IsNickFontBold": true,
+  "IsBodyFontBold": true,
+  "IsEnablePrivacyProtection": true,
+  "IsShowPageNumber": true,
+  "IsPageNarrowMargin": true,
+  "TypeLevel": 0,
+  "FirstMorePeopleList": [],
+  "SecondMorePeopleList": [],
+  "IsShowEditWindows": false,
+  "IsParagraphErrorCorrection": false,
+  "IsDocumentErrorCorrection": false,
+  "FirstPeople": {
+    "Role": "主催",
+    "Name": null,
+    "FontNameColor": "FF000000",
+    "FontBodyColor": "FF000000"
+  },
+  "SecondPeople": {
+    "Role": "被催",
+    "Name": null,
+    "FontNameColor": "FF0080FF",
+    "FontBodyColor": "FF0080FF"
+  }
+}

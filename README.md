@@ -1,5 +1,7 @@
 # StillMind: Inner Cinema
 
+> **2026-10-31 完整源码与独立资产**：本分支 `archive/bc-safe-assets-20261031` 包含 A 的最新审查源码，以及 [B/C 安全源码归档](modules/README.md)。B 是独立 Windows 文档工具，C 是知识加工工具，不是已接通的复盘/RAG 服务。查看 [资产清点与排除说明](docs/engineering/BC_ASSET_INVENTORY_2026-10-31.md)；私人材料、版权原文和混合内容未上传。以下 9 月接管信息为历史记录，后续进度以 CURRENT_STATE 为准。
+
 > **2026-09-07 接管更新**：先读 [CODEX_HANDOFF](docs/engineering/CODEX_HANDOFF.md)、[当前进度](.planning/stillmind-complete-product/CURRENT_STATE.md)、[三模块与组合](docs/product/MODULES_AND_COMBINATIONS.md) 和 [尚未实施的UX审阅](docs/product/UX_INTERACTION_REVIEW_2026-09-06.md)。工程验收通过不等于所有互动成立；当前主要代码属于A，不表示B/C全部完成。
 
 StillMind 是一个非临床的日常自我观察练习原型，提供短时暂停、注意力与视角练习。不保证缓解效果，不诊断、治疗或替代现实中的支持。

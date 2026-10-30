@@ -1,0 +1,37 @@
+{
+  "Id": "7718240324854070abb2498af185fe5c",
+  "Name": "腾讯会议模板",
+  "PolicyId": "71449c137a414e4ba8f1343416c15ea4",
+  "PolicyName": "腾讯会议(docx格式)",
+  "Description": "",
+  "FontName": "微软雅黑",
+  "FontSize": 12,
+  "IsGenerateOverview": true,
+  "IsRemoveDatetime": true,
+  "RemoveDatetimeRegex": "\\(\\d{2}:\\d{2}:\\d{2}\\)",
+  "IsConvertDatetimeToTimer": true,
+  "IsNickNewLine": false,
+  "IsNickFontBold": true,
+  "IsBodyFontBold": true,
+  "IsEnablePrivacyProtection": true,
+  "IsShowPageNumber": true,
+  "IsPageNarrowMargin": true,
+  "TypeLevel": 0,
+  "FirstMorePeopleList": [],
+  "SecondMorePeopleList": [],
+  "IsShowEditWindows": false,
+  "IsParagraphErrorCorrection": false,
+  "IsDocumentErrorCorrection": false,
+  "FirstPeople": {
+    "Role": "主催",
+    "Name": null,
+    "FontNameColor": "FF000000",
+    "FontBodyColor": "FF000000"
+  },
+  "SecondPeople": {
+    "Role": "被催",
+    "Name": null,
+    "FontNameColor": "FF0080FF",
+    "FontBodyColor": "FF0080FF"
+  }
+}

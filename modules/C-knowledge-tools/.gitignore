@@ -1,0 +1,10 @@
+artifacts/
+corpus/
+knowledge-base/
+knowledge-pack/
+private/
+__pycache__/
+*.pyc
+*.pdf
+*.jsonl
+.env*

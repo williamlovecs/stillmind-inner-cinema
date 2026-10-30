@@ -1,0 +1,13 @@
+bin/
+obj/
+dist/
+functional-test-output/
+config/consciousness/
+config/incorrect/*.json
+!config/incorrect/4c789ac1553c43bf948683435cef662f.json
+*.docx
+*.doc
+*.pdf
+*.bak*
+*.log
+.env*

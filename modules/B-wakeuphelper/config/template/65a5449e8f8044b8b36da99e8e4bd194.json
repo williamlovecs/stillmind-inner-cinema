@@ -1,0 +1,37 @@
+{
+  "Id": "65a5449e8f8044b8b36da99e8e4bd194",
+  "Name": "微信文字催",
+  "PolicyId": "88b45dd732884c71bc5ff87afedaa630",
+  "PolicyName": "微信文字催",
+  "Description": "",
+  "FontName": "宋体",
+  "FontSize": 11,
+  "IsGenerateOverview": false,
+  "IsRemoveDatetime": false,
+  "RemoveDatetimeRegex": "(\\d{2}:\\d{2}:\\d{2}): ",
+  "IsConvertDatetimeToTimer": true,
+  "IsNickNewLine": true,
+  "IsNickFontBold": true,
+  "IsBodyFontBold": true,
+  "IsEnablePrivacyProtection": true,
+  "IsShowPageNumber": true,
+  "IsPageNarrowMargin": true,
+  "TypeLevel": 1,
+  "FirstMorePeopleList": [],
+  "SecondMorePeopleList": [],
+  "IsShowEditWindows": false,
+  "IsParagraphErrorCorrection": false,
+  "IsDocumentErrorCorrection": false,
+  "FirstPeople": {
+    "Role": "主催",
+    "Name": null,
+    "FontNameColor": "FFFF0080",
+    "FontBodyColor": "FF0000FF"
+  },
+  "SecondPeople": {
+    "Role": "被催",
+    "Name": null,
+    "FontNameColor": "FFFF0000",
+    "FontBodyColor": "FF00FF00"
+  }
+}

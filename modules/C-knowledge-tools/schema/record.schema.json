@@ -1,0 +1,138 @@
+{
+  "$id": "https://local.invalid/consciousness-intensity/record.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "chapter": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "type": "object"
+    },
+    "dedup_key": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidence": {
+      "properties": {
+        "level": {
+          "enum": [
+            "empirical_support",
+            "source_framework",
+            "spiritual_source",
+            "insufficient_evidence"
+          ]
+        },
+        "mapping_scope": {
+          "type": "string"
+        },
+        "research_refs": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "level",
+        "label_zh",
+        "research_refs",
+        "mapping_scope",
+        "note"
+      ],
+      "type": "object"
+    },
+    "id": {
+      "pattern": "^ci-(concept|practice|claim)-[0-9a-f]{16}$",
+      "type": "string"
+    },
+    "input_trace": {
+      "minItems": 1,
+      "type": "array"
+    },
+    "original_excerpt": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "query_text": {
+      "type": "string"
+    },
+    "restriction_codes": {
+      "minItems": 1,
+      "type": "array"
+    },
+    "safety_tags": {
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source": {
+      "required": [
+        "volume",
+        "pdf_page",
+        "page_label",
+        "chapter_id",
+        "corpus_file",
+        "source_pdf_sha256"
+      ],
+      "type": "object"
+    },
+    "source_verified": {
+      "const": true
+    },
+    "sources": {
+      "minItems": 1,
+      "type": "array"
+    },
+    "summary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "summary_method": {
+      "const": "extractive"
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "topic_ids": {
+      "type": "array"
+    },
+    "type": {
+      "enum": [
+        "concept",
+        "practice",
+        "claim"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "type",
+    "title",
+    "summary",
+    "summary_method",
+    "original_excerpt",
+    "chapter",
+    "source",
+    "sources",
+    "source_verified",
+    "evidence",
+    "safety_tags",
+    "restriction_codes",
+    "topic_ids",
+    "query_text",
+    "dedup_key",
+    "input_trace"
+  ],
+  "title": "Consciousness Intensity Knowledge Record",
+  "type": "object"
+}

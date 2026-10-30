@@ -1,0 +1,1 @@
+{"Name":"飞书妙记(docx格式)","Id":"513df0b0d991411a92e7aa339ac9aa61","Regex":"^(?<name>.+?)\\s+(?:(?<datetime>\\d{4}-\\d{2}-\\d{2})\\s+)?(?<time>\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*$","BeforeRegex":null,"AfterRegex":null,"Description":"导出文字记录","TypeLevel":0,"SourceName":"飞书妙记","LastWriteTime":"1601-01-01T08:00:00+08:00"}
