@@ -43,6 +43,12 @@
 
 主要文件：`src/lib/web-library.ts`、`src/components/MethodLibrary.tsx`、`TodayShortcuts.tsx`、`WebReflection.tsx`、`WebDataSettings.tsx`、`mobile/src/components/stillmind/NativePracticeShortcuts.tsx`。
 
+### 依赖兼容维护
+
+- Expo 保持 SDK 57、React Native 保持 `0.86.3`，按 Doctor 对齐补丁，并显式固定根工作区 peer 依赖，消除根目录与 `mobile` 的重复原生模块。
+- Next／ESLint 配置对齐到 `16.4.3`；`sharp@0.35.5`、`shell-quote@1.11.0`、`source-map-js@1.2.2` 使用兼容补丁覆盖。没有强制依赖解析、降级 Expo 或关闭审计。
+- 2026-10-31 当前审计仍有 6 个 high、5 个 low 包条目，0 个 critical，集中于 Expo 工具链、Zod 与旧解码器链路；npm 给出的部分修复要求不兼容的大版本变更，未盲目应用。以 `final-audit.json` 为准，发布门禁仍不获安全放行。
+
 ## 独立官网与 B／C 概念
 
 工作区独立目录：`../stillmind-experience-site`，不在 A 的 Next/Expo 路由中。
