@@ -49,7 +49,7 @@ export default function MethodDetailScreen() {
         <Text style={type.body}>{EVIDENCE_COPY[method.evidenceTier]}</Text>
       </Surface>
       <View style={styles.duration}><Text style={type.h2}>选择时长</Text><View style={styles.chips}>{durations.map((value) => <Chip key={value} label={`${value} 分钟`} selected={selectedMinutes === value} onPress={() => setMinutes(value)} />)}</View></View>
-      <PrimaryButton label={`开始 ${selectedMinutes} 分钟`} icon={<Ionicons name="play" size={18} color={colors.white} />} onPress={() => router.push({ pathname: "/reset", params: { methodId: method.id, duration: String(selectedMinutes), mode: method.modes[0], activation: "3", outcome: method.outcomes[0], direct: "1" } })} />
+      <PrimaryButton label={`开始 ${selectedMinutes} 分钟`} icon={<Ionicons name="play" size={18} color={colors.accentInk} />} onPress={() => router.push({ pathname: "/reset", params: { methodId: method.id, duration: String(selectedMinutes), mode: method.modes[0], activation: "3", outcome: method.outcomes[0], direct: "1" } })} />
       <SecondaryButton label={hidden ? "恢复到推荐中" : "不再向我推荐"} onPress={toggleHidden} />
     </Screen>
   );

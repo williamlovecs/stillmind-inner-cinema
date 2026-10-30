@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   surfaceWarm: { backgroundColor: "rgba(82, 56, 72, 0.62)", borderColor: "rgba(244, 182, 106, 0.22)" },
   buttonOuter: { alignSelf: "stretch", borderRadius: radii.medium, overflow: "hidden" },
   primaryButton: { minHeight: 54, paddingHorizontal: 20, borderRadius: radii.medium, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9 },
-  primaryButtonText: { color: colors.white, fontSize: 16, fontWeight: "800" },
+  primaryButtonText: { color: colors.accentInk, fontSize: 16, fontWeight: "800" },
   secondaryButton: { minHeight: 50, paddingHorizontal: 18, borderRadius: radii.medium, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.surfaceSoft, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
   secondaryButtonText: { color: colors.text, fontSize: 15, fontWeight: "700" },
   disabled: { opacity: 0.45 },

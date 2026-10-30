@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { containsHighRiskLanguage, detectStateModeFromText, type ActivationLevel } from "@stillmind/domain";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
+import { AppHeader } from "@/components/ui";
 import { PracticeOptionsPanel } from "@/components/PracticeOptionsPanel";
 import { DEFAULT_PRACTICE_OPTIONS, type PracticeOptions } from "@/lib/practice-options";
 import { browserSessionStorage, storeResetDraft } from "@/lib/reset-draft";
@@ -89,21 +90,15 @@ export default function Home() {
   }
   return <>
     <DisclaimerModal />
-    <main className="relative min-h-dvh overflow-hidden bg-[#050914] text-stone-50">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(139,92,246,0.24),transparent_32%),radial-gradient(circle_at_86%_18%,rgba(96,165,250,0.13),transparent_28%),radial-gradient(circle_at_68%_86%,rgba(245,158,11,0.12),transparent_34%),linear-gradient(145deg,#050914_0%,#07111f_48%,#0b1020_100%)]" />
-      <section className="relative mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 py-5 sm:px-7 sm:py-7">
-        <header className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-fuchsia-200 via-violet-500 to-sky-500 p-[2px] shadow-lg shadow-violet-950/30"><span className="h-full w-full rounded-full bg-[#070d1b]" /></span>
-            <span><span className="block text-xs uppercase tracking-[0.34em] text-violet-100/70">StillMind</span><span className="mt-0.5 block text-sm font-medium text-stone-200">沉寂小我</span></span>
-          </div>
-          <Link href="/methods" className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-300 transition hover:border-violet-200/35 hover:text-white">方法库</Link>
-        </header>
+    <main className="sm-page">
+      <section className="sm-container flex min-h-dvh max-w-xl flex-col">
+        <AppHeader />
         <div className="flex flex-1 items-center py-7 sm:py-10">
           <section className="w-full py-5">
-            <h1 className="text-4xl font-semibold leading-[1.12] text-white sm:text-5xl">现在，先停一分钟。</h1>
-            <p className="mt-3 text-base text-stone-400">不必先解释，跟着做就好。</p>
-            <button type="button" onClick={startReset} disabled={starting} className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-300 to-amber-200 px-6 text-base font-semibold text-slate-950 shadow-xl shadow-violet-950/25 transition hover:scale-[1.01] disabled:cursor-wait disabled:opacity-70">{starting ? "正在进入…" : "开始 1 分钟 Reset"}</button>
+            <p className="sm-eyebrow">此刻 · 不需要先解释</p>
+            <h1 className="sm-title">现在，先停一分钟。</h1>
+            <p className="sm-copy mt-3">给自己一点观察与选择的空间，跟着做就好。</p>
+            <button type="button" onClick={startReset} disabled={starting} className="sm-button sm-button-primary mt-7 min-h-14 w-full text-base">{starting ? "正在进入…" : "开始 1 分钟 Reset"}</button>
             <details className="mt-5" onToggle={(event) => { if (!event.currentTarget.open) stopVoice(); }}><summary className="min-h-11 cursor-pointer py-3 text-sm text-stone-300">想说一句，或记录此刻程度（可选）</summary>
             <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
               <div className="flex items-center justify-between gap-3">

@@ -124,7 +124,7 @@ export default function TodayScreen() {
       <PrimaryButton
         label={starting ? "正在准备…" : "开始 1 分钟 Reset"}
         disabled={starting}
-        icon={<Ionicons name="play" size={18} color={colors.white} />}
+        icon={<Ionicons name="play" size={18} color={colors.accentInk} />}
         onPress={start}
       />
       {notice ? <Surface style={styles.noticeCard}>
