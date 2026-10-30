@@ -1,5 +1,7 @@
 # Codex接管：工程基准、三模块结构与未实施UX
 
+> 2026-10-31 上传接手说明：完整审查成果在 `review/overall-debug-20261003` 分支。先读 `.planning/stillmind-complete-product/CURRENT_STATE.md` 与 `docs/engineering/OVERALL_DEBUG_2026-10-03.md`。运行提交 `260dd3b`，QA 文档提交 `81299d7`。以下 9 月基线和“未实施”状态是历史快照，不得覆盖后续实现。10 月 3 日验证不等于 10 月 31 日重测；该次 audit 仍阻塞，未获公开上线安全放行。main 不自动合并或部署。
+
 更新：2026-09-07。本页是统一入口；旧聊天、旧包和历史进度不能覆盖这里明确区分的事实/规划。
 
 ## 先读五份，不用重读整个聊天

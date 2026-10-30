@@ -4,7 +4,11 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-## StillMind: start here (handoff updated 2026-09-07)
+## Current handoff override - 2026-10-31
+
+The complete reviewed source is on `review/overall-debug-20261003`. Read `.planning/stillmind-complete-product/CURRENT_STATE.md` and `docs/engineering/OVERALL_DEBUG_2026-10-03.md` first. Tested runtime: `260dd3b7e7f095738f17cff6e0fd801fc90cf7ae`; QA documentation: `81299d7`. The October 3 checks are historical evidence, not a new October 31 run. That audit remained blocking; recheck dependencies before release. The September branch/UX status below is a historical handoff, not the latest implementation state. Do not reset to it or automatically merge/deploy main.
+
+## StillMind: historical handoff (2026-09-07)
 
 Read in order:
 1. `docs/engineering/CODEX_HANDOFF.md`
