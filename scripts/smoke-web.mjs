@@ -182,7 +182,10 @@ try {
 
 
   // Presentation semantics: the same subject moves; no click is required for completion.
-  await resetData(); await navigate("/reset?method=inner-cinema&mode=looping&activation=2&direct=1");
+  await resetData(); await navigate("/reset?method=inner-cinema&mode=looping&activation=2");
+  await waitFor(() => hasButton("开始 1 分钟练习"), "observer entry");
+  await screenshot("inner-cinema-entry-390");
+  await navigate("/reset?method=inner-cinema&mode=looping&activation=2&direct=1");
   await waitFor(() => hasButton("暂停"), "observer practice");
   assert.match(await evaluate("document.body.innerText"), /看见刚才那一幕/, "the authored first-step guidance must be on screen");
   const screen = `document.querySelector('[data-testid="observer-screen"]')`;
@@ -196,6 +199,20 @@ try {
   await screenshot("observer-audience-390");
   await click("近一点"); await sleep(500);
   assert.ok(Math.abs(await evaluate(`${screen}.getBoundingClientRect().width`) - nearWidth) < 1);
+  await evaluate(`[...document.querySelectorAll('button')].find(b=>b.textContent==='近一点').focus()`);
+  for (const [key, code, windowsVirtualKeyCode, expectedLens, expectedFocus] of [
+    ["End", "End", 35, "witness", "再远一点"],
+    ["Home", "Home", 36, "role", "近一点"],
+    ["ArrowRight", "ArrowRight", 39, "audience", "退远一点"],
+    ["ArrowLeft", "ArrowLeft", 37, "role", "近一点"],
+  ]) {
+    await cdp("Input.dispatchKeyEvent", { type: "keyDown", key, code, windowsVirtualKeyCode });
+    await cdp("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode });
+    await sleep(350);
+    assert.equal(await evaluate("document.querySelector('.observer-cinema').dataset.lens"), expectedLens, `${key} selects ${expectedLens}`);
+    assert.equal(await evaluate("document.activeElement.textContent"), expectedFocus, `${key} moves focus with the lens`);
+    assert.equal(await evaluate(`${screen}.textContent`), subject, `${key} preserves the original sentence`);
+  }
   await cdp("Emulation.setDeviceMetricsOverride", { width: 320, height: 740, deviceScaleFactor: 1, mobile: true });
   await cdp("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
   await click("再远一点");
@@ -204,13 +221,16 @@ try {
   await screenshot("observer-reduced-motion-320");
   await cdp("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await screenshot("observer-wide-1440");
+  await cdp("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await click("暂停");
   const lens = await evaluate("document.querySelector('[data-lens]').dataset.lens");
   await evaluate(`[...document.querySelectorAll('button')].find(b=>b.textContent==='近一点').click()`);
   assert.equal(await evaluate("document.querySelector('[data-lens]').dataset.lens"), lens);
   await click("停止"); await click("跳过反馈，结束");
-  pass("observer lens changes the same central object reversibly; reduced motion, small width and pause work");
-  await cdp("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await waitFor(() => evaluate(`!!document.querySelector('.inner-cinema-completion-scene [data-lens="witness"]')`), "observer ending scene");
+  assert.equal(await evaluate(`document.querySelectorAll('[data-testid="observer-screen"]').length`), 0, "decorative ending must not duplicate the original sentence");
+  await screenshot("inner-cinema-ended-390");
+  pass("observer lens changes the same central object reversibly; keyboard, reduced motion, small width, pause and ending work");
   await resetData(); await navigate("/reset?method=paced-breath&mode=tense&activation=2&direct=1");
   await waitFor(() => hasButton("暂停"), "natural breathing");
   await sleep(6200);

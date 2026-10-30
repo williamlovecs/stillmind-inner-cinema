@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { PracticePlayer } from "@/components/ResetPracticePlayer";
+import { InnerCinemaVisual } from "@/components/InnerCinemaScene";
 import { WorkflowNav } from "@/components/WorkflowNav";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { PracticeOptionsPanel } from "@/components/PracticeOptionsPanel";
@@ -444,6 +445,9 @@ function ChoosePractice({ method, practice }: { method: MethodDefinition; practi
   </div></div>;
 }
 function MethodAnchorVisual({ methodId, label }: { methodId: MethodId; label: string }) {
+  if (methodId === "inner-cinema") {
+    return <figure className="inner-cinema-entry-visual"><InnerCinemaVisual lensId="audience" compact decorative /><figcaption>{label} · 观看位置可由你选择</figcaption></figure>;
+  }
   const visual = METHOD_VISUALS[methodId];
   return <figure className="relative min-h-44 overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/60 shadow-inner shadow-black/30"><Image src={visual.src} alt={visual.alt} width={720} height={520} className="h-44 w-full object-cover opacity-95" /><figcaption className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-slate-950/72 px-3 py-2 text-center text-sm font-medium text-stone-100 shadow-lg shadow-black/25 backdrop-blur-md">{label}</figcaption></figure>;
 }
@@ -498,6 +502,7 @@ function DoneView({ method, action, result, status, storageWarning, intensityBef
     catch { setCopied(false); setCopyFailed(true); }
   }
   return <div className="grid h-full place-items-center text-center"><div className="max-w-2xl">
+    {method.id === "inner-cinema" ? <div className="inner-cinema-completion-scene"><InnerCinemaVisual lensId="witness" compact decorative /></div> : null}
     <p className="text-sm uppercase tracking-[0.26em] text-amber-100/70">练习已结束</p>
     <h3 className="mt-4 text-4xl font-semibold leading-tight text-white">{ending.title}</h3><p className="mt-4 text-base leading-7 text-stone-300">{ending.body}</p>
     {storageWarning ? <p role="status" className="mt-4 rounded-2xl border border-amber-200/25 p-3 text-sm text-amber-100">本次记录未能完整保存在浏览器中。你仍然可以离开或复制反馈。</p> : null}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { OBSERVER_LENSES, observationText, observerFrame, type MethodId } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
+import { InnerCinemaScene } from "@/components/stillmind/InnerCinemaScene";
 
 const BODY_ZONES = [
   { id: "feet", label: "脚底", quality: "支撑" },
@@ -101,19 +102,7 @@ export function MethodPracticeExperience({
 
   if (methodId === "inner-cinema") {
     return <ExperienceShell title={title} instruction={instruction} stepIndex={stepIndex} stepCount={stepCount}>
-      <View testID="observer-stage" style={styles.cinema}>
-        <View testID="observer-screen" style={[styles.cinemaScreen, { width: `${cinemaLens.width}%`, marginBottom: cinemaLensIndex * 18 }]}>
-          <Text style={styles.cinemaCopy}>{subject}</Text>
-        </View>
-        {cinemaLensIndex > 0 ? <View accessible={false} style={[styles.observerSeat, { height: cinemaLensIndex === 1 ? 38 : 58 }]} /> : null}
-      </View>
-      <Text style={styles.helper}>{cinemaLens.hint}</Text>
-      <View style={styles.segmented}>
-        {OBSERVER_LENSES.map((item, index) => <Pressable disabled={paused} accessibilityRole="button" accessibilityState={{ selected: index === cinemaLensIndex }}
-          key={item.id} onPress={() => setCinemaLensIndex(index)} style={[styles.segment, cinemaLensIndex === index && styles.segmentActive]}>
-          <Text style={[styles.segmentText, cinemaLensIndex === index && styles.segmentTextActive]}>{item.label}</Text>
-        </Pressable>)}
-      </View>
+      <InnerCinemaScene subject={subject} lens={cinemaLens} lensIndex={cinemaLensIndex} paused={paused} onLensChange={setCinemaLensIndex} />
     </ExperienceShell>;
   }
 

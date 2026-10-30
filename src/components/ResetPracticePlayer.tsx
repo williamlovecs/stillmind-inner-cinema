@@ -3,8 +3,8 @@
 // Extracted from the existing reset page without changing method layouts.
 // The parent owns the session clock; this component only renders guided visuals and controls.
 import Image from "next/image";
-import "./observer-cinema.css";
 import { useState } from "react";
+import { InnerCinemaScene } from "@/components/InnerCinemaScene";
 import type { PracticeVariant } from "@stillmind/content";
 import { OBSERVER_LENSES, observationText, observerFrame, type MethodDefinition, type MethodId } from "@stillmind/domain";
 import type { CinemaPayload } from "@/lib/cinema-presets";
@@ -120,23 +120,7 @@ function ThoughtBubbleEngine({ methodId, instruction, trigger }: { methodId: Met
     </div>;
   }
   if (methodId === "inner-cinema") {
-    return <div className="observer-cinema flex flex-1 flex-col justify-center gap-4 text-center" data-lens={lens.id}>
-      <div className="observer-stage" data-testid="observer-stage">
-        <div aria-hidden="true" className="observer-background" />
-        <blockquote data-testid="observer-screen" className="observer-screen" style={{ width: `${lens.width}%` }}>
-          <p className="text-xl font-semibold leading-relaxed text-white sm:text-2xl">{subject}</p>
-        </blockquote>
-        <div aria-hidden="true" className="observer-seat" />
-      </div>
-      <p data-testid="step-instruction" className="min-h-12 text-2xl font-semibold leading-10 text-white">{instruction}</p>
-      <div className="mx-auto flex w-full max-w-md flex-col gap-2">
-        <p className="text-sm text-stone-400">{lens.hint}</p>
-        <div className="grid grid-cols-3 gap-2" role="group" aria-label="观看距离">
-          {OBSERVER_LENSES.map((item, index) => <button key={item.id} type="button" aria-pressed={index === lensIndex} onClick={() => setLensIndex(index)}
-            className={`min-h-12 rounded-lg border px-2 py-3 text-sm transition ${index === lensIndex ? "border-violet-100/60 bg-violet-100/10 text-white" : "border-white/15 text-stone-400"}`}>{item.label}</button>)}
-        </div>
-      </div>
-    </div>;
+    return <InnerCinemaScene subject={subject} instruction={instruction} lens={lens} lensIndex={lensIndex} onLensChange={setLensIndex} />;
   }
   if (methodId === "logout-pause") {
     return <div className="flex flex-1 flex-col items-center justify-center gap-5 p-4 text-center">
