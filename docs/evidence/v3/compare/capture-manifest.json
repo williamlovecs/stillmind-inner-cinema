@@ -1,0 +1,125 @@
+{
+  "complete": true,
+  "v2Sha": "c32d423c4eaa5e3f263d1679bb78eee0fd181fbd",
+  "v3Sha": "243a77913470bf864bac5296cc5f17565d8c4595",
+  "controlledClock": true,
+  "reducedMotion": true,
+  "sameObservedSubject": true,
+  "buildNote": "V2 build used temporary transpilePackages for migrated local workspace dependencies; the config was restored and no V2 source commit changed.",
+  "browserErrors": [],
+  "externalRequests": [],
+  "captures": [
+    {
+      "version": "v2",
+      "name": "home-390",
+      "path": "/",
+      "width": 390,
+      "height": 844,
+      "syntheticInput": "empty local history / acknowledged boundary"
+    },
+    {
+      "version": "v3",
+      "name": "home-390",
+      "path": "/",
+      "width": 390,
+      "height": 844,
+      "syntheticInput": "empty local history / acknowledged boundary"
+    },
+    {
+      "version": "v2",
+      "name": "home-768",
+      "path": "/",
+      "width": 768,
+      "height": 1024,
+      "syntheticInput": "empty local history / acknowledged boundary"
+    },
+    {
+      "version": "v3",
+      "name": "home-768",
+      "path": "/",
+      "width": 768,
+      "height": 1024,
+      "syntheticInput": "empty local history / acknowledged boundary"
+    },
+    {
+      "version": "v2",
+      "name": "home-1440",
+      "path": "/",
+      "width": 1440,
+      "height": 900,
+      "syntheticInput": "empty local history / acknowledged boundary"
+    },
+    {
+      "version": "v3",
+      "name": "home-1440",
+      "path": "/",
+      "width": 1440,
+      "height": 900,
+      "syntheticInput": "empty local history / acknowledged boundary"
+    },
+    {
+      "version": "v2",
+      "name": "choose-768",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2",
+      "width": 768,
+      "height": 1024,
+      "syntheticInput": "inner-cinema / looping / activation=2 / preparation"
+    },
+    {
+      "version": "v3",
+      "name": "choose-768",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2",
+      "width": 768,
+      "height": 1024,
+      "syntheticInput": "inner-cinema / looping / activation=2 / preparation"
+    },
+    {
+      "version": "v2",
+      "name": "cinema-390",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2&direct=1",
+      "width": 390,
+      "height": 844,
+      "syntheticInput": "default thought / inner-cinema / looping / activation=2 / paused"
+    },
+    {
+      "version": "v3",
+      "name": "cinema-390",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2&direct=1",
+      "width": 390,
+      "height": 844,
+      "syntheticInput": "default thought / inner-cinema / looping / activation=2 / paused"
+    },
+    {
+      "version": "v2",
+      "name": "cinema-768",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2&direct=1",
+      "width": 768,
+      "height": 1024,
+      "syntheticInput": "default thought / inner-cinema / looping / activation=2 / paused"
+    },
+    {
+      "version": "v3",
+      "name": "cinema-768",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2&direct=1",
+      "width": 768,
+      "height": 1024,
+      "syntheticInput": "default thought / inner-cinema / looping / activation=2 / paused"
+    },
+    {
+      "version": "v2",
+      "name": "cinema-1440",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2&direct=1",
+      "width": 1440,
+      "height": 900,
+      "syntheticInput": "default thought / inner-cinema / looping / activation=2 / paused"
+    },
+    {
+      "version": "v3",
+      "name": "cinema-1440",
+      "path": "/reset?method=inner-cinema&mode=looping&activation=2&direct=1",
+      "width": 1440,
+      "height": 900,
+      "syntheticInput": "default thought / inner-cinema / looping / activation=2 / paused"
+    }
+  ]
+}

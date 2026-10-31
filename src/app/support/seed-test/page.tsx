@@ -31,25 +31,22 @@ const questions = [
 
 export default function SeedTestPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#090a0c] text-stone-100">
-      <div className="cinema-bg" />
-      <div className="noise-grain" />
-
-      <section className="relative z-10 mx-auto w-full max-w-3xl px-5 py-10 sm:py-16">
+    <main className="sm-page">
+      <section className="sm-container mx-auto max-w-3xl">
         <Link
           href="/support"
-          className="text-xs uppercase tracking-[0.28em] text-stone-500 transition hover:text-stone-300"
+          className="inline-flex min-h-11 items-center text-sm text-[#596055] transition hover:text-[#8e4431]"
         >
           ← 支持与反馈
         </Link>
 
-        <p className="mt-8 text-xs uppercase tracking-[0.28em] text-violet-100/70">
+        <p className="sm-eyebrow mt-10">
           Invited seed test
         </p>
-        <h1 className="mt-3 text-3xl font-semibold leading-tight text-stone-50 sm:text-4xl">
+        <h1 className="sm-title mt-4">
           请测试产品流程，不要提交私人故事。
         </h1>
-        <p className="mt-4 text-[0.98rem] leading-7 text-stone-300">
+        <p className="sm-copy mt-5 text-[#596055]">
           StillMind 正在验证一个很小的假设：当人被念头带走时，短暂停顿、
           观察和回到一个小行动，是否真的有帮助。这不是治疗、诊断、建议或危机支持。
         </p>
@@ -59,12 +56,12 @@ export default function SeedTestPage() {
           <Panel title="安全反馈边界" items={safeFeedback} />
         </div>
 
-        <section className="mt-5 rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
-          <h2 className="text-lg font-medium text-stone-50">完成后回答这 5 个问题</h2>
-          <ol className="mt-4 space-y-3 text-[0.95rem] leading-7 text-stone-300">
+        <section className="mt-5 rounded-md border border-[#d4d2c5] bg-[#faf8f2] p-5">
+          <h2 className="text-lg font-medium text-[#282e29]">完成后回答这 5 个问题</h2>
+          <ol className="mt-4 space-y-3 text-[0.95rem] leading-7 text-[#596055]">
             {questions.map((question) => (
               <li key={question} className="flex gap-3">
-                <span className="mt-1 h-5 w-5 shrink-0 rounded-full bg-violet-300/20 text-center text-xs leading-5 text-violet-100">
+                <span className="mt-1 h-5 w-5 shrink-0 rounded-full bg-[#e7eae0] text-center text-xs leading-5 text-[#53694b]">
                   {questions.indexOf(question) + 1}
                 </span>
                 <span>{question}</span>
@@ -73,22 +70,22 @@ export default function SeedTestPage() {
           </ol>
         </section>
 
-        <section className="mt-5 rounded-[1.5rem] border border-amber-100/15 bg-amber-100/[0.06] p-5">
-          <h2 className="text-lg font-medium text-stone-50">如果过程中变得不安全</h2>
-          <p className="mt-3 text-[0.95rem] leading-7 text-stone-300">
+        <section className="mt-5 border-l-2 border-[#a9563d] bg-[#eeece3] p-5">
+          <h2 className="text-lg font-medium text-[#282e29]">如果过程中变得不安全</h2>
+          <p className="mt-3 text-[0.95rem] leading-7 text-[#596055]">
             请停止测试。StillMind 不能处理即时危险、医疗紧急情况、自伤/伤人风险或危机支持。
             请联系当地紧急服务、可信任的人或合格专业支持。
           </p>
         </section>
 
-        <div className="mt-10 flex flex-wrap gap-4 border-t border-white/10 pt-6 text-xs text-stone-500">
-          <Link href="/privacy" className="hover:text-stone-300">
+        <div className="mt-10 flex flex-wrap gap-5 border-t border-[#d4d2c5] pt-6 text-xs text-[#6b7165]">
+          <Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-[#282e29]">
             隐私政策
           </Link>
-          <Link href="/terms" className="hover:text-stone-300">
+          <Link href="/terms" className="inline-flex min-h-11 items-center hover:text-[#282e29]">
             服务条款
           </Link>
-          <Link href="/support" className="hover:text-stone-300">
+          <Link href="/support" className="inline-flex min-h-11 items-center hover:text-[#282e29]">
             支持与反馈
           </Link>
         </div>
@@ -99,12 +96,12 @@ export default function SeedTestPage() {
 
 function Panel({ title, items }: { title: string; items: readonly string[] }) {
   return (
-    <section className="rounded-[1.5rem] border border-white/10 bg-white/[0.045] p-5">
-      <h2 className="text-lg font-medium text-stone-50">{title}</h2>
-      <ul className="mt-4 space-y-3 text-[0.95rem] leading-7 text-stone-300">
+    <section className="rounded-md border border-[#d4d2c5] bg-[#faf8f2] p-5">
+      <h2 className="text-lg font-medium text-[#282e29]">{title}</h2>
+      <ul className="mt-4 space-y-3 text-[0.95rem] leading-7 text-[#596055]">
         {items.map((item) => (
           <li key={item} className="flex gap-3">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-200/80" />
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#53694b]" />
             <span>{item}</span>
           </li>
         ))}

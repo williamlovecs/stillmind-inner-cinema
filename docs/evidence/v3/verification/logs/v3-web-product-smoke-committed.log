@@ -1,0 +1,8 @@
+
+> stillmind-inner-cinema@0.1.0 smoke:product:web
+> node scripts/smoke-product-paths.mjs
+
+PASS web: favorite survives reload and combines with real duration/filter results
+PASS web: an actual timed practice appears in home shortcuts and local reflection
+PASS web: JSON export contains the real local session, not demo content
+PASS web: deletion failure stays honest and successful deletion clears reflection

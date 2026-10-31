@@ -4,10 +4,10 @@ import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
 export function AppHeader({ current, action }: { current?: string; action?: ReactNode }) {
   return <header className="sm-header">
     <Link href="/" className="sm-brand" aria-label="StillMind 首页">
-      <span className="sm-brand-mark" aria-hidden="true" />
+      <span className="sm-brand-mark" aria-hidden="true"><span /></span>
       <span><span className="sm-brand-name">StillMind</span><span className="sm-brand-description">{current ?? "沉寂小我"}</span></span>
     </Link>
-    {action ?? <Link href="/methods" className="sm-button sm-button-quiet">方法库</Link>}
+    {action ?? <nav className="sm-header-nav" aria-label="主要导航"><Link href="/methods">方法库</Link><Link href="/reflection">复盘</Link></nav>}
   </header>;
 }
 

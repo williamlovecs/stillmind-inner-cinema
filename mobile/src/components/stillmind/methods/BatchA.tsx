@@ -46,16 +46,16 @@ export function GazeObservation({ paused }: MethodInteractionProps) {
 }
 
 const styles = StyleSheet.create({
-  water: { minHeight: 190, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.borderStrong, backgroundColor: "#0E1C2B", alignItems: "center", justifyContent: "center", overflow: "hidden" },
-  waterRing: { position: "absolute", width: 72, height: 72, borderRadius: 36, borderWidth: 1, borderColor: colors.blue },
-  waterLine: { position: "absolute", bottom: 30, left: 20, right: 20, height: 32, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.borderStrong },
-  waterText: { color: colors.text, fontSize: 18, fontWeight: "600", backgroundColor: "#0E1C2B", padding: 10 },
-  candleStage: { minHeight: 220, borderWidth: 1, borderColor: colors.border, backgroundColor: "#11151D", alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  water: { minHeight: 190, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.borderStrong, backgroundColor: "#E2E7DB", alignItems: "center", justifyContent: "center", overflow: "hidden" },
+  waterRing: { position: "absolute", width: 72, height: 72, borderRadius: 36, borderWidth: 1, borderColor: "#728068" },
+  waterLine: { position: "absolute", bottom: 30, left: 20, right: 20, height: 32, borderTopWidth: 1, borderBottomWidth: 1, borderColor: "#9DA994" },
+  waterText: { color: colors.text, fontSize: 18, fontWeight: "500", backgroundColor: "#E2E7DB", padding: 10 },
+  candleStage: { minHeight: 220, backgroundColor: "#E8E4D8", alignItems: "center", justifyContent: "center", overflow: "hidden" },
   candle: { width: 110, height: 170 },
   candleEdge: { transform: [{ translateX: -54 }] },
   candleSpace: { transform: [{ scale: .65 }] },
-  flame: { position: "absolute", top: 10, left: 42, width: 28, height: 50, borderTopLeftRadius: 24, borderTopRightRadius: 14, borderBottomLeftRadius: 18, borderBottomRightRadius: 20, backgroundColor: "#E6C58C" },
+  flame: { position: "absolute", top: 10, left: 42, width: 28, height: 50, borderTopLeftRadius: 24, borderTopRightRadius: 14, borderBottomLeftRadius: 18, borderBottomRightRadius: 20, backgroundColor: "#B8734E" },
   wick: { position: "absolute", top: 60, left: 55, width: 2, height: 16, backgroundColor: colors.textFaint },
-  candleBody: { position: "absolute", top: 74, left: 28, width: 56, height: 86, borderRadius: radii.small, backgroundColor: "#B7B1A5" },
-  pressed: { opacity: .82 },
+  candleBody: { position: "absolute", top: 74, left: 28, width: 56, height: 86, borderRadius: radii.small, backgroundColor: "#AAA994" },
+  pressed: { opacity: .72 },
 });

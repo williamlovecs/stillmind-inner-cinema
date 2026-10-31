@@ -62,7 +62,7 @@ export default function ProfileScreen() {
   const scheduleReminder = async (hour: number) => {
     const Notifications = await import("expo-notifications");
     const permission = await Notifications.requestPermissionsAsync();
-    if (permission.status !== "granted") return false;
+    if (!permission.granted) return false;
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("stillmind-anchors", { name: "觉察锚点", importance: Notifications.AndroidImportance.DEFAULT });
     }
@@ -157,7 +157,7 @@ export default function ProfileScreen() {
 }
 
 function SettingRow({ title, subtitle, value, onValueChange }: { title: string; subtitle: string; value: boolean; onValueChange: (value: boolean) => void }) {
-  return <Surface style={styles.row}><View style={styles.flex}><Text style={type.bodyStrong}>{title}</Text><Text style={type.caption}>{subtitle}</Text></View><Switch value={value} onValueChange={onValueChange} accessibilityLabel={title} trackColor={{ false: "#293146", true: colors.violet }} thumbColor={colors.white} /></Surface>;
+  return <Surface style={styles.row}><View style={styles.flex}><Text style={type.bodyStrong}>{title}</Text><Text style={type.caption}>{subtitle}</Text></View><Switch value={value} onValueChange={onValueChange} accessibilityLabel={title} trackColor={{ false: colors.borderStrong, true: colors.accent }} thumbColor={colors.white} /></Surface>;
 }
 function ActionRow({ icon, title, danger, onPress }: { icon: keyof typeof Ionicons.glyphMap; title: string; danger?: boolean; onPress: () => void }) {
   return <Pressable accessibilityRole="button" accessibilityLabel={title} onPress={onPress}><Surface style={styles.row}><Ionicons name={icon} size={21} color={danger ? colors.danger : colors.lavender} /><Text style={[type.bodyStrong, styles.flex, danger && { color: colors.danger }]}>{title}</Text><Ionicons name="chevron-forward" size={19} color={colors.textFaint} /></Surface></Pressable>;

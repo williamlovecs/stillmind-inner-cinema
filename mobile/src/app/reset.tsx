@@ -12,7 +12,6 @@ import {
   type PracticeSession, type RoutingInput, type StateMode,
 } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
-import { BreathingOrb } from "@/components/stillmind/BreathingOrb";
 import { MethodPracticeExperience } from "@/components/stillmind/MethodPracticeExperience";
 import { Chip, PrimaryButton, Screen, SecondaryButton, Surface, type } from "@/components/stillmind/ui";
 import { MethodCard } from "@/components/stillmind/MethodCard";
@@ -41,6 +40,7 @@ export default function ResetScreen() {
   const [duration, setDuration] = useState<DurationMinutes>(() => parseDuration(params.duration));
   const [trigger, setTrigger] = useState(pendingResetDraft?.trigger ?? "");
   const [selectedMethodId, setSelectedMethodId] = useState<MethodId | undefined>(() => METHOD_BY_ID.get(params.methodId as MethodId)?.id);
+  const [showRouteOptions, setShowRouteOptions] = useState(false);
   const [activePractice, setActivePractice] = useState<PracticeVariant>();
   const [generating, setGenerating] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -233,24 +233,34 @@ export default function ResetScreen() {
   if (phase === "done") return <DoneView record={finalRecord} storageWarning={storageWarning} historyEnabled={preferences.historyEnabled} onReturn={close} methodAdjustment={finalRecord?.result === "worse" || finalRecord?.status === "stopped" ? { methodTitle: method.title, hidden: methodHidden, onHideMethod: hideCurrentMethod } : undefined} />;
 
   return <Screen>
-    <TopBar title="选择一条练习路径" onClose={close} />
-    <View style={styles.routeBlock}>
-      <Text style={type.label}>现在有多强烈？（可选） {ratingText(activationBefore)}</Text>
-      <View style={styles.row}>{([1, 2, 3, 4, 5] as const).map(value => <Chip key={value} label={String(value)} selected={activationBefore === value} onPress={() => changeInput(() => setActivationBefore(activationBefore === value ? undefined : value))} />)}</View>
-      <Text style={type.label}>你有多少时间？</Text>
-      <View style={styles.row}>{([1, 3, 5, 10] as const).map(value => <Chip key={value} label={`${value} 分钟`} selected={duration === value} onPress={() => changeInput(() => { setDuration(value); setSelectedMethodId(undefined); })} />)}</View>
-      {methodId === "inner-cinema" ? <><TextInput value={trigger} onChangeText={text => changeInput(() => setTrigger(text))} placeholder="一句话写下刚才的触发（可选）" placeholderTextColor={colors.textFaint} multiline style={styles.input} maxLength={500} /><Text style={type.caption}>{preferences.aiEnabled ? "点开始才会发送这句话进行可选 AI 生成；取消后不会自动开始。" : "AI 未开启，使用本机离线脚本。"}</Text></> : null}
-    </View>
-    {startNotice ? <Surface><Text accessibilityRole="alert" style={type.body}>{startNotice}</Text><SecondaryButton label="返回推荐" onPress={() => changeInput(() => setSelectedMethodId(undefined))} /></Surface> : null}
-    {recommendation.kind === "support" ? <Surface><Text style={type.body}>{recommendation.explanation}</Text><SecondaryButton label="结束并返回" onPress={close} /></Surface> : <View style={styles.recommendBlock}>
-      <Text style={type.label}>{selectedMethodId ? "你选择的方法" : "推荐这一种"}</Text><MethodCard method={method} />
-      <Text style={type.body}>{selectedMethodId ? method.summary : recommendation.explanation}</Text>
-      <PrimaryButton label={generating ? "正在投影…" : `开始 ${basePractice?.minutes ?? duration} 分钟`} disabled={generating || !ready || !preferences.onboardingComplete} onPress={startPractice} />
-      {generating ? <SecondaryButton label="取消生成" onPress={() => changeInput(() => undefined)} /> : null}
-      <Text style={type.label}>也可以换一种</Text>
-      {[recommendation.primary, ...recommendation.alternatives].filter(item => item.id !== methodId).map(item => <MethodCard key={item.id} method={item} onPress={() => changeInput(() => setSelectedMethodId(item.id))} />)}
-    </View>}
-    <Pressable accessibilityRole="button" onPress={() => { requestLifetime.cancel(); setGenerating(false); setPhase("support"); }}><Text style={styles.supportLink}>如果你现在无法保证安全，点这里</Text></Pressable>
+    <TopBar title="开始前的准备" onClose={close} />
+    {recommendation.kind === "support" ? <Surface style={styles.recommendBlock}>
+      <Text style={type.display}>先照顾此刻的安全。</Text>
+      <Text style={type.body}>{recommendation.explanation}</Text>
+      <SecondaryButton label="结束并返回" onPress={close} />
+    </Surface> : <>
+      <View style={styles.recommendLead}>
+        <Text style={type.label}>{selectedMethodId ? "你选择的方法" : "一个合适的起点"}</Text>
+        <Text style={type.display}>{method.title}</Text>
+        <Text style={type.body}>{selectedMethodId ? method.summary : recommendation.explanation}</Text>
+      </View>
+      {startNotice ? <Surface><Text accessibilityRole="alert" style={type.body}>{startNotice}</Text><SecondaryButton label="返回推荐" onPress={() => changeInput(() => setSelectedMethodId(undefined))} /></Surface> : null}
+      <View style={styles.recommendBlock}>
+        <PrimaryButton label={generating ? "正在投影…" : `开始 ${basePractice?.minutes ?? duration} 分钟`} disabled={generating || !ready || !preferences.onboardingComplete} onPress={startPractice} />
+        {generating ? <SecondaryButton label="取消生成" onPress={() => changeInput(() => undefined)} /> : null}
+        <SecondaryButton label={showRouteOptions ? "收起练习选项" : "调整状态、时长或方法"} onPress={() => setShowRouteOptions(value => !value)} />
+      </View>
+      {showRouteOptions ? <View style={styles.routeBlock}>
+        <Text style={type.label}>现在有多强烈？（可选） {ratingText(activationBefore)}</Text>
+        <View style={styles.row}>{([1, 2, 3, 4, 5] as const).map(value => <Chip key={value} label={String(value)} selected={activationBefore === value} onPress={() => changeInput(() => setActivationBefore(activationBefore === value ? undefined : value))} />)}</View>
+        <Text style={type.label}>你有多少时间？</Text>
+        <View style={styles.row}>{([1, 3, 5, 10] as const).map(value => <Chip key={value} label={`${value} 分钟`} selected={duration === value} onPress={() => changeInput(() => { setDuration(value); setSelectedMethodId(undefined); })} />)}</View>
+        <Text style={type.label}>也可以换一种</Text>
+        {[recommendation.primary, ...recommendation.alternatives].filter(item => item.id !== methodId).map(item => <MethodCard key={item.id} method={item} onPress={() => changeInput(() => setSelectedMethodId(item.id))} />)}
+        {methodId === "inner-cinema" ? <><TextInput value={trigger} onChangeText={text => changeInput(() => setTrigger(text))} placeholder="一句话写下刚才的触发（可选）" placeholderTextColor={colors.textFaint} multiline style={styles.input} maxLength={500} /><Text style={type.caption}>{preferences.aiEnabled ? "点开始才会发送这句话进行可选 AI 生成；取消后不会自动开始。" : "AI 未开启，使用本机离线脚本。"}</Text></> : null}
+      </View> : null}
+    </>}
+    <Pressable accessibilityRole="button" style={styles.supportButton} onPress={() => { requestLifetime.cancel(); setGenerating(false); setPhase("support"); }}><Text style={styles.supportLink}>如果你现在无法保证安全，点这里</Text></Pressable>
   </Screen>;
 }
 
@@ -282,7 +292,7 @@ function ActionView({ action, onAction, onComplete, onSkip }: { action?: string;
 }
 function DoneView({ record, storageWarning, historyEnabled, onReturn, methodAdjustment }: { record?: PracticeSession; storageWarning: boolean; historyEnabled: boolean; onReturn: () => void; methodAdjustment?: { methodTitle: string; hidden: boolean; onHideMethod: () => void } }) {
   const ending = endingCopy(record?.result, record?.status);
-  return <Screen><View style={styles.done}><BreathingOrb compact paused /><Text style={[type.display, styles.centerText]}>{ending.title}</Text><Text style={type.body}>{ending.body}</Text>
+  return <Screen><View style={styles.done}><StillObject /><Text style={[type.display, styles.centerText]}>{ending.title}</Text><Text style={type.body}>{ending.body}</Text>
     {storageWarning ? <Text accessibilityRole="alert" style={type.body}>本次记录未能完整保存。你仍可以直接离开。</Text> : !historyEnabled ? <Text style={type.caption}>本机历史已关闭，本次未保存到历史。</Text> : null}
     <Surface style={styles.deltaCard}><Text style={type.label}>你填写的分数</Text><Text style={type.h2}>{ratingText(record?.activationBefore)} → {ratingText(record?.activationAfter)}</Text><Text style={type.caption}>{changeText(record?.activationBefore, record?.activationAfter)}</Text></Surface>
     {record?.groundedActionId ? <Surface warm style={styles.actionCard}><Text style={type.label}>你选择的下一步（未记录完成）</Text><Text style={type.h2}>{record.groundedActionId}</Text></Surface> : null}
@@ -290,19 +300,21 @@ function DoneView({ record, storageWarning, historyEnabled, onReturn, methodAdju
     {methodAdjustment ? <Surface style={styles.adjustmentCard}><Text style={type.body}>这次不合适，可以将“{methodAdjustment.methodTitle}”从推荐中隐藏。</Text><SecondaryButton label={methodAdjustment.hidden ? "已隐藏推荐" : "隐藏这个方法"} disabled={methodAdjustment.hidden} onPress={methodAdjustment.onHideMethod} /></Surface> : null}
   </View></Screen>;
 }
-function PreparingView({ onClose }: { onClose: () => void }) { return <Screen scroll={false} contentStyle={styles.preparing}><BreathingOrb compact paused /><Text style={type.h2}>正在准备练习…</Text><SecondaryButton label="结束并返回" onPress={onClose} /></Screen>; }
+function StillObject() { return <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.stillObject}><View style={styles.stillObjectPaper}><View style={styles.stillObjectFold} /></View></View>; }
+function PreparingView({ onClose }: { onClose: () => void }) { return <Screen scroll={false} contentStyle={styles.preparing}><StillObject /><Text style={type.h2}>正在准备练习…</Text><SecondaryButton label="结束并返回" onPress={onClose} /></Screen>; }
 function SupportView({ onBack }: { onBack: () => void }) { return <Screen><TopBar title="先保证现实中的安全" onClose={onBack} /><View style={styles.centerCopy}><Text style={type.display}>先联系现实中的支持。</Text><Text style={type.body}>如果你有即时危险、医疗紧急情况，或无法保证自己的安全，请联系当地紧急服务、前往急诊，或让可信任的人陪在你身边。</Text></View><Surface style={styles.supportCard}><Text style={type.body}>StillMind 只提供一般性的短暂停顿与定向提示，不提供诊断、治疗或危机处置。</Text></Surface><PrimaryButton label="结束并返回" onPress={onBack} /></Screen>; }
 function TopBar({ title, meta, onClose }: { title: string; meta?: string; onClose?: () => void }) {
-  return <View style={styles.topBar}><Text style={styles.topTitle}>{title}</Text><View style={styles.topActions}>{meta ? <Text testID="native-session-timer" style={styles.topMeta}>{meta}</Text> : null}{onClose ? <Pressable accessibilityRole="button" accessibilityLabel="关闭" hitSlop={12} onPress={onClose}><Ionicons name="close" size={26} color={colors.textMuted} /></Pressable> : null}</View></View>;
+  return <View style={styles.topBar}><Text style={styles.topTitle}>{title}</Text><View style={styles.topActions}>{meta ? <Text testID="native-session-timer" style={styles.topMeta}>{meta}</Text> : null}{onClose ? <Pressable accessibilityRole="button" accessibilityLabel="关闭" style={styles.closeButton} onPress={onClose}><Ionicons name="close" size={24} color={colors.textMuted} /></Pressable> : null}</View></View>;
 }
 
 const styles = StyleSheet.create({
-  topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 50 }, topTitle: { color: colors.textMuted, fontSize: 14, fontWeight: "700" },
-  topActions: { flexDirection: "row", alignItems: "center", gap: 12 }, topMeta: { color: colors.textFaint, fontSize: 12, fontWeight: "600", fontVariant: ["tabular-nums"] },
-  routeBlock: { gap: 12 }, row: { flexDirection: "row", flexWrap: "wrap", gap: 9 }, input: { minHeight: 92, borderWidth: 1, borderColor: colors.border, borderRadius: radii.medium, color: colors.text, backgroundColor: colors.surface, padding: 15, fontSize: 15, textAlignVertical: "top" },
-  recommendBlock: { gap: 13 }, supportLink: { color: colors.textFaint, textAlign: "center", fontSize: 12, textDecorationLine: "underline" },
-  player: { paddingBottom: 28 }, progressRow: { flexDirection: "row", gap: 6 }, progressSegment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.12)" }, progressActive: { backgroundColor: colors.lavender },
+  topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 50 }, topTitle: { color: colors.textMuted, fontSize: 14, fontWeight: "600" },
+  topActions: { flexDirection: "row", alignItems: "center", gap: 12 }, topMeta: { color: colors.textFaint, fontSize: 12, fontWeight: "600", fontVariant: ["tabular-nums"] }, closeButton: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
+  recommendLead: { gap: 14, paddingTop: spacing.lg, paddingBottom: spacing.md }, routeBlock: { gap: 14, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.border }, row: { flexDirection: "row", flexWrap: "wrap", gap: 9 }, input: { minHeight: 92, borderWidth: 1, borderColor: colors.border, borderRadius: radii.small, color: colors.text, backgroundColor: colors.surface, padding: 15, fontSize: 15, textAlignVertical: "top" },
+  recommendBlock: { gap: 13 }, supportButton: { minHeight: 48, alignItems: "center", justifyContent: "center" }, supportLink: { color: colors.textMuted, textAlign: "center", fontSize: 12, textDecorationLine: "underline" },
+  player: { paddingBottom: 28 }, progressRow: { flexDirection: "row", gap: 6 }, progressSegment: { flex: 1, height: 2, backgroundColor: colors.border }, progressActive: { backgroundColor: colors.accent },
   playerCenter: { flex: 1, justifyContent: "center", gap: spacing.md }, alternative: { color: colors.textMuted, fontSize: 13, lineHeight: 20, textAlign: "center" },
   controls: { flexDirection: "row", gap: 10 }, control: { flex: 1 }, centerCopy: { gap: 12, marginTop: spacing.xl }, stack: { gap: 10 }, adjustmentCard: { gap: 12 }, done: { flex: 1, justifyContent: "center", gap: 24 }, centerText: { textAlign: "center" }, actionCard: { gap: 10 }, supportCard: { gap: 10 },
   deltaCard: { gap: 7 }, preparing: { flex: 1, alignItems: "center", justifyContent: "center", gap: 18, paddingBottom: 20 },
+  stillObject: { height: 116, alignItems: "center", justifyContent: "center" }, stillObjectPaper: { width: 74, height: 74, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.surface, transform: [{ rotate: "-7deg" }], alignItems: "flex-end" }, stillObjectFold: { width: 32, height: 32, borderLeftWidth: 1, borderBottomWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.surfaceSoft },
 });

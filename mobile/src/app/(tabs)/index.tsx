@@ -118,8 +118,10 @@ export default function TodayScreen() {
     <Screen contentStyle={styles.screen}>
       <BrandHeader />
       <View style={styles.heroCopy}>
-        <Text style={type.display}>现在，先停一分钟。</Text>
-        <Text style={type.body}>不必先解释，跟着做就好。</Text>
+        <Text style={type.label}>沉寂小我 · 一分钟入口</Text>
+        <Text style={type.display}>先不用回答。{"\n"}给自己一分钟。</Text>
+        <Text style={type.body}>不用整理好情绪，也不用先读懂十二种方法。让一个念头被看见，再决定下一步。</Text>
+        <Text style={type.caption}>可以空输入，随时可以停止。练后不必报告变化。</Text>
       </View>
 
       <PrimaryButton
@@ -201,10 +203,14 @@ export default function TodayScreen() {
         </View>
       ) : null}
 
-      <Pressable onPress={() => router.push("/(tabs)/practices")} style={styles.methodsLink}>
+      <Pressable accessibilityRole="button" onPress={() => router.push("/(tabs)/practices")} style={styles.methodsLink}>
         <Text style={styles.methodsLinkText}>探索 12 种方法</Text>
         <Ionicons name="arrow-forward" size={16} color={colors.textMuted} />
       </Pressable>
+      <View style={styles.quietObject} accessibilityLabel="一分钟练习：看见，留一点距离，回到此刻">
+        <View style={styles.objectOrbit} /><View style={styles.objectPaper}><Text style={styles.objectText}>一个念头{"\n"}也可以只是{"\n"}被看见。</Text></View>
+        <View style={styles.objectSteps}><Text style={styles.objectStep}>看见</Text><Text style={styles.objectStep}>留一点距离</Text><Text style={styles.objectStep}>回到此刻</Text></View>
+      </View>
       <Text style={styles.safety}>不提供诊断、治疗或危机处置。私人原话不会进入分析事件。</Text>
     </Screen>
   );
@@ -212,29 +218,35 @@ export default function TodayScreen() {
 
 const styles = StyleSheet.create({
   screen: { gap: spacing.md },
-  heroCopy: { gap: 7, paddingTop: spacing.md },
+  heroCopy: { gap: 13, paddingTop: spacing.xl },
   noticeCard: { gap: 12, padding: 16 },
   noticeCopy: { gap: 7 },
-  intakeCard: { gap: 16, padding: 16 },
+  intakeCard: { gap: 16, paddingVertical: 18, paddingHorizontal: 0, borderTopWidth: 1, borderColor: colors.border, borderRadius: 0, backgroundColor: "transparent" },
   dictationHint: { flexDirection: "row", alignItems: "center", gap: 7 },
-  dictationText: { color: colors.textMuted, fontSize: 12, fontWeight: "600" },
-  input: { minHeight: 122, borderWidth: 1, borderColor: colors.border, borderRadius: radii.medium, backgroundColor: "rgba(5,9,20,0.72)", color: colors.text, padding: 15, fontSize: 16, lineHeight: 24 },
-  examples: { flexDirection: "row", gap: 8, overflow: "hidden" },
-  example: { flex: 1, minWidth: 0, borderRadius: radii.round, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceSoft, paddingHorizontal: 10, paddingVertical: 9 },
+  dictationText: { color: colors.textMuted, fontSize: 12, fontWeight: "500" },
+  input: { minHeight: 122, borderBottomWidth: 1, borderColor: colors.borderStrong, color: colors.text, backgroundColor: "transparent", paddingVertical: 15, fontSize: 16, lineHeight: 25 },
+  examples: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  example: { minHeight: 44, borderRadius: radii.small, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 12, paddingVertical: 9, justifyContent: "center" },
   exampleText: { color: colors.textMuted, fontSize: 12, textAlign: "center" },
   scaleHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
-  score: { color: colors.amber, fontSize: 22, fontWeight: "800", fontVariant: ["tabular-nums"] },
+  score: { color: colors.accentStrong, fontSize: 20, fontWeight: "500", fontVariant: ["tabular-nums"] },
   scale: { flexDirection: "row", gap: 8 },
-  scaleButton: { flex: 1, aspectRatio: 1, maxHeight: 52, borderRadius: 16, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceSoft, alignItems: "center", justifyContent: "center" },
-  scaleButtonActive: { borderColor: colors.amber, backgroundColor: "rgba(244,182,106,0.16)" },
-  scaleText: { color: colors.textMuted, fontSize: 15, fontWeight: "700" },
-  scaleTextActive: { color: colors.text },
+  scaleButton: { flex: 1, minHeight: 46, borderRadius: radii.small, borderWidth: 1, borderColor: colors.border, backgroundColor: "transparent", alignItems: "center", justifyContent: "center" },
+  scaleButtonActive: { borderColor: colors.accent, borderBottomWidth: 2 },
+  scaleText: { color: colors.textMuted, fontSize: 15, fontWeight: "500" },
+  scaleTextActive: { color: colors.accentStrong },
   matchCopy: { color: colors.textFaint, fontSize: 12, textAlign: "center" },
   secondaryLink: { minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5 },
-  secondaryLinkText: { color: colors.textMuted, fontSize: 13, fontWeight: "600" },
+  secondaryLinkText: { color: colors.textMuted, fontSize: 13, fontWeight: "500" },
   stateChoices: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   methodsLink: { minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 },
-  methodsLinkText: { color: colors.textMuted, fontSize: 13, fontWeight: "700" },
+  methodsLinkText: { color: colors.accentStrong, fontSize: 13, fontWeight: "500" },
+  quietObject: { minHeight: 280, alignItems: "center", justifyContent: "center", marginTop: spacing.md },
+  objectOrbit: { position: "absolute", width: 250, height: 174, borderRadius: 125, borderWidth: 1, borderColor: "#AEB6A0", transform: [{ rotate: "-16deg" }] },
+  objectPaper: { width: 178, height: 194, backgroundColor: "#E5E3D5", alignItems: "center", justifyContent: "center", transform: [{ rotate: "3deg" }] },
+  objectText: { color: "#4D5848", fontSize: 18, lineHeight: 32, fontWeight: "400", textAlign: "center" },
+  objectSteps: { position: "absolute", bottom: 0, left: 0, right: 0, flexDirection: "row", justifyContent: "space-between", borderTopWidth: 1, borderColor: colors.border, paddingTop: 12 },
+  objectStep: { color: colors.textMuted, fontSize: 11 },
   safety: { color: colors.textFaint, fontSize: 11, lineHeight: 18, textAlign: "center", paddingHorizontal: 8 },
-  pressed: { opacity: 0.74 },
+  pressed: { opacity: 0.72 },
 });

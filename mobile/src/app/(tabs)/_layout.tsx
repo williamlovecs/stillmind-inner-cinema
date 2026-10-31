@@ -13,10 +13,10 @@ export default function TabLayout() {
   return (
     <Tabs screenOptions={({ route }) => ({
       headerShown: false,
-      tabBarActiveTintColor: colors.lavender,
+      tabBarActiveTintColor: colors.accent,
       tabBarInactiveTintColor: colors.textFaint,
-      tabBarStyle: { position: "absolute", height: 82, paddingTop: 8, paddingBottom: 18, backgroundColor: "rgba(5, 9, 20, 0.95)", borderTopColor: colors.border },
-      tabBarLabelStyle: { fontSize: 11, fontWeight: "700" },
+      tabBarStyle: { position: "absolute", height: 82, paddingTop: 8, paddingBottom: 18, backgroundColor: colors.background, borderTopColor: colors.border },
+      tabBarLabelStyle: { fontSize: 11, fontWeight: "500" },
       tabBarIcon: ({ focused, color, size }) => {
         const icons = ICONS[route.name as keyof typeof ICONS] ?? ICONS.index;
         return <Ionicons name={focused ? icons[0] : icons[1]} color={color} size={size} />;

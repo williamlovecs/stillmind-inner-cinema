@@ -366,8 +366,8 @@ try {
 
   await resetData(); await navigate("/methods");
   assert.equal(await evaluate(`new Set([...document.querySelectorAll('a[href^="/methods/"]')].map(a=>a.pathname)).size`), 12);
-  for (const width of [390, 1440]) {
-    await cdp("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width < 500 });
+  for (const width of [390, 768, 1440]) {
+    await cdp("Emulation.setDeviceMetricsOverride", { width, height: width === 768 ? 1024 : 900, deviceScaleFactor: 1, mobile: width < 500 });
     await navigate("/");
     assert.equal(await evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), true);
     await screenshot(`home-${width}`);
@@ -376,7 +376,7 @@ try {
     assert.equal(await evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), true);
     await screenshot(`choose-${width}`);
   }
-  pass("twelve method links remain; 390/1440 layouts have no root overflow or accidental auto-start");
+  pass("twelve method links remain; 390/768/1440 layouts have no root overflow or accidental auto-start");
 
   await resetData();
   await cdp("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });

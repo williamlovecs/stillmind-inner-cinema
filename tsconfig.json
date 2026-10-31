@@ -19,7 +19,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@stillmind/content": ["./packages/content/src/index.ts"],
+      "@stillmind/design-tokens": ["./packages/design-tokens/src/index.ts"],
+      "@stillmind/domain": ["./packages/domain/src/index.ts"]
     }
   },
   "include": [
