@@ -20,6 +20,21 @@ test("cinema API rejects missing and oversized input", async () => {
   assert.deepEqual(await oversized.json(), { error: "payload-too-large" });
 });
 
+test("cinema API enforces its byte limit without a content-length header", async () => {
+  const prior = process.env.STEPFUN_API_KEY;
+  delete process.env.STEPFUN_API_KEY;
+  try {
+    const attack = request({ trigger: "hello", padding: "🧠".repeat(1_100) });
+    assert.equal(attack.headers.has("content-length"), false);
+    const response = await POST(attack);
+    assert.equal(response.status, 413);
+    assert.deepEqual(await response.json(), { error: "payload-too-large" });
+  } finally {
+    if (prior === undefined) delete process.env.STEPFUN_API_KEY;
+    else process.env.STEPFUN_API_KEY = prior;
+  }
+});
+
 test("cinema API routes high-risk language to the safety boundary", async () => {
   const response = await POST(request({ trigger: "我现在无法保证自己安全" }));
   assert.equal(response.status, 422);

@@ -105,6 +105,33 @@ function clientIp(request: Request): string {
   return request.headers.get("x-real-ip") ?? "unknown";
 }
 
+async function readBodyWithLimit(request: Request): Promise<{ raw?: string; tooLarge?: boolean }> {
+  if (!request.body) return { raw: "" };
+
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder();
+  let size = 0;
+  let raw = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) return { raw: raw + decoder.decode() };
+
+      size += value.byteLength;
+      if (size > MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        return { tooLarge: true };
+      }
+      raw += decoder.decode(value, { stream: true });
+    }
+  } catch {
+    return {};
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 export async function POST(request: Request) {
   const ip = clientIp(request);
   if (!checkRate(ip)) {
@@ -114,9 +141,15 @@ export async function POST(request: Request) {
   const contentLength = Number(request.headers.get("content-length") ?? 0);
   if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) return json({ error: "payload-too-large" }, 413);
 
-  const body = (await request.json().catch(() => null)) as {
-    trigger?: unknown;
-  } | null;
+  const result = await readBodyWithLimit(request);
+  if (result.tooLarge) return json({ error: "payload-too-large" }, 413);
+
+  let body: { trigger?: unknown } | null;
+  try {
+    body = JSON.parse(result.raw ?? "") as { trigger?: unknown } | null;
+  } catch {
+    body = null;
+  }
   const trigger =
     typeof body?.trigger === "string" ? body.trigger.trim().slice(0, MAX_TRIGGER_LENGTH) : "";
 
