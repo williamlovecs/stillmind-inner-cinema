@@ -9,8 +9,9 @@
 |---|---|---|---|
 | `meditohq/medito-app` | `c7dbdaa8700f8138cb45319050405329217ef726`，提交时间 2026-10-30 | 根 `LICENSE` 正文为 GNU Affero General Public License v3 | [源码](https://github.com/meditohq/medito-app/tree/c7dbdaa8700f8138cb45319050405329217ef726)、[LICENSE](https://github.com/meditohq/medito-app/blob/c7dbdaa8700f8138cb45319050405329217ef726/LICENSE) |
 | `heylinda/heylinda-app` | `42da556101efdb12debce6cae21d323a2b25b54e`，提交时间 2026-07-19 | 根 `LICENSE` 正文为 GNU Affero General Public License v3 | [源码](https://github.com/heylinda/heylinda-app/tree/42da556101efdb12debce6cae21d323a2b25b54e)、[LICENSE](https://github.com/heylinda/heylinda-app/blob/42da556101efdb12debce6cae21d323a2b25b54e/LICENSE) |
+| `nyxkn/meditation` | `56f56d0a2f2ec97aae04f852f8b5dc90dbf72b4c`，提交时间 2024-12-06 | 根 `LICENSE` 为 GPL-3.0-only；README 另声明 assets／media／Android res 为 CC-BY-SA 4.0，音频另有第三方来源 | [源码](https://github.com/nyxkn/meditation/tree/56f56d0a2f2ec97aae04f852f8b5dc90dbf72b4c)、[LICENSE](https://github.com/nyxkn/meditation/blob/56f56d0a2f2ec97aae04f852f8b5dc90dbf72b4c/LICENSE) |
 
-许可证包含修改作品的 copyleft、对应源码提供义务，以及网络交互场景的源码提供条款。是否构成衍生／结合作品、义务覆盖范围和第三方资产许可是具体法律问题，不能由“公开可读”或“非商业使用”自动消解。本 PR 不引入两仓库代码或依赖，因此没有把 StillMind 重新许可为 AGPL。
+前两个仓库的 AGPL 与第三个仓库的 GPL 均包含修改作品的 copyleft 和对应源码提供义务；AGPL 还涉及网络交互场景的源码提供条款。是否构成衍生／结合作品、义务覆盖范围和第三方资产许可是具体法律问题，不能由“公开可读”或“非商业使用”自动消解。本 PR 不引入三个仓库的代码、资产或依赖，因此没有把 StillMind 重新许可为 AGPL／GPL。
 
 ## Medito：观察到的职责分离
 
@@ -61,9 +62,33 @@
 
 **不采用**：Redux 迁移、播放器组件、样式、图片、课程、音频、AsyncStorage 结构或完成逻辑。
 
+## nyxkn/meditation：计时生命周期与薄测试边界
+
+**证据等级：SOURCE OBSERVED。固定提交为 `56f56d0a2f2ec97aae04f852f8b5dc90dbf72b4c`；未运行 Flutter App，所有界面、通知和平台行为 NOT VERIFIED。**
+
+阅读：
+
+- `lib/timer.dart`
+- `lib/main.dart`
+- `lib/settings.dart`
+- `test/widget_test.dart`
+- 根 `README.md`、`LICENSE`
+
+观察：
+
+1. 代码分别表达停止、延迟和冥想状态，并以 wall-clock 起止时间辅助计时，而不是只靠动画帧累计。
+2. 生命周期处理、通知回退和权限失败返回体现了一个工程事实：定时结束与平台通知不是同一件事，失败不能静默伪装为成功。
+3. 设置持久化与结束清理有独立职责；这可以启发 StillMind 检查暂停、停止、后台和恢复边界，但不能替代其现有 domain clock。
+4. `test/widget_test.dart` 仍保留模板 `Counter increments smoke test`，因此不能声称这个仓库的计时与通知路径已被其测试覆盖。
+5. README 的 CC-BY-SA 资产声明不排除音频另带第三方许可；代码可公开阅读不等于素材可以进入 StillMind。
+
+**抽象借鉴**：起止时间与界面状态分开；结束、失败和权限结果应各自可表示；回到前台时重新核对真实状态；清理逻辑不能依赖动画完成。
+
+**不采用**：Flutter 迁移、前台服务、精确闹钟、通知权限、源码、音频、图像、Android 资源或未经核验的后台计时方案。StillMind 不因此新增系统提醒能力，浏览器后台与真实 OS 生命周期仍分别验收。
+
 ## 对 V3 实现的具体约束
 
-- 不新增 AGPL 依赖，不建立“借鉴组件”副本；所有 React / CSS / React Native 表现层在 StillMind 现有代码上重新实现。
+- 不新增 AGPL／GPL 依赖，不建立“借鉴组件”副本；所有 React / CSS / React Native 表现层在 StillMind 现有代码上重新实现。
 - 复用现有 `@stillmind/domain`、内容目录、storage 和 attempt 语义，不用竞品状态模型覆盖本地安全逻辑。
 - 新视觉只展示已有数据：方法、计时、暂停、停止、真实自报反馈、本地记录；不生成“稳定度”“觉察分”“呼吸准确率”“宽恕进度”。
 - 播放器不虚构音频或下载能力；V3 当前是引导式练习，不因研究 Medito 就声称拥有音频课程。

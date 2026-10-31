@@ -1,0 +1,276 @@
+{
+  "complete": true,
+  "browserErrors": [],
+  "captures": [
+    {
+      "file": "A-home-1440.png",
+      "direction": "A",
+      "screen": "home",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=home",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-home-390.png",
+      "direction": "A",
+      "screen": "home",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=home",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-library-1440.png",
+      "direction": "A",
+      "screen": "library",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=library",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-library-390.png",
+      "direction": "A",
+      "screen": "library",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=library",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-cinema-1440.png",
+      "direction": "A",
+      "screen": "cinema",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=cinema",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-cinema-390.png",
+      "direction": "A",
+      "screen": "cinema",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=cinema",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-breath-1440.png",
+      "direction": "A",
+      "screen": "breath",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=breath",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-breath-390.png",
+      "direction": "A",
+      "screen": "breath",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=breath",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-reflection-1440.png",
+      "direction": "A",
+      "screen": "reflection",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=reflection",
+      "reducedMotion": true
+    },
+    {
+      "file": "A-reflection-390.png",
+      "direction": "A",
+      "screen": "reflection",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/A-folded-path.html?screen=reflection",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-home-1440.png",
+      "direction": "B",
+      "screen": "home",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=home",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-home-390.png",
+      "direction": "B",
+      "screen": "home",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=home",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-library-1440.png",
+      "direction": "B",
+      "screen": "library",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=library",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-library-390.png",
+      "direction": "B",
+      "screen": "library",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=library",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-cinema-1440.png",
+      "direction": "B",
+      "screen": "cinema",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=cinema",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-cinema-390.png",
+      "direction": "B",
+      "screen": "cinema",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=cinema",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-breath-1440.png",
+      "direction": "B",
+      "screen": "breath",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=breath",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-breath-390.png",
+      "direction": "B",
+      "screen": "breath",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=breath",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-reflection-1440.png",
+      "direction": "B",
+      "screen": "reflection",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=reflection",
+      "reducedMotion": true
+    },
+    {
+      "file": "B-reflection-390.png",
+      "direction": "B",
+      "screen": "reflection",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/B-one-room.html?screen=reflection",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-home-1440.png",
+      "direction": "C",
+      "screen": "home",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=home",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-home-390.png",
+      "direction": "C",
+      "screen": "home",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=home",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-library-1440.png",
+      "direction": "C",
+      "screen": "library",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=library",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-library-390.png",
+      "direction": "C",
+      "screen": "library",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=library",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-cinema-1440.png",
+      "direction": "C",
+      "screen": "cinema",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=cinema",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-cinema-390.png",
+      "direction": "C",
+      "screen": "cinema",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=cinema",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-breath-1440.png",
+      "direction": "C",
+      "screen": "breath",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=breath",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-breath-390.png",
+      "direction": "C",
+      "screen": "breath",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=breath",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-reflection-1440.png",
+      "direction": "C",
+      "screen": "reflection",
+      "width": 1440,
+      "height": 960,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=reflection",
+      "reducedMotion": true
+    },
+    {
+      "file": "C-reflection-390.png",
+      "direction": "C",
+      "screen": "reflection",
+      "width": 390,
+      "height": 844,
+      "source": "file:///E:/kimi/tasks/2026-10-31/02-42-11-0872a2fc/stillmind-v3/docs/design/prototypes/C-living-index.html?screen=reflection",
+      "reducedMotion": true
+    }
+  ]
+}

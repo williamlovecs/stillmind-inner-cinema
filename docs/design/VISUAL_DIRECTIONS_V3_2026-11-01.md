@@ -6,13 +6,31 @@
 
 ## 可比较的屏幕
 
-| 方向 | 结构差异 | 原型 | 实际 Chromium 截图 |
-| --- | --- | --- | --- |
-| A｜折页路径 | 暖纸白、非对称编辑网格；左侧行动，右侧自然几何观看对象；次级信息折起 | [HTML](prototypes/A-folded-path.html) | [1440×960](../evidence/v3/directions/A-folded-path.png) |
-| B｜一间静室 | 暖灰绿的单一空间；以观看对象为中心，导航与说明退到边缘 | [HTML](prototypes/B-one-room.html) | [1440×960](../evidence/v3/directions/B-one-room.png) |
-| C｜生长索引 | 竖向编号索引、纸张物件与细密行线；强调方法比较和长期回看 | [HTML](prototypes/C-living-index.html) | [1440×960](../evidence/v3/directions/C-living-index.png) |
+三个方向使用同一组中文任务文案、同一组合成数据、同样的 1440×960 与 390×844 viewport；通过 `?screen=home|library|cinema|breath|reflection` 打开单屏。观电影三个视角会在原型中真实改变对象构图，自然数息明确“不点击也能完成”。原型不是生产功能，按钮中未接通的控制不代表产品能力。
 
-三套原型均已实际打开并查看。它们是方向比较证据，不是十二法验收、真实手机测试或生产页面。
+原型：[A 折页路径](prototypes/A-folded-path.html) · [B 一间静室](prototypes/B-one-room.html) · [C 生长索引](prototypes/C-living-index.html)。
+
+| 同一屏幕 | A｜折页路径 | B｜一间静室 | C｜生长索引 |
+| --- | --- | --- | --- |
+| 首页 | [桌面](../evidence/v3/directions/A-home-1440.png) · [窄屏](../evidence/v3/directions/A-home-390.png) | [桌面](../evidence/v3/directions/B-home-1440.png) · [窄屏](../evidence/v3/directions/B-home-390.png) | [桌面](../evidence/v3/directions/C-home-1440.png) · [窄屏](../evidence/v3/directions/C-home-390.png) |
+| 方法库 | [桌面](../evidence/v3/directions/A-library-1440.png) · [窄屏](../evidence/v3/directions/A-library-390.png) | [桌面](../evidence/v3/directions/B-library-1440.png) · [窄屏](../evidence/v3/directions/B-library-390.png) | [桌面](../evidence/v3/directions/C-library-1440.png) · [窄屏](../evidence/v3/directions/C-library-390.png) |
+| 观电影 | [桌面](../evidence/v3/directions/A-cinema-1440.png) · [窄屏](../evidence/v3/directions/A-cinema-390.png) | [桌面](../evidence/v3/directions/B-cinema-1440.png) · [窄屏](../evidence/v3/directions/B-cinema-390.png) | [桌面](../evidence/v3/directions/C-cinema-1440.png) · [窄屏](../evidence/v3/directions/C-cinema-390.png) |
+| 自然数息 | [桌面](../evidence/v3/directions/A-breath-1440.png) · [窄屏](../evidence/v3/directions/A-breath-390.png) | [桌面](../evidence/v3/directions/B-breath-1440.png) · [窄屏](../evidence/v3/directions/B-breath-390.png) | [桌面](../evidence/v3/directions/C-breath-1440.png) · [窄屏](../evidence/v3/directions/C-breath-390.png) |
+| 结束与反思 | [桌面](../evidence/v3/directions/A-reflection-1440.png) · [窄屏](../evidence/v3/directions/A-reflection-390.png) | [桌面](../evidence/v3/directions/B-reflection-1440.png) · [窄屏](../evidence/v3/directions/B-reflection-390.png) | [桌面](../evidence/v3/directions/C-reflection-1440.png) · [窄屏](../evidence/v3/directions/C-reflection-390.png) |
+
+实际 Chromium 共生成 30 张新截图，全部在 Reduced Motion 下运行；断言每页只有一个活动屏幕、无根级横向溢出、无浏览器异常。证据索引：[capture-manifest.json](../evidence/v3/directions/capture-manifest.json)。已人工查看桌面和窄屏总览，并修正 A 方法链接默认蓝色、B 呼吸标题对比不足与 C 结束标题孤字换行后重新截图。它们是方向比较证据，不是十二法验收、真实手机测试或生产页面。
+
+## 加权设计决策
+
+以下是设计决策评分，不是用户评分、心理效果或市场验证。每个维度得分已包含任务书权重，满分 100。
+
+| 方向 | 成熟度与辨识度 20 | 核心任务清晰 20 | 安静可持续 20 | 十二法适配 15 | 移动可访问性 15 | 工程成本 10 | 合计 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| A｜折页路径 | 17 | 18 | 18 | 13 | 13 | 9 | **88** |
+| B｜一间静室 | 18 | 17 | 16 | 12 | 10 | 7 | **80** |
+| C｜生长索引 | 16 | 16 | 17 | 14 | 12 | 8 | **83** |
+
+A 的阅读、默认行动和跨端实现最均衡；B 的空间主体最强，但全站暗色、长文和控件对比成本较高；C 的方法比较与回看最好，但密集索引不适合直接成为练习壳。因此最终选择不是单独“分数最高即全照抄”，而是 A 为系统、B 为练习空间、C 为索引节奏的可回退组合。
 
 ## 各自适合与不适合之处
 
@@ -52,4 +70,4 @@
 
 ## 验收依据
 
-最终不是以本原型“通过”为结论，而是在生产 Web 与 Expo Web 上重新检查 320／390／1440、键盘、大字号、Reduced Motion、十二法与完整数据路径。真实手机、真实触摸、屏幕阅读器与微信浏览器未经执行均标为 `NOT VERIFIED`。
+最终不是以本原型“通过”为结论，而是在生产 Web 与 Expo Web 上重新检查 320／390／768／1440、键盘、大字号、Reduced Motion、十二法与完整数据路径。真实手机、真实触摸、屏幕阅读器与微信浏览器未经执行均标为 `NOT VERIFIED`。

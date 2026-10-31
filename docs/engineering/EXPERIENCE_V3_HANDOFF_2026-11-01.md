@@ -4,11 +4,11 @@
 
 - 分支：`design/stillmind-rea-ui-v3-20261101`。
 - 起点：`c32d423c4eaa5e3f263d1679bb78eee0fd181fbd`，来自 `feat/stillmind-experience-v2-20261031`，不是 PR #6 的小修分支。
-- 实际运行验收对应实现提交：`96cd7c0a608842f8e9d946926961b62cd05e9d01`。
-- 最终 PR HEAD 还包含本交接文档和原始证据的 docs-only 提交；以 Draft PR 页面为准。
+- 既有实现及其实际运行验收对应：`96cd7c0a608842f8e9d946926961b62cd05e9d01`，以下结果属于历史实现基线。
+- 最终 PR HEAD 还包含补齐任务书证据的提交。最终 SHA、同 SHA 复验、CI 与剩余阻塞以 PR 最新交接说明和独立 `evidence/stillmind-v3-final-20261101` 分支为准，不用旧结果冒充最终复验。
 - Draft PR 的目标分支必须为 `feat/stillmind-experience-v2-20261031`。不合并、不部署、不发布，不修改 main、B/C 研究档案或独立官网。
 
-本轮完成 V3 全量表现层与信息架构重构，并复用既有十二法、domain clock、存储和安全逻辑。自动验收通过不等于真实手机、完整无障碍、心理疗效或发布许可。
+本轮完成 V3 全量表现层与信息架构重构，并复用既有十二法、domain clock、存储和安全逻辑。自动验收通过不等于真实手机、完整无障碍、心理疗效或发布许可；AT-10／AT-11 等任务书缺口仍未关闭。
 
 ## 已交付
 
@@ -17,7 +17,9 @@
 - 暖纸、矿物墨色、低饱和绿和单一陶土强调色；去掉主体验的蓝紫渐变、发光圆环和层层卡片。
 - Web 首页桌面使用行动／观看对象双栏，移动端回到自然单列；Expo 首页采用同一语义而非强行共享视图。
 - 共享令牌：`packages/design-tokens/src/index.ts`。Web 与 Expo 的主题、页面和组件同步更新。
-- 规范：`docs/design/STILLMIND_DESIGN_SYSTEM_V3.md`；三方向原型和 V2 审计分别位于 `docs/design/` 与 `docs/evidence/v3/`。
+- 规范：`docs/design/STILLMIND_DESIGN_SYSTEM_V3.md`；三套五屏原型及评分：`docs/design/VISUAL_DIRECTIONS_V3_2026-11-01.md`。
+- 三套原型在相同中文内容、相同 390／1440 尺寸下实际渲染共 30 张图；不是只比较配色或概念图。方向 A 为全站系统，吸收 B 的空间关系与 C 的索引节奏。
+- Phase 0–7 索引与最终十问：`docs/handoff/v3/CODEX_V3_HANDOFF.md`。
 
 ### 进入、准备、练习、结束与重入
 
@@ -44,9 +46,9 @@
 
 ## 实际验证结果
 
-验证使用本地 Next production build、真实 Expo Web 静态导出、本机 Chrome/Chromium、一次性浏览器配置和合成测试输入。未把 Expo Web 当成真机。
+本节是实现提交 `96cd7c0a608842f8e9d946926961b62cd05e9d01` 的历史验收记录；最终 PR HEAD 的同 SHA 复验以 PR 最新交接说明和独立 evidence 分支为准。验证使用本地 Next production build、真实 Expo Web 静态导出、本机 Chrome/Chromium、一次性浏览器配置和合成测试输入。未把 Expo Web 当成真机。
 
-| 检查 | 实际结果 | 证据 |
+| 检查 | 历史实现验收结果 | 证据 |
 | --- | --- | --- |
 | `npm run typecheck` | Web、design tokens、domain、content、mobile 全部通过 | [日志](../evidence/v3/verification/logs/static-unit-and-claims.log) |
 | `npm run lint` | Web 与 Expo lint 全部通过 | 同上 |
@@ -54,6 +56,7 @@
 | `npm run check:claims` | 通过；仅是词法门禁，不是安全或权利认证 | 同上 |
 | Next Webpack production build | 成功，生成 26 个静态页面，含 12 个方法详情 | [构建日志](../evidence/v3/verification/logs/v3-web-build.log) |
 | `npm run build:mobile:web` | 成功，Expo 导出 12 个静态路由 | [构建日志](../evidence/v3/verification/logs/v3-mobile-build.log) |
+| `npm run build:mobile:ios` | 后续预提交复核成功导出静态 HBC bundle；不是 IPA、原生构建或真机测试 | [日志](../evidence/v3/verification/logs/v3-mobile-ios-build-precommit.log) |
 | `npm run smoke:web` | 18 项主回归＋10 项对抗测试全部通过 | [日志](../evidence/v3/verification/logs/v3-web-smoke-committed.log)、[JSON](../evidence/v3/verification/web-smoke-result.json) |
 | `npm run smoke:product:web` | 4 项真实本机产品路径全部通过 | [日志](../evidence/v3/verification/logs/v3-web-product-smoke-committed.log)、[JSON](../evidence/v3/verification/web-product-summary.json) |
 | `npm run smoke:native` | 15 项 Expo Web 回归全部通过 | [日志](../evidence/v3/verification/logs/v3-native-smoke-committed.log) |
@@ -61,7 +64,7 @@
 | 公开页补充检查 | support、seed-test、privacy、terms、method detail 在 390px／Reduced Motion 下无根级横向溢出，无浏览器异常 | [日志](../evidence/v3/verification/logs/v3-public-smoke.log) |
 | `git diff --check` | 通过 | 静态检查日志 |
 
-最终 Web JSON 的 `testedGitSha` 均为 `96cd7c0a608842f8e9d946926961b62cd05e9d01`；`complete: true`、`browserErrors: []`。两份产品路径 JSON 均为 `complete: true`、`failures: []`、`externalRequests: []`。Expo 主回归以真实命令日志为准，不虚构不存在的 result JSON。
+上述历史 Web JSON 的 `testedGitSha` 均为 `96cd7c0a608842f8e9d946926961b62cd05e9d01`；`complete: true`、`browserErrors: []`。两份历史产品路径 JSON 均为 `complete: true`、`failures: []`、`externalRequests: []`。Expo 主回归以真实命令日志为准，不虚构不存在的 result JSON。最终提交复验必须重新生成并核对这些字段。
 
 ### 十二法与状态覆盖
 
@@ -69,12 +72,13 @@ Web 和 Expo Web 均逐一启动并停止以下方法，且验证了所选方法
 
 `inner-cinema`、`paced-breath`、`thought-watching`、`wide-gaze`、`body-scan`、`person-shift`、`logout-pause`、`release`、`open-awareness`、`grounded-action`、`trigger-journal`、`anchors`。
 
-共同覆盖：320px 停止可达、真实计时、暂停／继续、未评分、八秒停止、worse、存储失败、原句保留、重新进入、离线、后台暂停、键盘、Reduced Motion、收藏筛选、复盘、导出和删除。自动逐法通过不代表每种方法都已完成真人体验或临床验证。
+共同覆盖：320px 停止可达、真实计时、暂停／继续、未评分、八秒停止、worse、存储失败、原句保留、重新进入、离线、后台暂停、键盘、Reduced Motion、收藏筛选、复盘、导出和删除。自动逐法通过不代表每种方法都已完成真人体验或临床验证。AT-10 的原 Session 可见保存重试仍不完整，AT-11 的 running／paused／completed_candidate／save_error 恢复仍缺失；其余逐项状态见 `docs/handoff/v3/08_QA_REPORT.md`。
 
 ### 截图与原始结果
 
-- V3 验收截图：`docs/evidence/v3/verification/`。含 Web 320／390／1440、Expo 320／390、十二法、首次边界、观电影、减少动态、长中文、停止、worse 和公开页面。
-- 三方向截图：`docs/evidence/v3/directions/`；V2 对照：`docs/evidence/v3/v2-baseline/`。
+- V3 验收截图：`docs/evidence/v3/verification/`。历史实现含 Web 320／390／1440、Expo 320／390、十二法、首次边界、观电影、减少动态、长中文、停止、worse 和公开页面；最终复验新增 Web 390／768／1440 首页与准备页。
+- 三方向五屏截图：`docs/evidence/v3/directions/`，30 张均已实际查看。
+- 严格 V2／V3 同条件对照：`docs/evidence/v3/compare/`，七组共 14 张均已实际查看，说明见 `docs/handoff/v3/09_BEFORE_AFTER.md`。旧 `docs/evidence/v3/v2-baseline/` 不冒充严格同条件对照。
 - 已人工查看代表性最终截图，重点检查首次边界弹窗、准备页、观电影、320px 控制、停止后状态、Expo 首页／引导和五个公开页面。
 - 截图文字和 Session 均为合成测试数据，不是用户案例。性能字段只是本地单次浏览器记录，不是公网 Lighthouse 或真实用户指标。
 
@@ -101,7 +105,7 @@ Draft PR #7 的首轮远端 CI 对应 `e1b749fb50fd3c00b8b1dd5021d12213bb6408c0`
 - `Verify release readiness`：失败于 `Capture dependency advisories`，后续 `Run release verification` 和 `Exercise actual Expo Web export` 被跳过。这是已披露的依赖审计门禁失败，不是 Web 功能回归失败。
 - 仓库既有 Vercel 集成在 push 后自动完成 Preview；这不是手动生产部署或发布，也没有把该 Preview 当作真实设备／公网验收。
 
-本交接追加提交只更新文档；最终 PR HEAD 以 GitHub 为准。不得把上述首轮 CI 结果冒充为新 HEAD 的完整发布放行。
+本交接追加提交补齐研究、设计文档、截图证据及 768px 回归覆盖；最终 PR HEAD 与对应 CI 以 GitHub 为准。不得把上述首轮 CI 结果冒充为新 HEAD 的完整发布放行。
 
 ## 依赖审计：仍未获得安全放行
 
@@ -139,7 +143,7 @@ High 的具体链路：
 
 ## 审查建议
 
-1. 审查 `c32d423...96cd7c0` 的实现与证据，再查看 docs-only 的最终交接提交。
+1. 审查 `c32d423...96cd7c0` 的实现与历史证据，再查看最终交接提交及其独立 evidence 分支中的同 SHA 复验。
 2. 优先检查准备页默认值、折叠选项、十二法路由、安全门、真实计时、After-check、存储失败和返回路径。
 3. 在干净 Node 22 环境安装锁定依赖并重跑本文命令；补齐真实移动设备与读屏验收后，才能更新对应 `NOT VERIFIED`。
 4. 另行处理 Expo 依赖链和长课程内容。不要自动合并 main、部署或把 B/C 档案并入 A。
