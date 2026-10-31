@@ -92,6 +92,17 @@ Web 和 Expo Web 均逐一启动并停止以下方法，且验证了所选方法
 
 默认 `npm run build` 的 Turbopack 路线在此 Windows 环境历史上有子进程 `program not found` 阻塞，本轮最终验收没有宣称其通过。后续应在干净 Node 22 CI／开发机重跑默认构建与完整 release 门禁，不把当前 Webpack 成功扩展成全环境构建证明。
 
+## GitHub PR CI 与自动 Preview
+
+Draft PR #7 的首轮远端 CI 对应 `e1b749fb50fd3c00b8b1dd5021d12213bb6408c0`，workflow run 为 `41229045862`：
+
+- `Read-only source handoff`：通过。
+- `Web production browser regression`：通过；干净 Ubuntu／Node 22 环境的 `Build Web and exercise real browser paths` 步骤成功。
+- `Verify release readiness`：失败于 `Capture dependency advisories`，后续 `Run release verification` 和 `Exercise actual Expo Web export` 被跳过。这是已披露的依赖审计门禁失败，不是 Web 功能回归失败。
+- 仓库既有 Vercel 集成在 push 后自动完成 Preview；这不是手动生产部署或发布，也没有把该 Preview 当作真实设备／公网验收。
+
+本交接追加提交只更新文档；最终 PR HEAD 以 GitHub 为准。不得把上述首轮 CI 结果冒充为新 HEAD 的完整发布放行。
+
 ## 依赖审计：仍未获得安全放行
 
 2026-11-01 实际执行 `npm audit --json`，结果为：
