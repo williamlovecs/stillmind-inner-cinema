@@ -1,0 +1,17 @@
+2026-11-01T03:52:27+08:00
+b4cf885eae5105cb1266d82c040f8ecab7e168b9
+
+changed 1 package, and audited 1008 packages in 32s
+
+170 packages are looking for funding
+  run `npm fund` for details
+
+43 vulnerabilities (2 low, 24 moderate, 15 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.

@@ -1,0 +1,16 @@
+2026-11-01T03:56:33+08:00
+b4cf885eae5105cb1266d82c040f8ecab7e168b9
+stillmind-inner-cinema@0.1.0 E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57
+`-- mobile@1.0.0 -> .\mobile
+  +-- @expo/metro-runtime@57.0.17
+  +-- expo-router@57.0.29
+  +-- expo@57.0.31
+  +-- react-native-worklets@0.10.1
+  `-- react-native@0.86.3
+
+
+> stillmind-inner-cinema@0.1.0 doctor:mobile
+> npx expo-doctor@latest mobile
+
+Running 21 checks on your project...
+21/21 checks passed. No issues detected!

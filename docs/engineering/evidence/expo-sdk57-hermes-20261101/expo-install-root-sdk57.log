@@ -1,0 +1,159 @@
+2026-11-01T03:50:29+08:00
+b4cf885eae5105cb1266d82c040f8ecab7e168b9
+› Installing 1 other package using npm
+› Using 57.0.9 instead of ~56.0.24 for expo because this version was explicitly provided. Packages excluded from dependency validation should be listed in expo.install.exclude in package.json. Learn more: https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation
+> npm install
+npm warn ERESOLVE overriding peer dependency
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: expo-modules-core@57.0.24
+npm warn Found: react-native-worklets@0.13.1
+npm warn node_modules/react-native-worklets
+npm warn   peerOptional react-native-worklets@"*" from @expo/ui@57.0.26
+npm warn   node_modules/expo-router/node_modules/@expo/ui
+npm warn     @expo/ui@"^57.0.26" from expo-router@57.0.29
+npm warn   1 more (react-native-reanimated)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peerOptional react-native-worklets@"^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0" from expo-modules-core@57.0.24
+npm warn node_modules/expo-modules-core
+npm warn   expo-modules-core@"~57.0.8" from expo@57.0.9
+npm warn   node_modules/expo
+npm warn   1 more (expo)
+npm warn
+npm warn Conflicting peer dependency: react-native-worklets@0.10.4
+npm warn node_modules/react-native-worklets
+npm warn   peerOptional react-native-worklets@"^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0" from expo-modules-core@57.0.24
+npm warn   node_modules/expo-modules-core
+npm warn     expo-modules-core@"~57.0.8" from expo@57.0.9
+npm warn     node_modules/expo
+npm warn     1 more (expo)
+
+added 45 packages, removed 124 packages, changed 89 packages, and audited 1008 packages in 45s
+
+170 packages are looking for funding
+  run `npm fund` for details
+
+43 vulnerabilities (2 low, 24 moderate, 15 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+› Running npx expo install under the updated expo version
+> expo install --fix
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@57.0.9 - expected version: ~57.0.31
+  typescript@5.9.3 - expected version: ~6.0.3
+Your project may not work correctly until you install the expected versions of the packages.
+› Installing 2 SDK 57.0.0 compatible native modules using npm
+> npm install
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: expo-modules-core@57.0.24
+npm warn Found: react-native-worklets@0.13.1
+npm warn node_modules/react-native-worklets
+npm warn   peerOptional react-native-worklets@"*" from @expo/ui@57.0.26
+npm warn   node_modules/expo-router/node_modules/@expo/ui
+npm warn     @expo/ui@"^57.0.26" from expo-router@57.0.29
+npm warn     node_modules/expo-router
+npm warn   1 more (react-native-reanimated)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peerOptional react-native-worklets@"^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0" from expo-modules-core@57.0.24
+npm warn node_modules/expo-modules-core
+npm warn   expo-modules-core@"~57.0.24" from expo@57.0.31
+npm warn   node_modules/expo
+npm warn
+npm warn Conflicting peer dependency: react-native-worklets@0.10.4
+npm warn node_modules/react-native-worklets
+npm warn   peerOptional react-native-worklets@"^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0" from expo-modules-core@57.0.24
+npm warn   node_modules/expo-modules-core
+npm warn     expo-modules-core@"~57.0.24" from expo@57.0.31
+npm warn     node_modules/expo
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: react-native@0.88.1
+npm error Found: react@19.2.3
+npm error node_modules/react
+npm error   react@"19.2.3" from the root project
+npm error   peerOptional react@"*" from @expo/devtools@57.0.1
+npm error   node_modules/@expo/devtools
+npm error     @expo/devtools@"~57.0.1" from expo@57.0.31
+npm error     node_modules/expo
+npm error       expo@"~57.0.31" from the root project
+npm error       32 more (@expo/dom-webview, @expo/log-box, @expo/metro-config, ...)
+npm error   89 more (@expo/dom-webview, @expo/log-box, @expo/metro-runtime, ...)
+npm error
+npm error Could not resolve dependency:
+npm error peer react@"^19.3.0" from react-native@0.88.1
+npm error node_modules/react-native
+npm error   peerOptional react-native@"*" from @expo/devtools@57.0.1
+npm error   node_modules/@expo/devtools
+npm error     @expo/devtools@"~57.0.1" from expo@57.0.31
+npm error     node_modules/expo
+npm error       expo@"~57.0.31" from the root project
+npm error       32 more (@expo/dom-webview, @expo/log-box, @expo/metro-config, ...)
+npm error   peer react-native@"*" from @expo/dom-webview@57.0.1
+npm error   node_modules/@expo/dom-webview
+npm error     @expo/dom-webview@"^57.0.1" from @expo/log-box@57.0.4
+npm error     node_modules/@expo/log-box
+npm error       @expo/log-box@"^57.0.4" from @expo/metro-runtime@57.0.17
+npm error       node_modules/@expo/metro-runtime
+npm error       3 more (expo-router, expo, @expo/cli)
+npm error     1 more (expo)
+npm error   34 more (@expo/log-box, @expo/metro-runtime, ...)
+npm error
+npm error Conflicting peer dependency: react@19.3.1
+npm error node_modules/react
+npm error   peer react@"^19.3.0" from react-native@0.88.1
+npm error   node_modules/react-native
+npm error     peerOptional react-native@"*" from @expo/devtools@57.0.1
+npm error     node_modules/@expo/devtools
+npm error       @expo/devtools@"~57.0.1" from expo@57.0.31
+npm error       node_modules/expo
+npm error         expo@"~57.0.31" from the root project
+npm error         32 more (@expo/dom-webview, @expo/log-box, @expo/metro-config, ...)
+npm error     peer react-native@"*" from @expo/dom-webview@57.0.1
+npm error     node_modules/@expo/dom-webview
+npm error       @expo/dom-webview@"^57.0.1" from @expo/log-box@57.0.4
+npm error       node_modules/@expo/log-box
+npm error         @expo/log-box@"^57.0.4" from @expo/metro-runtime@57.0.17
+npm error         node_modules/@expo/metro-runtime
+npm error         3 more (expo-router, expo, @expo/cli)
+npm error       1 more (expo)
+npm error     34 more (@expo/log-box, @expo/metro-runtime, ...)
+npm error
+npm error Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\.npm-cache\_logs\2026-10-31T19_51_21_726Z-eresolve-report.txt
+npm error A complete log of this run can be found in: E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\.npm-cache\_logs\2026-10-31T19_51_21_726Z-debug-0.log
+Cannot install the latest Expo package. Install expo@latest with npm and then run npx expo install again.
+Error: npm install exited with non-zero code: 1
+Error: npm install exited with non-zero code: 1
+    at ChildProcess.completionListener (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\@expo\spawn-async\build\spawnAsync.js:113:23)
+    at ChildProcess.wrapper (node:events:639:12)
+    at ChildProcess.emit (node:events:514:28)
+    at cp.emit (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\cross-spawn\lib\enoent.js:34:29)
+    at ChildProcess._handle.onexit (node:internal/child_process:295:12)
+    ...
+    at spawnAsync (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\@expo\spawn-async\build\spawnAsync.js:9:23)
+    at NpmPackageManager.runAsync (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\@expo\package-manager\build\node\BasePackageManager.js:41:42)
+    at E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\@expo\package-manager\build\node\NpmPackageManager.js:36:20
+    at E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\@expo\package-manager\build\utils\spawn.js:14:34
+Error: npx expo install --fix exited with non-zero code: 1
+Error: npx expo install --fix exited with non-zero code: 1
+    at ChildProcess.completionListener (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\@expo\spawn-async\build\spawnAsync.js:113:23)
+    at ChildProcess.wrapper (node:events:639:12)
+    at ChildProcess.emit (node:events:514:28)
+    at cp.emit (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\cross-spawn\lib\enoent.js:34:29)
+    at ChildProcess._handle.onexit (node:internal/child_process:295:12)
+    ...
+    at spawnAsync (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\@expo\spawn-async\build\spawnAsync.js:9:23)
+    at installExpoPackageAsync (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\expo\node_modules\@expo\cli\build\src\install\installExpoPackage.js:114:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async installPackagesAsync (E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\closeout\d-expo-sdk57\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js:176:16)
