@@ -10,7 +10,7 @@ export function ReleaseBoundary({ instruction, paused }: MethodInteractionProps)
   const [boundary, setBoundary] = useState<Boundary>("unprocessed");
   return <>
     <OriginalText testID="boundary-guidance">{boundary === "contact" ? instruction : boundaryCopy[boundary]}</OriginalText>
-    <ChoiceRow><Chip label="暂不处理" selected={boundary === "unprocessed"} onPress={() => setBoundary("unprocessed")} /><Chip label="保持距离" selected={boundary === "distance"} onPress={() => setBoundary("distance")} /><Chip label="只停止本次重播" selected={boundary === "stop-replay"} onPress={() => setBoundary("stop-replay")} /></ChoiceRow>
+    <ChoiceRow><Chip disabled={paused} label="暂不处理" selected={boundary === "unprocessed"} onPress={() => setBoundary("unprocessed")} /><Chip disabled={paused} label="保持距离" selected={boundary === "distance"} onPress={() => setBoundary("distance")} /><Chip disabled={paused} label="只停止本次重播" selected={boundary === "stop-replay"} onPress={() => setBoundary("stop-replay")} /></ChoiceRow>
     <SecondaryButton disabled={paused} accessibilityState={{ selected: boundary === "contact" }} label={boundary === "contact" ? "暂不接触这件事" : "愿意继续观察反应"} onPress={() => setBoundary(boundary === "contact" ? "unprocessed" : "contact")} />
     <Note>这只改变本次引导，不代表你已宽恕，也不要求和解或联系对方。</Note>
   </>;
@@ -22,7 +22,7 @@ export function OpenAwareness({ paused }: MethodInteractionProps) {
   const [textOnly, setTextOnly] = useState(false);
   function toggle(field: string) { setFields((current) => current.includes(field) ? current.filter((item) => item !== field) : [...current, field]); }
   return <>
-    <Chip label={textOnly ? "显示静态场景" : "切换纯文字"} selected={textOnly} onPress={() => setTextOnly(!textOnly)} />
+    <Chip disabled={paused} label={textOnly ? "显示静态场景" : "切换纯文字"} selected={textOnly} onPress={() => setTextOnly(!textOnly)} />
     {textOnly ? <OriginalText>可以注意一种声音、一处接触、一句念头，或周围的空间。也可以什么都不标记。</OriginalText> : <Stage><View style={styles.awarenessOuter}><View style={styles.awarenessInner} /></View><Note>一个静态的开放注意范围，没有需要到达的中心。</Note></Stage>}
     <View accessibilityLabel="可选的觉察标记"><ChoiceRow>{awarenessFields.map((field) => <Chip key={field} disabled={paused} label={field} selected={fields.includes(field)} onPress={() => toggle(field)} />)}</ChoiceRow></View>
     <Note>主动标记：{fields.join("、") || "暂无"}。没有标记不代表没有觉察。</Note>
@@ -35,10 +35,10 @@ export function FocusedObservation({ paused }: MethodInteractionProps) {
   const [external, setExternal] = useState(false);
   const [objectName, setObjectName] = useState("");
   return <>
-    <ChoiceRow><Chip label="观察屏幕纸面" selected={!external} onPress={() => setExternal(false)} /><Chip label="观察现实物品" selected={external} onPress={() => setExternal(true)} /></ChoiceRow>
+    <ChoiceRow><Chip disabled={paused} label="观察屏幕纸面" selected={!external} onPress={() => setExternal(false)} /><Chip disabled={paused} label="观察现实物品" selected={external} onPress={() => setExternal(true)} /></ChoiceRow>
     {external ? <><Note>把屏幕放低，看一件普通的真实物品。不需要拍照或授权摄像头。</Note><TextInput accessibilityLabel="本次观察的真实物品" editable={!paused} value={objectName} onChangeText={setObjectName} maxLength={60} placeholder="可记下物品或细节，也可以不写" placeholderTextColor={colors.textFaint} style={methodStyles.input} />{objectName.trim() ? <View style={methodStyles.notice}><Text style={methodStyles.noticeText}>本次对象：{objectName}</Text></View> : null}</> : <>
       <View style={styles.paperViewport}><View accessible accessibilityLabel={view === "detail" ? "纸面纹理与杯沿边界的近看细节" : "带纸面纹理和杯沿轮廓的静物"} style={[styles.paper, view === "object" && styles.paperObject, view === "detail" && styles.paperDetail]}><View style={styles.paperLine} /><View style={styles.paperLineSecond} /><View style={styles.cupRim} /></View></View>
-      <ChoiceRow>{focusViews.map((item) => <Chip key={item.id} label={item.label} selected={view === item.id} onPress={() => setView(item.id)} />)}</ChoiceRow>
+      <ChoiceRow>{focusViews.map((item) => <Chip key={item.id} disabled={paused} label={item.label} selected={view === item.id} onPress={() => setView(item.id)} />)}</ChoiceRow>
       <Note>{view === "whole" ? "先看纸面与周围的关系。" : view === "object" ? "只看纸面上的杯沿轮廓。" : "观察一条纹理或一处明暗边界；画面只是放大，不代表注意力水平。"}</Note>
     </>}
   </>;

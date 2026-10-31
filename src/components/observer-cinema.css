@@ -379,6 +379,17 @@
   min-height: 116px;
 }
 
+/* Keep the sentence central: distance is reinforced by quieter light, never by moving or rewriting it. */
+.observer-stage[data-lens="audience"] .observer-screen {
+  border-color: rgb(216 180 254 / 32%);
+  box-shadow: 0 0 36px rgb(139 92 246 / 10%), 0 18px 40px rgb(1 4 14 / 32%), inset 0 1px 0 rgb(255 255 255 / 5%);
+}
+
+.observer-stage[data-lens="witness"] .observer-screen {
+  border-color: rgb(216 180 254 / 26%);
+  box-shadow: 0 0 36px rgb(139 92 246 / 8%), 0 18px 40px rgb(1 4 14 / 32%), inset 0 1px 0 rgb(255 255 255 / 5%);
+}
+
 @media (max-width: 380px) {
   .observer-stage {
     min-height: 292px;

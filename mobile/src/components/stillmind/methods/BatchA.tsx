@@ -9,7 +9,7 @@ export function BreathObservation({ paused }: MethodInteractionProps) {
   const [taps, setTaps] = useState(0);
   const [textOnly, setTextOnly] = useState(false);
   return <>
-    <ChoiceRow><Chip label="静态水面" selected={!textOnly} onPress={() => setTextOnly(false)} /><Chip label="纯文字" selected={textOnly} onPress={() => setTextOnly(true)} /></ChoiceRow>
+    <ChoiceRow><Chip disabled={paused} label="静态水面" selected={!textOnly} onPress={() => setTextOnly(false)} /><Chip disabled={paused} label="纯文字" selected={textOnly} onPress={() => setTextOnly(true)} /></ChoiceRow>
     {textOnly ? <OriginalText>按自己的节奏呼吸。呼气时，可以在心里数一次。</OriginalText> : <Pressable disabled={paused} accessibilityRole="button" accessibilityLabel="轻点记一次数" onPress={() => setTaps((value) => value + 1)} style={styles.water}>
       <View style={styles.waterRing} /><View style={styles.waterLine} /><Text accessibilityLiveRegion="polite" style={styles.waterText}>{taps ? `轻点 ${taps}` : "自然呼吸"}</Text>
     </Pressable>}
@@ -40,7 +40,7 @@ export function GazeObservation({ paused }: MethodInteractionProps) {
     <Pressable disabled={paused} accessibilityRole="button" accessibilityLabel="走神了，点一下回到烛光" onPress={() => { setReturns((value) => value + 1); setView("center"); }} style={({ pressed }) => [styles.candleStage, pressed && styles.pressed]}>
       <View style={[styles.candle, view === "edge" && styles.candleEdge, view === "space" && styles.candleSpace]}><View style={styles.flame} /><View style={styles.wick} /><View style={styles.candleBody} /></View>
     </Pressable>
-    <ChoiceRow>{gazeViews.map((item) => <Chip key={item.id} label={item.label} selected={view === item.id} onPress={() => setView(item.id)} />)}</ChoiceRow>
+    <ChoiceRow>{gazeViews.map((item) => <Chip key={item.id} disabled={paused} label={item.label} selected={view === item.id} onPress={() => setView(item.id)} />)}</ChoiceRow>
     <Note>{active.hint}</Note><Note>眼睛累了就眨眼或停止。点击只是回到中心，不是成绩。{returns > 0 ? `本次主动回到中心 ${returns} 次。` : ""}</Note>
   </>;
 }
