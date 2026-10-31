@@ -1,0 +1,21 @@
+2026-11-01T03:47:23+08:00
+b4cf885eae5105cb1266d82c040f8ecab7e168b9
+› Installing 2 other packages using npm
+› Using ~57.0.17 instead of ~56.0.21 for @expo/metro-runtime and ~57.0.29 instead of ~56.2.22 for expo-router because these versions was explicitly provided. Packages excluded from dependency validation should be listed in expo.install.exclude in package.json. Learn more: https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation
+> npm install --save-dev
+
+up to date, audited 1087 packages in 9s
+
+170 packages are looking for funding
+  run `npm fund` for details
+
+46 vulnerabilities (2 low, 26 moderate, 16 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+› Added config plugin: expo-router

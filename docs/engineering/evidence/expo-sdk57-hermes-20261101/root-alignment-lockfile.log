@@ -1,0 +1,37 @@
+2026-11-01T03:48:32+08:00
+b4cf885eae5105cb1266d82c040f8ecab7e168b9
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: stillmind-inner-cinema@0.1.0
+npm error Found: react@19.2.3
+npm error node_modules/react
+npm error   react@"19.2.3" from the root project
+npm error   peer react@"*" from @expo/metro-runtime@57.0.17
+npm error   node_modules/@expo/metro-runtime
+npm error     dev @expo/metro-runtime@"~57.0.17" from the root project
+npm error     @expo/metro-runtime@"~57.0.17" from mobile@1.0.0
+npm error     mobile
+npm error       mobile@1.0.0
+npm error       node_modules/mobile
+npm error         workspace mobile from the root project
+npm error     1 more (expo)
+npm error   3 more (expo, mobile, react-dom)
+npm error
+npm error Could not resolve dependency:
+npm error peer react@"^19.3.0" from react-native@0.88.1
+npm error node_modules/react-native
+npm error   peer react-native@"*" from @expo/metro-runtime@57.0.17
+npm error   node_modules/@expo/metro-runtime
+npm error     dev @expo/metro-runtime@"~57.0.17" from the root project
+npm error     2 more (mobile, expo)
+npm error   peer react-native@"*" from expo@58.0.22
+npm error   node_modules/expo
+npm error     peer expo@"*" from @expo/metro-runtime@57.0.17
+npm error
+npm error Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\.npm-cache\_logs\2026-10-31T19_48_32_907Z-eresolve-report.txt
+npm error A complete log of this run can be found in: E:\kimi-work\tasks\2026-10-31\22-30-27-1531681d\.npm-cache\_logs\2026-10-31T19_48_32_907Z-debug-0.log
