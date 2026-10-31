@@ -1,0 +1,20 @@
+
+> stillmind-inner-cinema@0.1.0 smoke:native
+> node scripts/smoke-native-web.mjs
+
+PASS native direct entry waits for onboarding and allows skipping feedback
+PASS native missing scores, active clock, pause and eight-second stop are honest
+PASS native manual deep links cannot bypass method eligibility or breath preferences
+PASS native completion precedes feedback and discomfort never becomes success
+PASS native storage failure preserves the exit and reports unsaved data
+PASS native observer changes the same central object and restores the near composition
+PASS web builds show the crisis boundary inline when high-risk language is entered
+PASS web builds can actually delete all local data through a real confirmation
+PASS failed history hydration preserves acknowledged onboarding and saved breath opt-outs
+PASS library and detail preference persistence failures are visible without unhandled promises
+PASS partial deletion attempts independent cleanup and keeps the warning visible
+PASS 320px onboarding scrolls its content while keeping the entry control visible
+PASS native breathing has no fixed phase and only records optional taps
+PASS native long quoted input stays intact and small-screen stop remains physically reachable
+PASS native twelve methods start and stop; static observation, voluntary awareness and contact choice are truthful
+Native Expo Web regression PASS; physical iOS and signing are not tested.

@@ -1,0 +1,6 @@
+PASS /support renders at 390px without root overflow; reduced-motion screenshot captured
+PASS /support/seed-test renders at 390px without root overflow; reduced-motion screenshot captured
+PASS /privacy renders at 390px without root overflow; reduced-motion screenshot captured
+PASS /terms renders at 390px without root overflow; reduced-motion screenshot captured
+PASS /methods/inner-cinema renders at 390px without root overflow; reduced-motion screenshot captured
+Public-page visual smoke PASS; no browser runtime exceptions.

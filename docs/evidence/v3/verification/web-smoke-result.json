@@ -1,0 +1,27 @@
+{
+  "complete": true,
+  "passed": [
+    "production security headers and cross-origin API rejection are active",
+    "direct entry waits for acknowledged boundary; stop can skip feedback",
+    "missing scores stay missing; pause excludes time; eight-second stop stays eight seconds",
+    "URL/manual start cannot bypass high-activation or breath opt-out rules",
+    "completion precedes feedback; worse ending is neutral and does not promote repeating",
+    "default start, stop and feedback send no analytics requests",
+    "observer lens changes the same central object reversibly; keyboard, reduced motion, small width, pause and ending work",
+    "natural counting has no timed inhale/exhale or estimated breath count",
+    "framing keeps quoted speakers and compounds without a default name",
+    "logout hides/restores content; noticing is an optional reversible mark with neutral empty intake",
+    "actual tab background pauses timer and CSS animation; returning requires explicit resume",
+    "opt-in start and client-side navigation emit one joinable abandoned attempt",
+    "late consent sends feedback only; missing answers and action remain unreported",
+    "stability is a static observation with a reversible external alternative, not press-driven progress",
+    "awareness has no invented selections and contact choice actually changes the guidance",
+    "all twelve methods start their selected method and can stop at 320px without horizontal overflow",
+    "twelve method links remain; 390/1440 layouts have no root overflow or accidental auto-start",
+    "storage write failure does not trap exit or claim a successful save"
+  ],
+  "testedGitSha": "96cd7c0a608842f8e9d946926961b62cd05e9d01",
+  "browserErrors": [],
+  "eventCount": 5,
+  "scope": "Synthetic local Chromium production test; not physical-device or efficacy validation"
+}
