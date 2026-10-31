@@ -1,0 +1,6 @@
+
+> stillmind-inner-cinema@0.1.0 test:api
+> tsx --test test/api-cinema.test.ts
+
+'tsx' is not recognized as an internal or external command,
+operable program or batch file.

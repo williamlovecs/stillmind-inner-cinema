@@ -1,0 +1,109 @@
+
+> stillmind-inner-cinema@0.1.0 test:api
+> tsx --test test/api-cinema.test.ts
+
+✔ cinema API rejects missing and oversized input (3.4028ms)
+✖ cinema API enforces its byte limit without a content-length header (1.7869ms)
+✔ cinema API routes high-risk language to the safety boundary (0.4134ms)
+✔ cinema API always returns a complete safe preset without a provider key (0.6355ms)
+✖ cinema API does not let abnormal content-length headers bypass the byte limit (0.528ms)
+✔ cinema API accepts a valid body at exactly 4096 bytes (0.3095ms)
+✖ cinema API rejects a valid body one byte above the limit (0.3111ms)
+✔ cinema API decodes multibyte UTF-8 split across single-byte chunks (1.5102ms)
+✖ cinema API safely handles stream read failure and releases the reader lock (0.824ms)
+✖ cinema API contains cancel rejection and releases the lock after rejecting oversized input (31.6972ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 5
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 461.796
+
+✖ failing tests:
+
+test at test\api-cinema.test.ts:2:2707
+✖ cinema API enforces its byte limit without a content-length header (1.7869ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  200 !== 413
+  
+      at TestContext.<anonymous> (C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind-old-baseline-20261101\test\api-cinema.test.ts:60:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 413,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\api-cinema.test.ts:2:4484
+✖ cinema API does not let abnormal content-length headers bypass the byte limit (0.528ms)
+  AssertionError [ERR_ASSERTION]: content-length: "not-a-number"
+  
+  200 !== 413
+  
+      at <anonymous> (C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind-old-baseline-20261101\test\api-cinema.test.ts:99:12)
+      at async withoutProviderKey (C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind-old-baseline-20261101\test\api-cinema.test.ts:36:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 413,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\api-cinema.test.ts:2:5749
+✖ cinema API rejects a valid body one byte above the limit (0.3111ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  200 !== 413
+  
+      at <anonymous> (C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind-old-baseline-20261101\test\api-cinema.test.ts:126:10)
+      at async withoutProviderKey (C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind-old-baseline-20261101\test\api-cinema.test.ts:36:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 200,
+    expected: 413,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\api-cinema.test.ts:2:7012
+✖ cinema API safely handles stream read failure and releases the reader lock (0.824ms)
+  TypeError [ERR_INVALID_STATE]: Invalid state: ReadableStream is locked
+      at setupReadableStreamDefaultReader (node:internal/webstreams/readablestream:2649:11)
+      at new ReadableStreamDefaultReader (node:internal/webstreams/readablestream:921:5)
+      at ReadableStream.getReader (node:internal/webstreams/readablestream:372:14)
+      at TestContext.<anonymous> (C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind-old-baseline-20261101\test\api-cinema.test.ts:163:25)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'ERR_INVALID_STATE'
+  }
+
+test at test\api-cinema.test.ts:2:7650
+✖ cinema API contains cancel rejection and releases the lock after rejecting oversized input (31.6972ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  400 !== 413
+  
+      at TestContext.<anonymous> (C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind-old-baseline-20261101\test\api-cinema.test.ts:186:10)
+      at runNextTicks (node:internal/process/task_queues:65:5)
+      at listOnTimeout (node:internal/timers:644:9)
+      at process.processTimers (node:internal/timers:618:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 400,
+    expected: 413,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
