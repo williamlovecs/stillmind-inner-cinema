@@ -128,8 +128,8 @@
         "node_modules/@expo/config-plugins"
       ],
       "fixAvailable": {
-        "name": "expo-sharing",
-        "version": "14.0.8",
+        "name": "expo-splash-screen",
+        "version": "55.0.25",
         "isSemVerMajor": true
       }
     },
@@ -236,7 +236,7 @@
       ],
       "fixAvailable": {
         "name": "eslint-config-next",
-        "version": "0.2.4",
+        "version": "12.0.4",
         "isSemVerMajor": true
       }
     },
@@ -275,7 +275,7 @@
       ],
       "fixAvailable": {
         "name": "eslint-config-next",
-        "version": "0.2.4",
+        "version": "12.0.4",
         "isSemVerMajor": true
       }
     },
@@ -316,7 +316,7 @@
       ],
       "fixAvailable": {
         "name": "eslint-config-next",
-        "version": "0.2.4",
+        "version": "12.0.4",
         "isSemVerMajor": true
       }
     },
@@ -340,7 +340,7 @@
       ],
       "fixAvailable": {
         "name": "eslint-config-next",
-        "version": "0.2.4",
+        "version": "12.0.4",
         "isSemVerMajor": true
       }
     },
@@ -431,6 +431,7 @@
         "@typescript-eslint/parser",
         "@typescript-eslint/type-utils",
         "@typescript-eslint/utils",
+        "eslint-config-next",
         "typescript-eslint"
       ],
       "range": "0.7.1 - 2.0.0-rc.1 || >=4.1.0",
@@ -462,7 +463,7 @@
       ],
       "fixAvailable": {
         "name": "eslint-config-next",
-        "version": "0.2.4",
+        "version": "12.0.4",
         "isSemVerMajor": true
       }
     },
@@ -473,18 +474,12 @@
       "via": [
         "minimatch"
       ],
-      "effects": [
-        "eslint-config-next"
-      ],
+      "effects": [],
       "range": ">=1.15.0",
       "nodes": [
         "node_modules/eslint-plugin-import"
       ],
-      "fixAvailable": {
-        "name": "eslint-config-next",
-        "version": "0.2.4",
-        "isSemVerMajor": true
-      }
+      "fixAvailable": true
     },
     "eslint-plugin-jsx-a11y": {
       "name": "eslint-plugin-jsx-a11y",
@@ -502,7 +497,7 @@
       ],
       "fixAvailable": {
         "name": "eslint-config-next",
-        "version": "0.2.4",
+        "version": "12.0.4",
         "isSemVerMajor": true
       }
     },
@@ -723,7 +718,7 @@
       ],
       "fixAvailable": {
         "name": "eslint-config-next",
-        "version": "0.2.4",
+        "version": "12.0.4",
         "isSemVerMajor": true
       }
     },

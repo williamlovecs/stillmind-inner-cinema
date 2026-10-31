@@ -11,13 +11,13 @@
   "performance": {
     "scope": "Local production build in headless Chrome; not Lighthouse or public-network measurement",
     "metrics": {
-      "domContentLoadedMs": 77.80000001192093,
-      "loadMs": 78,
+      "domContentLoadedMs": 126,
+      "loadMs": 126.5,
       "resourceCount": 2,
-      "transferBytes": 3411036,
-      "decodedBytes": 3410436
+      "transferBytes": 3373113,
+      "decodedBytes": 3372513
     }
   },
-  "testedGitSha": "96cd7c0a608842f8e9d946926961b62cd05e9d01",
+  "testedGitSha": "790a591cf34618e77f1f0b396f1823bf9a852b70",
   "scope": "Local Expo Web export; not a physical device"
 }

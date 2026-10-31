@@ -12,13 +12,13 @@
   "performance": {
     "scope": "Local production build in headless Chrome; not Lighthouse or public-network measurement",
     "metrics": {
-      "domContentLoadedMs": 14.200000002980232,
-      "loadMs": 24.5,
+      "domContentLoadedMs": 12.699999988079071,
+      "loadMs": 26.799999997019768,
       "resourceCount": 21,
-      "transferBytes": 16560,
-      "decodedBytes": 682223
+      "transferBytes": 13405,
+      "decodedBytes": 682933
     }
   },
-  "testedGitSha": "96cd7c0a608842f8e9d946926961b62cd05e9d01",
+  "testedGitSha": "790a591cf34618e77f1f0b396f1823bf9a852b70",
   "scope": "Local Next production browser automation"
 }

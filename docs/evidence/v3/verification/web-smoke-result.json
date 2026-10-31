@@ -17,10 +17,10 @@
     "stability is a static observation with a reversible external alternative, not press-driven progress",
     "awareness has no invented selections and contact choice actually changes the guidance",
     "all twelve methods start their selected method and can stop at 320px without horizontal overflow",
-    "twelve method links remain; 390/1440 layouts have no root overflow or accidental auto-start",
+    "twelve method links remain; 390/768/1440 layouts have no root overflow or accidental auto-start",
     "storage write failure does not trap exit or claim a successful save"
   ],
-  "testedGitSha": "96cd7c0a608842f8e9d946926961b62cd05e9d01",
+  "testedGitSha": "790a591cf34618e77f1f0b396f1823bf9a852b70",
   "browserErrors": [],
   "eventCount": 5,
   "scope": "Synthetic local Chromium production test; not physical-device or efficacy validation"

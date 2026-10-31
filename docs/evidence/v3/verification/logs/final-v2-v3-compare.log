@@ -1,0 +1,18 @@
+
+DevTools listening on ws://127.0.0.1:9473/devtools/browser/4ab6d532-eceb-423a-b5a1-48a44ee4220e
+PASS v2/home-390
+PASS v3/home-390
+PASS v2/home-768
+PASS v3/home-768
+PASS v2/home-1440
+PASS v3/home-1440
+PASS v2/choose-768
+PASS v3/choose-768
+PASS v2/cinema-390
+PASS v3/cinema-390
+PASS v2/cinema-768
+PASS v3/cinema-768
+PASS v2/cinema-1440
+Created TensorFlow Lite XNNPACK delegate for CPU.
+PASS v3/cinema-1440
+Matched V2/V3 capture PASS: 14 screenshots; same inputs, viewport, clock and observed subject.

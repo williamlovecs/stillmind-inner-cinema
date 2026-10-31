@@ -1,0 +1,336 @@
+
+> stillmind-inner-cinema@0.1.0 test
+> npm run test:domain && npm run test:content && npm run test:api && npm run test:api-events && npm run test:analytics && npm run test:timeline && npm run test:seed-users && npm run test:device-qa && npm run test:reset-routing && npm run test:payment-interviews && npm run test:audit && npm run test:native && npm run test:dependencies && npm run test:round2
+
+
+> stillmind-inner-cinema@0.1.0 test:domain
+> tsx --test packages/domain/test/routing.test.ts
+
+✔ high activation and impulsive mode prefer an acute eyes-open method (1.0815ms)
+✔ the first-use reset route only recommends the focused core set (6.469ms)
+✔ intake text maps the four golden moments without exposing raw text (0.5695ms)
+✔ legacy ten-point scores migrate deterministically to the shared five-point scale (0.7468ms)
+✔ safety gate always wins over favorites (0.1701ms)
+✔ medical emergency has highest safety priority (0.1791ms)
+✔ high-risk language is detected before reflective exercises (0.367ms)
+✔ comfort constraints exclude body and breath practices (0.1394ms)
+✔ eyes-open preference and high activation exclude ineligible methods (0.1476ms)
+✔ every supported mode and duration produces a known practice (0.4849ms)
+✔ a favorite cannot bypass explicit method hiding (0.1755ms)
+✔ practice paths are complete, routable, and non-labeling (0.1945ms)
+✔ practice path progress advances only through completed non-worse stages (0.2894ms)
+✔ practice path progress respects methods hidden by the user (0.1354ms)
+✔ weekly review excludes sessions outside the interval and hides low-sample averages (0.6255ms)
+✔ weekly review ignores malformed dates and reports an average only with enough samples (0.183ms)
+✔ weekly review suggests the shortest pause when there is no data (0.0909ms)
+✔ weekly review lowers intensity after repeated worse or stopped signals (0.1233ms)
+✔ weekly review continues a method after repeated better outcomes (0.2391ms)
+✔ weekly review uses repeated mode as a next experiment without identity labels (0.1628ms)
+✔ stored-session validation drops malformed and unknown records (0.209ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 584.3955
+
+> stillmind-inner-cinema@0.1.0 test:content
+> tsx --test packages/content/test/catalog.test.ts
+
+✔ every method has an original offline practice script (0.5756ms)
+✔ every declared duration resolves to a complete exact-length variant (0.3327ms)
+✔ an unsupported duration falls back without pretending to match it (0.1087ms)
+✔ scaled durations disclose the same guidance and use the revised content version (0.1865ms)
+✔ scaled variants keep the authored step order, ids, kinds and guidance text (0.7842ms)
+✔ the method index matches the variant list and unknown ids resolve to undefined (0.1345ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 425.3838
+
+> stillmind-inner-cinema@0.1.0 test:api
+> tsx --test test/api-cinema.test.ts
+
+✔ cinema API rejects missing and oversized input (17.5963ms)
+✔ cinema API routes high-risk language to the safety boundary (0.7398ms)
+✔ cinema API always returns a complete safe preset without a provider key (0.7113ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 485.6631
+
+> stillmind-inner-cinema@0.1.0 test:api-events
+> tsx --test test/api-events.test.ts
+
+✔ events endpoint is CORS-ready and never caches (37.9173ms)
+✔ valid events are safely accepted when analytics is not configured (12.2106ms)
+✔ raw user text and unknown fields are rejected (1.7308ms)
+✔ malformed JSON is rejected without throwing (1.4443ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 721.8085
+
+> stillmind-inner-cinema@0.1.0 test:analytics
+> tsx --test test/analytics.test.ts
+
+✔ analytics is inert until a privacy-reviewed sink is configured (1.3545ms)
+✔ analytics emits only the typed sanitized envelope (0.7855ms)
+✔ the anonymous receiver contract rejects raw text and extra fields (0.6175ms)
+✔ analytics buckets avoid precise behavioral timestamps and counts (0.1591ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 495.9301
+
+> stillmind-inner-cinema@0.1.0 test:timeline
+> tsx --test test/timeline.test.ts
+
+✔ timeline resolves start and partial first step (1.4587ms)
+✔ timeline crosses steps using absolute elapsed time (0.1198ms)
+✔ timeline completes exactly at total duration (0.0922ms)
+✔ timeline handles negative elapsed and empty content safely (0.1206ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 465.7594
+
+> stillmind-inner-cinema@0.1.0 test:seed-users
+> tsx --test test/seed-users.test.ts
+
+✔ seed-user analyzer handles an empty template (122.8749ms)
+✔ seed-user analyzer returns GO when 15 users meet broader TestFlight thresholds (129.0783ms)
+✔ seed-user analyzer pauses launch when a severe safety concern appears (146.3678ms)
+✔ seed-user analyzer asks for iteration when go thresholds are not met (144.6493ms)
+✔ seed-user analyzer pauses when one method has two worse reports (144.9953ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1102.512
+
+> stillmind-inner-cinema@0.1.0 test:device-qa
+> tsx --test test/device-qa.test.ts
+
+✔ device QA analyzer handles an empty template (121.328ms)
+✔ device QA analyzer passes complete all-pass coverage (128.3862ms)
+✔ device QA analyzer blocks critical failures (131.7187ms)
+✔ device QA analyzer reports insufficient coverage (128.6879ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 902.7481
+
+> stillmind-inner-cinema@0.1.0 test:reset-routing
+> tsx --test test/reset-routing.test.ts test/reset-draft.test.ts test/web-library.test.ts
+
+✔ input, score and optional consent are transferred atomically and consumed only once (1.9701ms)
+✔ failed writes never let a fresh navigation consume stale private text or consent (0.239ms)
+✔ unavailable storage or failed removal cannot replay a draft (0.1864ms)
+✔ malformed, oversized or unsupported drafts are discarded (0.3264ms)
+✔ invalid scores remain missing and anonymous consent requires an explicit boolean (0.1845ms)
+✔ the shared five-point activation wins over legacy values (1.8213ms)
+✔ legacy ten-point scores migrate only when no five-point value is present (0.2683ms)
+✔ stored reset intensity wins and survives route hydration (0.2266ms)
+✔ query intensity preserves the entry score when session storage is unavailable (0.1685ms)
+✔ invalid values use the recommendation fallback and valid values are clamped (0.1696ms)
+✔ web library loads only valid sessions and known method favorites (1.4763ms)
+✔ web library favorites persist and a failed write is not reported as saved (0.2583ms)
+✔ web library combines real family, duration and favorite filters (0.2462ms)
+✔ web deletion touches only explicit StillMind keys and reports every failure (0.258ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 790.0444
+
+> stillmind-inner-cinema@0.1.0 test:payment-interviews
+> tsx --test test/payment-interviews.test.ts
+
+✔ payment interview analyzer handles an empty template (129.9568ms)
+✔ payment interview analyzer returns GO for enough high-intent interviews (131.7054ms)
+✔ payment interview analyzer blocks therapy or trust-risk demand (106.9617ms)
+✔ payment interview analyzer asks for offer iteration when intent is weak (115.5701ms)
+✔ payment interview analyzer ignores unqualified high-intent rows for paid signal (138.1693ms)
+✔ payment interview analyzer requires five qualified interviews (126.2614ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1179.5303
+
+> stillmind-inner-cinema@0.1.0 test:audit
+> tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs
+
+✔ provider structured JSON is normalized and honestly marked stepfun (29.7709ms)
+✔ provider fenced JSON is accepted without pretending prose is JSON (1.1255ms)
+✔ truncated JSON and prose fallback never use a stepfun badge (5.2676ms)
+✔ invalid structures and prohibited identity claims are rejected (2.0201ms)
+✔ provider failure and aborted requests retain a usable preset (1.1437ms)
+✔ clock counts active time, not paused time, with idempotent pause/resume (1.6511ms)
+✔ delayed ticks resolve a pure absolute timeline without double increments (0.3998ms)
+✔ unanswered scores remain missing, not same, and valid ratings remain 1-5 (0.3206ms)
+✔ worse/stopped/abandoned endings never claim an acquired observer position (0.4681ms)
+✔ an eight-second stop retains actual and planned durations separately (0.9935ms)
+✔ completion is recorded before optional feedback and feedback updates the same id (0.3012ms)
+✔ actual start/abandon events are opt-in, joinable and idempotent (1.6043ms)
+✔ late feedback consent does not invent start or completion funnel events (0.2995ms)
+✔ anonymous event schema rejects raw text, unknown fields and malformed attempt ids (0.2426ms)
+✔ storage exceptions never need a retry to end a practice (0.6455ms)
+✔ manual and URL choices obey the same eligibility as recommendations (0.5585ms)
+✔ navigation keeps opt-outs but URLs never opt in to analytics (0.2171ms)
+✔ 202 accepted:false, malformed responses and server errors are not stored events (24.9216ms)
+✔ legacy sessions still load; new duration metadata is validated (0.3059ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 762.6453
+✔ a disclaimer cannot exempt a guaranteed claim in another sentence (2.043ms)
+✔ neighboring JSX on one source line has independent claims (8.9625ms)
+✔ content-package string literals are parsed as user-facing candidates (1.8512ms)
+✔ local explicit prohibitions remain allowed (0.8945ms)
+✔ ordinary instructions are not outcome evidence or prohibited claims (0.1219ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 504.537
+
+> stillmind-inner-cinema@0.1.0 test:native
+> tsx --test test/native-session.test.ts test/native-database.test.ts test/native-storage-lifecycle.test.ts
+
+✔ a transient open failure is retried on the next call, not cached forever (1.7725ms)
+✔ concurrent callers share one successful open (0.2378ms)
+✔ native query hints are not ratings until explicitly confirmed (1.4121ms)
+✔ native stop has actual active time and missing scores remain missing (1.3192ms)
+✔ native records completion before optional feedback (0.2698ms)
+✔ native start, end and feedback writes are ordered even when the first write is slow (1.3645ms)
+✔ native failed storage cannot block stop or poison later feedback saves (0.4911ms)
+✔ native late consent sends only feedback and never manufactures a past start (0.7938ms)
+✔ native actual lifecycle is opt-in, joinable and abandonment idempotent (1.3179ms)
+✔ subjective feedback is retained separately when numeric change disagrees (0.3301ms)
+✔ native stop status cannot be turned into completion by a positive answer (0.4581ms)
+✔ a feeling can be recorded without inventing a numerical score (0.3433ms)
+✔ leaving or replacing generation invalidates late responses (0.2445ms)
+✔ serial storage queue preserves delete order and recovers after failure (0.7268ms)
+✔ generated native practice honors selected duration with two or three scenes (0.8421ms)
+✔ malformed or oversized generated scene lists are rejected (0.2531ms)
+✔ a failed history read does not discard independently saved privacy or safety choices (2.824ms)
+✔ a failed preferences read fails closed for persistence, analytics and optional experiences (0.5564ms)
+✔ malformed and structurally invalid saved preferences never enable history (0.74ms)
+✔ a genuinely first launch preserves the intentional onboarding defaults (0.375ms)
+✔ deletion attempts reminders, sessions, settings and identity even if one resource fails (1.0826ms)
+✔ deletion reports all failures, including synchronous adapter exceptions (0.411ms)
+✔ a reminder lane drains a late OS response before deletion, including failed preference writes (0.8114ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 860.8756
+
+> stillmind-inner-cinema@0.1.0 test:dependencies
+> node --test test/dependency-compat.test.mjs
+
+✔ patched xcode UUID dependency retains project-id shape (133.2451ms)
+✔ patched decoder preserves Expo query-string UTF-8 and arrays (0.8984ms)
+✔ patched decoder tolerates malformed sequences without an unbounded split loop (1.6321ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 309.6459
+
+> stillmind-inner-cinema@0.1.0 test:round2
+> tsx --test test/round2-contracts.test.ts test/observation.test.ts test/request-policy.test.ts && node --test test/round2-seed.test.mjs
+
+✔ empty intake has no attributed negative thought (1.0287ms)
+✔ observation keeps compounds, quoted speakers and facts intact (0.1829ms)
+✔ optional name is never invented and original thought remains the viewing subject (0.188ms)
+✔ origins are exact; native clients need no Origin; hostile browsers cannot preflight (25.5244ms)
+✔ malformed, non-http and allowlisted origins follow the exact-match policy (1.4524ms)
+✔ both APIs reject hostile origins and simple form bodies before any upstream I/O (2.0802ms)
+✔ long input cannot truncate away the safety boundary or silently change the submitted event (6.0444ms)
+✔ rotating forwarded addresses cannot bypass the per-instance provider budget (20.2848ms)
+✔ bounded JSON rejects actual UTF-8 bytes with absent or forged Content-Length (29.4564ms)
+✔ bounded JSON decodes UTF-8 split across arbitrary stream chunks (2.809ms)
+✔ bounded JSON rejects invalid encoding, malformed JSON and an idle stream (17.7047ms)
+✔ rate map rejects new identifiers at capacity without evicting active limits (0.5515ms)
+✔ both API routes reject oversized requests before provider or sink calls (2.7719ms)
+✔ provider labels and blank essential views cannot bypass output validation (3.1965ms)
+✔ out-of-range current and migrated scores are not fabricated self-reports (0.4708ms)
+✔ weekly positives are attributed to the method that actually received them (0.761ms)
+✔ weekly recommendation never promises a duration absent from the method catalog (0.2427ms)
+✔ withdrawing native consent aborts queued event scopes and blocks subsequent dispatch (0.2833ms)
+✔ fresh consent does not revive events queued under an earlier consent scope (0.0894ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 914.8578
+✔ blank scores remain absent rather than numeric zero (1.2104ms)
+✔ a severe concern pauses at participant one, not only after fifteen (0.6923ms)
+✔ two worse reports pause the method without waiting for a full cohort (0.2394ms)
+✔ duplicate participant rows cannot manufacture a fifteen-person cohort (0.4161ms)
+✔ missing safety observations cannot be silently counted as zero incidents (0.4915ms)
+✔ original go thresholds remain available for fifteen complete, distinct observations (0.2761ms)
+✔ quoted newlines and commas remain inside one participant row (1.3071ms)
+✔ malformed quoting, duplicate headers and wrong field counts fail closed (0.3706ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 172.362

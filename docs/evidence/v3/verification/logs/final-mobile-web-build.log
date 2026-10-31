@@ -1,0 +1,68 @@
+
+> stillmind-inner-cinema@0.1.0 build:mobile:web
+> cd mobile && npx expo export --platform web --output-dir ../.expo-ci/web --clear
+
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Expo Autolinking module resolution enabled
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Static rendering is enabled. Learn more: https://docs.expo.dev/router/web/static-rendering/
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+| (node:46024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `Kimi --trace-warnings ...` to show where the warning was created)
+λ Bundled 21383ms node_modules\expo\node_modules\@expo\cli\node_modules\@expo\router-server\node\render.js (1531 modules)
+Web Bundled 24104ms node_modules\expo-router\entry.js (1519 modules)
+
+› web bundles (3):
+_expo/static/js/web/entry-457fe26fb67eb00b23bc85ce6b5f8d7f.js (3MB)
+_expo/static/js/web/index-5bfb48d69dbedb95581051d9445c9c98.js (62KB)
+_expo/static/js/web/worker-16163571d062495dd1cbd053062c8ae0.js (139KB)
+
+› Static routes (12):
+/reset (22KB)
+/ (index) (22KB)
+/profile (22KB)
+/_sitemap (21KB)
+/practices (22KB)
+/+not-found (21KB)
+/reflection (22KB)
+/method/[id] (22KB)
+/(tabs) (22KB)
+/(tabs)/profile (22KB)
+/(tabs)/practices (22KB)
+/(tabs)/reflection (22KB)
+
+Exported: ../.expo-ci/web
