@@ -29,4 +29,4 @@ The final `npm ci` reported 39 npm audit findings (2 low, 23 moderate, 12 high, 
 
 ## NOT VERIFIED
 
-No physical-device QA, signed EAS build, TestFlight validation, production build, deployment, or production acceptance was performed. GitHub Actions results are not asserted by this local evidence.
+No physical-device QA, signed EAS build, TestFlight validation, deployment, or production acceptance was performed. GitHub Actions results are not asserted by this local evidence.
