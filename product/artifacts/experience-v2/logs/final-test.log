@@ -1,0 +1,1108 @@
+
+> stillmind-inner-cinema@0.1.0 test
+> npm run test:domain && npm run test:content && npm run test:api && npm run test:api-events && npm run test:analytics && npm run test:timeline && npm run test:seed-users && npm run test:device-qa && npm run test:reset-routing && npm run test:payment-interviews && npm run test:audit && npm run test:native && npm run test:dependencies && npm run test:round2
+
+
+> stillmind-inner-cinema@0.1.0 test:domain
+> tsx --test packages/domain/test/routing.test.ts
+
+TAP version 13
+# Subtest: high activation and impulsive mode prefer an acute eyes-open method
+ok 1 - high activation and impulsive mode prefer an acute eyes-open method
+  ---
+  duration_ms: 0.7923
+  type: 'test'
+  ...
+# Subtest: the first-use reset route only recommends the focused core set
+ok 2 - the first-use reset route only recommends the focused core set
+  ---
+  duration_ms: 5.9442
+  type: 'test'
+  ...
+# Subtest: intake text maps the four golden moments without exposing raw text
+ok 3 - intake text maps the four golden moments without exposing raw text
+  ---
+  duration_ms: 0.2607
+  type: 'test'
+  ...
+# Subtest: legacy ten-point scores migrate deterministically to the shared five-point scale
+ok 4 - legacy ten-point scores migrate deterministically to the shared five-point scale
+  ---
+  duration_ms: 0.469
+  type: 'test'
+  ...
+# Subtest: safety gate always wins over favorites
+ok 5 - safety gate always wins over favorites
+  ---
+  duration_ms: 0.0744
+  type: 'test'
+  ...
+# Subtest: medical emergency has highest safety priority
+ok 6 - medical emergency has highest safety priority
+  ---
+  duration_ms: 0.0608
+  type: 'test'
+  ...
+# Subtest: high-risk language is detected before reflective exercises
+ok 7 - high-risk language is detected before reflective exercises
+  ---
+  duration_ms: 0.3233
+  type: 'test'
+  ...
+# Subtest: comfort constraints exclude body and breath practices
+ok 8 - comfort constraints exclude body and breath practices
+  ---
+  duration_ms: 0.101
+  type: 'test'
+  ...
+# Subtest: eyes-open preference and high activation exclude ineligible methods
+ok 9 - eyes-open preference and high activation exclude ineligible methods
+  ---
+  duration_ms: 0.1714
+  type: 'test'
+  ...
+# Subtest: every supported mode and duration produces a known practice
+ok 10 - every supported mode and duration produces a known practice
+  ---
+  duration_ms: 0.4025
+  type: 'test'
+  ...
+# Subtest: a favorite cannot bypass explicit method hiding
+ok 11 - a favorite cannot bypass explicit method hiding
+  ---
+  duration_ms: 0.1177
+  type: 'test'
+  ...
+# Subtest: practice paths are complete, routable, and non-labeling
+ok 12 - practice paths are complete, routable, and non-labeling
+  ---
+  duration_ms: 0.1447
+  type: 'test'
+  ...
+# Subtest: practice path progress advances only through completed non-worse stages
+ok 13 - practice path progress advances only through completed non-worse stages
+  ---
+  duration_ms: 0.1582
+  type: 'test'
+  ...
+# Subtest: practice path progress respects methods hidden by the user
+ok 14 - practice path progress respects methods hidden by the user
+  ---
+  duration_ms: 0.0623
+  type: 'test'
+  ...
+# Subtest: weekly review excludes sessions outside the interval and hides low-sample averages
+ok 15 - weekly review excludes sessions outside the interval and hides low-sample averages
+  ---
+  duration_ms: 0.9991
+  type: 'test'
+  ...
+# Subtest: weekly review ignores malformed dates and reports an average only with enough samples
+ok 16 - weekly review ignores malformed dates and reports an average only with enough samples
+  ---
+  duration_ms: 0.11
+  type: 'test'
+  ...
+# Subtest: weekly review suggests the shortest pause when there is no data
+ok 17 - weekly review suggests the shortest pause when there is no data
+  ---
+  duration_ms: 0.0546
+  type: 'test'
+  ...
+# Subtest: weekly review lowers intensity after repeated worse or stopped signals
+ok 18 - weekly review lowers intensity after repeated worse or stopped signals
+  ---
+  duration_ms: 0.0656
+  type: 'test'
+  ...
+# Subtest: weekly review continues a method after repeated better outcomes
+ok 19 - weekly review continues a method after repeated better outcomes
+  ---
+  duration_ms: 0.1262
+  type: 'test'
+  ...
+# Subtest: weekly review uses repeated mode as a next experiment without identity labels
+ok 20 - weekly review uses repeated mode as a next experiment without identity labels
+  ---
+  duration_ms: 0.1021
+  type: 'test'
+  ...
+# Subtest: stored-session validation drops malformed and unknown records
+ok 21 - stored-session validation drops malformed and unknown records
+  ---
+  duration_ms: 0.1247
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 233.2578
+
+> stillmind-inner-cinema@0.1.0 test:content
+> tsx --test packages/content/test/catalog.test.ts
+
+TAP version 13
+# Subtest: every method has an original offline practice script
+ok 1 - every method has an original offline practice script
+  ---
+  duration_ms: 0.5178
+  type: 'test'
+  ...
+# Subtest: every declared duration resolves to a complete exact-length variant
+ok 2 - every declared duration resolves to a complete exact-length variant
+  ---
+  duration_ms: 0.3883
+  type: 'test'
+  ...
+# Subtest: an unsupported duration falls back without pretending to match it
+ok 3 - an unsupported duration falls back without pretending to match it
+  ---
+  duration_ms: 0.0847
+  type: 'test'
+  ...
+# Subtest: scaled durations disclose the same guidance and use the revised content version
+ok 4 - scaled durations disclose the same guidance and use the revised content version
+  ---
+  duration_ms: 0.1652
+  type: 'test'
+  ...
+# Subtest: scaled variants keep the authored step order, ids, kinds and guidance text
+ok 5 - scaled variants keep the authored step order, ids, kinds and guidance text
+  ---
+  duration_ms: 0.8797
+  type: 'test'
+  ...
+# Subtest: the method index matches the variant list and unknown ids resolve to undefined
+ok 6 - the method index matches the variant list and unknown ids resolve to undefined
+  ---
+  duration_ms: 0.1281
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 234.0792
+
+> stillmind-inner-cinema@0.1.0 test:api
+> tsx --test test/api-cinema.test.ts
+
+TAP version 13
+# Subtest: cinema API rejects missing and oversized input
+ok 1 - cinema API rejects missing and oversized input
+  ---
+  duration_ms: 16.9562
+  type: 'test'
+  ...
+# Subtest: cinema API routes high-risk language to the safety boundary
+ok 2 - cinema API routes high-risk language to the safety boundary
+  ---
+  duration_ms: 0.8355
+  type: 'test'
+  ...
+# Subtest: cinema API always returns a complete safe preset without a provider key
+ok 3 - cinema API always returns a complete safe preset without a provider key
+  ---
+  duration_ms: 0.9041
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 253.9785
+
+> stillmind-inner-cinema@0.1.0 test:api-events
+> tsx --test test/api-events.test.ts
+
+TAP version 13
+# Subtest: events endpoint is CORS-ready and never caches
+ok 1 - events endpoint is CORS-ready and never caches
+  ---
+  duration_ms: 12.4897
+  type: 'test'
+  ...
+# Subtest: valid events are safely accepted when analytics is not configured
+ok 2 - valid events are safely accepted when analytics is not configured
+  ---
+  duration_ms: 4.1866
+  type: 'test'
+  ...
+# Subtest: raw user text and unknown fields are rejected
+ok 3 - raw user text and unknown fields are rejected
+  ---
+  duration_ms: 0.5175
+  type: 'test'
+  ...
+# Subtest: malformed JSON is rejected without throwing
+ok 4 - malformed JSON is rejected without throwing
+  ---
+  duration_ms: 0.3948
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 266.8219
+
+> stillmind-inner-cinema@0.1.0 test:analytics
+> tsx --test test/analytics.test.ts
+
+TAP version 13
+# Subtest: analytics is inert until a privacy-reviewed sink is configured
+ok 1 - analytics is inert until a privacy-reviewed sink is configured
+  ---
+  duration_ms: 0.5357
+  type: 'test'
+  ...
+# Subtest: analytics emits only the typed sanitized envelope
+ok 2 - analytics emits only the typed sanitized envelope
+  ---
+  duration_ms: 0.5414
+  type: 'test'
+  ...
+# Subtest: the anonymous receiver contract rejects raw text and extra fields
+ok 3 - the anonymous receiver contract rejects raw text and extra fields
+  ---
+  duration_ms: 1.0478
+  type: 'test'
+  ...
+# Subtest: analytics buckets avoid precise behavioral timestamps and counts
+ok 4 - analytics buckets avoid precise behavioral timestamps and counts
+  ---
+  duration_ms: 0.1677
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 240.7028
+
+> stillmind-inner-cinema@0.1.0 test:timeline
+> tsx --test test/timeline.test.ts
+
+TAP version 13
+# Subtest: timeline resolves start and partial first step
+ok 1 - timeline resolves start and partial first step
+  ---
+  duration_ms: 1.0197
+  type: 'test'
+  ...
+# Subtest: timeline crosses steps using absolute elapsed time
+ok 2 - timeline crosses steps using absolute elapsed time
+  ---
+  duration_ms: 0.1239
+  type: 'test'
+  ...
+# Subtest: timeline completes exactly at total duration
+ok 3 - timeline completes exactly at total duration
+  ---
+  duration_ms: 0.0692
+  type: 'test'
+  ...
+# Subtest: timeline handles negative elapsed and empty content safely
+ok 4 - timeline handles negative elapsed and empty content safely
+  ---
+  duration_ms: 0.1275
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 247.9447
+
+> stillmind-inner-cinema@0.1.0 test:seed-users
+> tsx --test test/seed-users.test.ts
+
+TAP version 13
+# Subtest: seed-user analyzer handles an empty template
+ok 1 - seed-user analyzer handles an empty template
+  ---
+  duration_ms: 86.9396
+  type: 'test'
+  ...
+# Subtest: seed-user analyzer returns GO when 15 users meet broader TestFlight thresholds
+ok 2 - seed-user analyzer returns GO when 15 users meet broader TestFlight thresholds
+  ---
+  duration_ms: 78.613
+  type: 'test'
+  ...
+# Subtest: seed-user analyzer pauses launch when a severe safety concern appears
+ok 3 - seed-user analyzer pauses launch when a severe safety concern appears
+  ---
+  duration_ms: 83.5071
+  type: 'test'
+  ...
+# Subtest: seed-user analyzer asks for iteration when go thresholds are not met
+ok 4 - seed-user analyzer asks for iteration when go thresholds are not met
+  ---
+  duration_ms: 74.1655
+  type: 'test'
+  ...
+# Subtest: seed-user analyzer pauses when one method has two worse reports
+ok 5 - seed-user analyzer pauses when one method has two worse reports
+  ---
+  duration_ms: 73.0155
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 618.8602
+
+> stillmind-inner-cinema@0.1.0 test:device-qa
+> tsx --test test/device-qa.test.ts
+
+TAP version 13
+# Subtest: device QA analyzer handles an empty template
+ok 1 - device QA analyzer handles an empty template
+  ---
+  duration_ms: 81.3968
+  type: 'test'
+  ...
+# Subtest: device QA analyzer passes complete all-pass coverage
+ok 2 - device QA analyzer passes complete all-pass coverage
+  ---
+  duration_ms: 75.9807
+  type: 'test'
+  ...
+# Subtest: device QA analyzer blocks critical failures
+ok 3 - device QA analyzer blocks critical failures
+  ---
+  duration_ms: 76.3338
+  type: 'test'
+  ...
+# Subtest: device QA analyzer reports insufficient coverage
+ok 4 - device QA analyzer reports insufficient coverage
+  ---
+  duration_ms: 70.8809
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 528.5148
+
+> stillmind-inner-cinema@0.1.0 test:reset-routing
+> tsx --test test/reset-routing.test.ts test/reset-draft.test.ts test/web-library.test.ts
+
+TAP version 13
+# Subtest: input, score and optional consent are transferred atomically and consumed only once
+ok 1 - input, score and optional consent are transferred atomically and consumed only once
+  ---
+  duration_ms: 1.1427
+  type: 'test'
+  ...
+# Subtest: failed writes never let a fresh navigation consume stale private text or consent
+ok 2 - failed writes never let a fresh navigation consume stale private text or consent
+  ---
+  duration_ms: 0.1552
+  type: 'test'
+  ...
+# Subtest: unavailable storage or failed removal cannot replay a draft
+ok 3 - unavailable storage or failed removal cannot replay a draft
+  ---
+  duration_ms: 0.0998
+  type: 'test'
+  ...
+# Subtest: malformed, oversized or unsupported drafts are discarded
+ok 4 - malformed, oversized or unsupported drafts are discarded
+  ---
+  duration_ms: 0.1525
+  type: 'test'
+  ...
+# Subtest: invalid scores remain missing and anonymous consent requires an explicit boolean
+ok 5 - invalid scores remain missing and anonymous consent requires an explicit boolean
+  ---
+  duration_ms: 0.1458
+  type: 'test'
+  ...
+# Subtest: the shared five-point activation wins over legacy values
+ok 6 - the shared five-point activation wins over legacy values
+  ---
+  duration_ms: 1.0601
+  type: 'test'
+  ...
+# Subtest: legacy ten-point scores migrate only when no five-point value is present
+ok 7 - legacy ten-point scores migrate only when no five-point value is present
+  ---
+  duration_ms: 0.2119
+  type: 'test'
+  ...
+# Subtest: stored reset intensity wins and survives route hydration
+ok 8 - stored reset intensity wins and survives route hydration
+  ---
+  duration_ms: 0.1556
+  type: 'test'
+  ...
+# Subtest: query intensity preserves the entry score when session storage is unavailable
+ok 9 - query intensity preserves the entry score when session storage is unavailable
+  ---
+  duration_ms: 0.074
+  type: 'test'
+  ...
+# Subtest: invalid values use the recommendation fallback and valid values are clamped
+ok 10 - invalid values use the recommendation fallback and valid values are clamped
+  ---
+  duration_ms: 0.1264
+  type: 'test'
+  ...
+# Subtest: web library loads only valid sessions and known method favorites
+ok 11 - web library loads only valid sessions and known method favorites
+  ---
+  duration_ms: 1.0829
+  type: 'test'
+  ...
+# Subtest: web library favorites persist and a failed write is not reported as saved
+ok 12 - web library favorites persist and a failed write is not reported as saved
+  ---
+  duration_ms: 0.1796
+  type: 'test'
+  ...
+# Subtest: web library combines real family, duration and favorite filters
+ok 13 - web library combines real family, duration and favorite filters
+  ---
+  duration_ms: 0.195
+  type: 'test'
+  ...
+# Subtest: web deletion touches only explicit StillMind keys and reports every failure
+ok 14 - web deletion touches only explicit StillMind keys and reports every failure
+  ---
+  duration_ms: 0.2471
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 322.0613
+
+> stillmind-inner-cinema@0.1.0 test:payment-interviews
+> tsx --test test/payment-interviews.test.ts
+
+TAP version 13
+# Subtest: payment interview analyzer handles an empty template
+ok 1 - payment interview analyzer handles an empty template
+  ---
+  duration_ms: 80.0316
+  type: 'test'
+  ...
+# Subtest: payment interview analyzer returns GO for enough high-intent interviews
+ok 2 - payment interview analyzer returns GO for enough high-intent interviews
+  ---
+  duration_ms: 73.7639
+  type: 'test'
+  ...
+# Subtest: payment interview analyzer blocks therapy or trust-risk demand
+ok 3 - payment interview analyzer blocks therapy or trust-risk demand
+  ---
+  duration_ms: 74.1412
+  type: 'test'
+  ...
+# Subtest: payment interview analyzer asks for offer iteration when intent is weak
+ok 4 - payment interview analyzer asks for offer iteration when intent is weak
+  ---
+  duration_ms: 70.3686
+  type: 'test'
+  ...
+# Subtest: payment interview analyzer ignores unqualified high-intent rows for paid signal
+ok 5 - payment interview analyzer ignores unqualified high-intent rows for paid signal
+  ---
+  duration_ms: 74.7973
+  type: 'test'
+  ...
+# Subtest: payment interview analyzer requires five qualified interviews
+ok 6 - payment interview analyzer requires five qualified interviews
+  ---
+  duration_ms: 68.3165
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 665.7696
+
+> stillmind-inner-cinema@0.1.0 test:audit
+> tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs
+
+TAP version 13
+# Subtest: provider structured JSON is normalized and honestly marked stepfun
+ok 1 - provider structured JSON is normalized and honestly marked stepfun
+  ---
+  duration_ms: 17.9054
+  type: 'test'
+  ...
+# Subtest: provider fenced JSON is accepted without pretending prose is JSON
+ok 2 - provider fenced JSON is accepted without pretending prose is JSON
+  ---
+  duration_ms: 1.1103
+  type: 'test'
+  ...
+# Subtest: truncated JSON and prose fallback never use a stepfun badge
+ok 3 - truncated JSON and prose fallback never use a stepfun badge
+  ---
+  duration_ms: 2.8761
+  type: 'test'
+  ...
+# Subtest: invalid structures and prohibited identity claims are rejected
+ok 4 - invalid structures and prohibited identity claims are rejected
+  ---
+  duration_ms: 2.2987
+  type: 'test'
+  ...
+# Subtest: provider failure and aborted requests retain a usable preset
+ok 5 - provider failure and aborted requests retain a usable preset
+  ---
+  duration_ms: 1.1268
+  type: 'test'
+  ...
+# Subtest: clock counts active time, not paused time, with idempotent pause/resume
+ok 6 - clock counts active time, not paused time, with idempotent pause/resume
+  ---
+  duration_ms: 0.6732
+  type: 'test'
+  ...
+# Subtest: delayed ticks resolve a pure absolute timeline without double increments
+ok 7 - delayed ticks resolve a pure absolute timeline without double increments
+  ---
+  duration_ms: 0.2643
+  type: 'test'
+  ...
+# Subtest: unanswered scores remain missing, not same, and valid ratings remain 1-5
+ok 8 - unanswered scores remain missing, not same, and valid ratings remain 1-5
+  ---
+  duration_ms: 0.1428
+  type: 'test'
+  ...
+# Subtest: worse/stopped/abandoned endings never claim an acquired observer position
+ok 9 - worse/stopped/abandoned endings never claim an acquired observer position
+  ---
+  duration_ms: 0.2353
+  type: 'test'
+  ...
+# Subtest: an eight-second stop retains actual and planned durations separately
+ok 10 - an eight-second stop retains actual and planned durations separately
+  ---
+  duration_ms: 1.3083
+  type: 'test'
+  ...
+# Subtest: completion is recorded before optional feedback and feedback updates the same id
+ok 11 - completion is recorded before optional feedback and feedback updates the same id
+  ---
+  duration_ms: 0.1751
+  type: 'test'
+  ...
+# Subtest: actual start/abandon events are opt-in, joinable and idempotent
+ok 12 - actual start/abandon events are opt-in, joinable and idempotent
+  ---
+  duration_ms: 1.0178
+  type: 'test'
+  ...
+# Subtest: late feedback consent does not invent start or completion funnel events
+ok 13 - late feedback consent does not invent start or completion funnel events
+  ---
+  duration_ms: 0.1678
+  type: 'test'
+  ...
+# Subtest: anonymous event schema rejects raw text, unknown fields and malformed attempt ids
+ok 14 - anonymous event schema rejects raw text, unknown fields and malformed attempt ids
+  ---
+  duration_ms: 0.2008
+  type: 'test'
+  ...
+# Subtest: storage exceptions never need a retry to end a practice
+ok 15 - storage exceptions never need a retry to end a practice
+  ---
+  duration_ms: 0.4319
+  type: 'test'
+  ...
+# Subtest: manual and URL choices obey the same eligibility as recommendations
+ok 16 - manual and URL choices obey the same eligibility as recommendations
+  ---
+  duration_ms: 0.2753
+  type: 'test'
+  ...
+# Subtest: navigation keeps opt-outs but URLs never opt in to analytics
+ok 17 - navigation keeps opt-outs but URLs never opt in to analytics
+  ---
+  duration_ms: 0.1974
+  type: 'test'
+  ...
+# Subtest: 202 accepted:false, malformed responses and server errors are not stored events
+ok 18 - 202 accepted:false, malformed responses and server errors are not stored events
+  ---
+  duration_ms: 12.4833
+  type: 'test'
+  ...
+# Subtest: legacy sessions still load; new duration metadata is validated
+ok 19 - legacy sessions still load; new duration metadata is validated
+  ---
+  duration_ms: 0.1372
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 301.3546
+TAP version 13
+# Subtest: a disclaimer cannot exempt a guaranteed claim in another sentence
+ok 1 - a disclaimer cannot exempt a guaranteed claim in another sentence
+  ---
+  duration_ms: 1.3048
+  type: 'test'
+  ...
+# Subtest: neighboring JSX on one source line has independent claims
+ok 2 - neighboring JSX on one source line has independent claims
+  ---
+  duration_ms: 4.6285
+  type: 'test'
+  ...
+# Subtest: content-package string literals are parsed as user-facing candidates
+ok 3 - content-package string literals are parsed as user-facing candidates
+  ---
+  duration_ms: 0.9502
+  type: 'test'
+  ...
+# Subtest: local explicit prohibitions remain allowed
+ok 4 - local explicit prohibitions remain allowed
+  ---
+  duration_ms: 0.638
+  type: 'test'
+  ...
+# Subtest: ordinary instructions are not outcome evidence or prohibited claims
+ok 5 - ordinary instructions are not outcome evidence or prohibited claims
+  ---
+  duration_ms: 0.0984
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 442.1381
+
+> stillmind-inner-cinema@0.1.0 test:native
+> tsx --test test/native-session.test.ts test/native-database.test.ts test/native-storage-lifecycle.test.ts
+
+TAP version 13
+# Subtest: a transient open failure is retried on the next call, not cached forever
+ok 1 - a transient open failure is retried on the next call, not cached forever
+  ---
+  duration_ms: 0.8477
+  type: 'test'
+  ...
+# Subtest: concurrent callers share one successful open
+ok 2 - concurrent callers share one successful open
+  ---
+  duration_ms: 0.1505
+  type: 'test'
+  ...
+# Subtest: native query hints are not ratings until explicitly confirmed
+ok 3 - native query hints are not ratings until explicitly confirmed
+  ---
+  duration_ms: 0.7122
+  type: 'test'
+  ...
+# Subtest: native stop has actual active time and missing scores remain missing
+ok 4 - native stop has actual active time and missing scores remain missing
+  ---
+  duration_ms: 1.2863
+  type: 'test'
+  ...
+# Subtest: native records completion before optional feedback
+ok 5 - native records completion before optional feedback
+  ---
+  duration_ms: 0.1292
+  type: 'test'
+  ...
+# Subtest: native start, end and feedback writes are ordered even when the first write is slow
+ok 6 - native start, end and feedback writes are ordered even when the first write is slow
+  ---
+  duration_ms: 0.6139
+  type: 'test'
+  ...
+# Subtest: native failed storage cannot block stop or poison later feedback saves
+ok 7 - native failed storage cannot block stop or poison later feedback saves
+  ---
+  duration_ms: 0.2295
+  type: 'test'
+  ...
+# Subtest: native late consent sends only feedback and never manufactures a past start
+ok 8 - native late consent sends only feedback and never manufactures a past start
+  ---
+  duration_ms: 0.3771
+  type: 'test'
+  ...
+# Subtest: native actual lifecycle is opt-in, joinable and abandonment idempotent
+ok 9 - native actual lifecycle is opt-in, joinable and abandonment idempotent
+  ---
+  duration_ms: 0.3601
+  type: 'test'
+  ...
+# Subtest: subjective feedback is retained separately when numeric change disagrees
+ok 10 - subjective feedback is retained separately when numeric change disagrees
+  ---
+  duration_ms: 0.1521
+  type: 'test'
+  ...
+# Subtest: native stop status cannot be turned into completion by a positive answer
+ok 11 - native stop status cannot be turned into completion by a positive answer
+  ---
+  duration_ms: 0.2316
+  type: 'test'
+  ...
+# Subtest: a feeling can be recorded without inventing a numerical score
+ok 12 - a feeling can be recorded without inventing a numerical score
+  ---
+  duration_ms: 0.2139
+  type: 'test'
+  ...
+# Subtest: leaving or replacing generation invalidates late responses
+ok 13 - leaving or replacing generation invalidates late responses
+  ---
+  duration_ms: 0.1481
+  type: 'test'
+  ...
+# Subtest: serial storage queue preserves delete order and recovers after failure
+ok 14 - serial storage queue preserves delete order and recovers after failure
+  ---
+  duration_ms: 0.2607
+  type: 'test'
+  ...
+# Subtest: generated native practice honors selected duration with two or three scenes
+ok 15 - generated native practice honors selected duration with two or three scenes
+  ---
+  duration_ms: 0.4512
+  type: 'test'
+  ...
+# Subtest: malformed or oversized generated scene lists are rejected
+ok 16 - malformed or oversized generated scene lists are rejected
+  ---
+  duration_ms: 0.1419
+  type: 'test'
+  ...
+# Subtest: a failed history read does not discard independently saved privacy or safety choices
+ok 17 - a failed history read does not discard independently saved privacy or safety choices
+  ---
+  duration_ms: 1.1306
+  type: 'test'
+  ...
+# Subtest: a failed preferences read fails closed for persistence, analytics and optional experiences
+ok 18 - a failed preferences read fails closed for persistence, analytics and optional experiences
+  ---
+  duration_ms: 0.194
+  type: 'test'
+  ...
+# Subtest: malformed and structurally invalid saved preferences never enable history
+ok 19 - malformed and structurally invalid saved preferences never enable history
+  ---
+  duration_ms: 0.251
+  type: 'test'
+  ...
+# Subtest: a genuinely first launch preserves the intentional onboarding defaults
+ok 20 - a genuinely first launch preserves the intentional onboarding defaults
+  ---
+  duration_ms: 0.1566
+  type: 'test'
+  ...
+# Subtest: deletion attempts reminders, sessions, settings and identity even if one resource fails
+ok 21 - deletion attempts reminders, sessions, settings and identity even if one resource fails
+  ---
+  duration_ms: 0.463
+  type: 'test'
+  ...
+# Subtest: deletion reports all failures, including synchronous adapter exceptions
+ok 22 - deletion reports all failures, including synchronous adapter exceptions
+  ---
+  duration_ms: 0.1529
+  type: 'test'
+  ...
+# Subtest: a reminder lane drains a late OS response before deletion, including failed preference writes
+ok 23 - a reminder lane drains a late OS response before deletion, including failed preference writes
+  ---
+  duration_ms: 0.2326
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 330.5411
+
+> stillmind-inner-cinema@0.1.0 test:dependencies
+> node --test test/dependency-compat.test.mjs
+
+TAP version 13
+# Subtest: patched xcode UUID dependency retains project-id shape
+ok 1 - patched xcode UUID dependency retains project-id shape
+  ---
+  duration_ms: 54.5547
+  type: 'test'
+  ...
+# Subtest: patched decoder preserves Expo query-string UTF-8 and arrays
+ok 2 - patched decoder preserves Expo query-string UTF-8 and arrays
+  ---
+  duration_ms: 0.7885
+  type: 'test'
+  ...
+# Subtest: patched decoder tolerates malformed sequences without an unbounded split loop
+ok 3 - patched decoder tolerates malformed sequences without an unbounded split loop
+  ---
+  duration_ms: 1.1794
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 169.5014
+
+> stillmind-inner-cinema@0.1.0 test:round2
+> tsx --test test/round2-contracts.test.ts test/observation.test.ts test/request-policy.test.ts && node --test test/round2-seed.test.mjs
+
+TAP version 13
+# Subtest: empty intake has no attributed negative thought
+ok 1 - empty intake has no attributed negative thought
+  ---
+  duration_ms: 0.5413
+  type: 'test'
+  ...
+# Subtest: observation keeps compounds, quoted speakers and facts intact
+ok 2 - observation keeps compounds, quoted speakers and facts intact
+  ---
+  duration_ms: 0.1353
+  type: 'test'
+  ...
+# Subtest: optional name is never invented and original thought remains the viewing subject
+ok 3 - optional name is never invented and original thought remains the viewing subject
+  ---
+  duration_ms: 0.0718
+  type: 'test'
+  ...
+# Subtest: origins are exact; native clients need no Origin; hostile browsers cannot preflight
+ok 4 - origins are exact; native clients need no Origin; hostile browsers cannot preflight
+  ---
+  duration_ms: 15.3554
+  type: 'test'
+  ...
+# Subtest: malformed, non-http and allowlisted origins follow the exact-match policy
+ok 5 - malformed, non-http and allowlisted origins follow the exact-match policy
+  ---
+  duration_ms: 0.6457
+  type: 'test'
+  ...
+# Subtest: both APIs reject hostile origins and simple form bodies before any upstream I/O
+ok 6 - both APIs reject hostile origins and simple form bodies before any upstream I/O
+  ---
+  duration_ms: 0.8748
+  type: 'test'
+  ...
+# Subtest: long input cannot truncate away the safety boundary or silently change the submitted event
+ok 7 - long input cannot truncate away the safety boundary or silently change the submitted event
+  ---
+  duration_ms: 3.8109
+  type: 'test'
+  ...
+# Subtest: rotating forwarded addresses cannot bypass the per-instance provider budget
+ok 8 - rotating forwarded addresses cannot bypass the per-instance provider budget
+  ---
+  duration_ms: 11.457
+  type: 'test'
+  ...
+# Subtest: bounded JSON rejects actual UTF-8 bytes with absent or forged Content-Length
+ok 9 - bounded JSON rejects actual UTF-8 bytes with absent or forged Content-Length
+  ---
+  duration_ms: 16.8773
+  type: 'test'
+  ...
+# Subtest: bounded JSON decodes UTF-8 split across arbitrary stream chunks
+ok 10 - bounded JSON decodes UTF-8 split across arbitrary stream chunks
+  ---
+  duration_ms: 1.4203
+  type: 'test'
+  ...
+# Subtest: bounded JSON rejects invalid encoding, malformed JSON and an idle stream
+ok 11 - bounded JSON rejects invalid encoding, malformed JSON and an idle stream
+  ---
+  duration_ms: 22.3813
+  type: 'test'
+  ...
+# Subtest: rate map rejects new identifiers at capacity without evicting active limits
+ok 12 - rate map rejects new identifiers at capacity without evicting active limits
+  ---
+  duration_ms: 0.297
+  type: 'test'
+  ...
+# Subtest: both API routes reject oversized requests before provider or sink calls
+ok 13 - both API routes reject oversized requests before provider or sink calls
+  ---
+  duration_ms: 1.426
+  type: 'test'
+  ...
+# Subtest: provider labels and blank essential views cannot bypass output validation
+ok 14 - provider labels and blank essential views cannot bypass output validation
+  ---
+  duration_ms: 3.0708
+  type: 'test'
+  ...
+# Subtest: out-of-range current and migrated scores are not fabricated self-reports
+ok 15 - out-of-range current and migrated scores are not fabricated self-reports
+  ---
+  duration_ms: 0.3647
+  type: 'test'
+  ...
+# Subtest: weekly positives are attributed to the method that actually received them
+ok 16 - weekly positives are attributed to the method that actually received them
+  ---
+  duration_ms: 1.1641
+  type: 'test'
+  ...
+# Subtest: weekly recommendation never promises a duration absent from the method catalog
+ok 17 - weekly recommendation never promises a duration absent from the method catalog
+  ---
+  duration_ms: 0.2176
+  type: 'test'
+  ...
+# Subtest: withdrawing native consent aborts queued event scopes and blocks subsequent dispatch
+ok 18 - withdrawing native consent aborts queued event scopes and blocks subsequent dispatch
+  ---
+  duration_ms: 0.3325
+  type: 'test'
+  ...
+# Subtest: fresh consent does not revive events queued under an earlier consent scope
+ok 19 - fresh consent does not revive events queued under an earlier consent scope
+  ---
+  duration_ms: 0.1089
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 381.8097
+TAP version 13
+# Subtest: blank scores remain absent rather than numeric zero
+ok 1 - blank scores remain absent rather than numeric zero
+  ---
+  duration_ms: 0.5759
+  type: 'test'
+  ...
+# Subtest: a severe concern pauses at participant one, not only after fifteen
+ok 2 - a severe concern pauses at participant one, not only after fifteen
+  ---
+  duration_ms: 0.7531
+  type: 'test'
+  ...
+# Subtest: two worse reports pause the method without waiting for a full cohort
+ok 3 - two worse reports pause the method without waiting for a full cohort
+  ---
+  duration_ms: 0.1808
+  type: 'test'
+  ...
+# Subtest: duplicate participant rows cannot manufacture a fifteen-person cohort
+ok 4 - duplicate participant rows cannot manufacture a fifteen-person cohort
+  ---
+  duration_ms: 0.1449
+  type: 'test'
+  ...
+# Subtest: missing safety observations cannot be silently counted as zero incidents
+ok 5 - missing safety observations cannot be silently counted as zero incidents
+  ---
+  duration_ms: 0.1711
+  type: 'test'
+  ...
+# Subtest: original go thresholds remain available for fifteen complete, distinct observations
+ok 6 - original go thresholds remain available for fifteen complete, distinct observations
+  ---
+  duration_ms: 0.1078
+  type: 'test'
+  ...
+# Subtest: quoted newlines and commas remain inside one participant row
+ok 7 - quoted newlines and commas remain inside one participant row
+  ---
+  duration_ms: 0.6293
+  type: 'test'
+  ...
+# Subtest: malformed quoting, duplicate headers and wrong field counts fail closed
+ok 8 - malformed quoting, duplicate headers and wrong field counts fail closed
+  ---
+  duration_ms: 0.2184
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 91.7281

@@ -1,0 +1,19 @@
+{
+  "complete": true,
+  "passed": [
+    "out-of-range URL rating never becomes a fabricated answer",
+    "rapid duplicate start/stop clicks produce one attempt",
+    "failed draft writes cannot carry stale text, scores or old analytics consent into a new practice",
+    "markup remains literal text and is absent from persisted sessions",
+    "loaded offline practice still pauses, stops and saves locally",
+    "reload does not overwrite the previous attempt as a successful completion",
+    "320px reduced-motion interface retains a physically clickable stop control",
+    "manual edits and example selection stop dictation before late results can overwrite them",
+    "collapse/background stop dictation and late callbacks cannot overwrite current input; no microphone or cloud used",
+    "production HTTP handlers reject oversized actual bodies"
+  ],
+  "testedGitSha": "c32d423c4eaa5e3f263d1679bb78eee0fd181fbd",
+  "browserErrors": [],
+  "eventCount": 0,
+  "scope": "Synthetic local Chromium production test; not physical-device or efficacy validation"
+}

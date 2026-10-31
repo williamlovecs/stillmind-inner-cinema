@@ -1,0 +1,72 @@
+▲ Next.js 16.3.8 (webpack)
+✓ Running next.config.ts took 128ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.6s
+  Running TypeScript ...
+  Finished TypeScript in 2.0s ...
+  Collecting page data using 14 workers ...
+  Generating static pages using 14 workers (0/24) ...
+  Generating static pages using 14 workers (6/24) 
+  Generating static pages using 14 workers (12/24) 
+  Generating static pages using 14 workers (18/24) 
+✓ Generating static pages using 14 workers (24/24) in 4.0s
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/cinema
+├ ƒ /api/events
+├ ○ /methods
+├   /methods/[id]
+│ ├ ● /methods/inner-cinema
+│ ├ ● /methods/paced-breath
+│ ├ ● /methods/thought-watching
+│ └ ● [+9 more paths]
+├ ○ /privacy
+├ ○ /reset
+├ ○ /support
+├ ○ /support/seed-test
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> stillmind-inner-cinema@0.1.0 smoke:web
+> node scripts/smoke-web.mjs && node scripts/smoke-adversarial.mjs
+
+PASS production security headers and cross-origin API rejection are active
+PASS direct entry waits for acknowledged boundary; stop can skip feedback
+PASS missing scores stay missing; pause excludes time; eight-second stop stays eight seconds
+PASS URL/manual start cannot bypass high-activation or breath opt-out rules
+PASS completion precedes feedback; worse ending is neutral and does not promote repeating
+PASS default start, stop and feedback send no analytics requests
+PASS observer lens changes the same central object reversibly; reduced motion, small width and pause work
+PASS natural counting has no timed inhale/exhale or estimated breath count
+PASS framing keeps quoted speakers and compounds without a default name
+PASS logout hides/restores content; noticing is an optional reversible mark with neutral empty intake
+PASS actual tab background pauses timer and CSS animation; returning requires explicit resume
+PASS opt-in start and client-side navigation emit one joinable abandoned attempt
+PASS late consent sends feedback only; missing answers and action remain unreported
+PASS stability is a static observation with a reversible external alternative, not press-driven progress
+PASS awareness has no invented selections and contact choice actually changes the guidance
+PASS all twelve methods start their selected method and can stop at 320px without horizontal overflow
+PASS twelve method links remain; 390/1440 layouts have no root overflow or accidental auto-start
+PASS storage write failure does not trap exit or claim a successful save
+Web smoke PASS (Chromium production automation; not development StrictMode, physical iOS/WeChat QA or efficacy testing).
+PASS out-of-range URL rating never becomes a fabricated answer
+PASS rapid duplicate start/stop clicks produce one attempt
+PASS failed draft writes cannot carry stale text, scores or old analytics consent into a new practice
+PASS markup remains literal text and is absent from persisted sessions
+PASS loaded offline practice still pauses, stops and saves locally
+PASS reload does not overwrite the previous attempt as a successful completion
+PASS 320px reduced-motion interface retains a physically clickable stop control
+PASS manual edits and example selection stop dictation before late results can overwrite them
+PASS collapse/background stop dictation and late callbacks cannot overwrite current input; no microphone or cloud used
+PASS production HTTP handlers reject oversized actual bodies
+Round2 adversarial browser PASS; synthetic data and local production build only.

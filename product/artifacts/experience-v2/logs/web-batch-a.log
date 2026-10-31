@@ -1,0 +1,4 @@
+PASS web A: representative pages captured with reduced motion
+PASS web A: paced-breath meaningful interaction, pause, stop and small viewport
+PASS web A: thought-watching meaningful interaction, pause, stop and small viewport
+PASS web A: wide-gaze meaningful interaction, pause, stop and small viewport

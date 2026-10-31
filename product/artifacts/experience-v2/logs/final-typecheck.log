@@ -1,0 +1,24 @@
+
+> stillmind-inner-cinema@0.1.0 typecheck
+> npm run typecheck:web && npm run typecheck:design && npm run typecheck:domain && npm run typecheck:content && npm run typecheck:mobile
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:web
+> tsc --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:design
+> tsc -p packages/design-tokens/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:domain
+> tsc -p packages/domain/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:content
+> tsc -p packages/content/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:mobile
+> tsc -p mobile/tsconfig.json --noEmit
+

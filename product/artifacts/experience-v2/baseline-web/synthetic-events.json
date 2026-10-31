@@ -1,0 +1,66 @@
+[
+  {
+    "schemaVersion": 1,
+    "name": "reset_entry_submitted",
+    "payload": {
+      "session_id": "web-4df38245-0f0a-4f7d-a0e2-85aaaba797d7",
+      "mode": "looping",
+      "activation_bucket": "unreported",
+      "input_method": "state-only",
+      "text_provided": false
+    },
+    "anonymousId": "26e64271-8860-4dcd-b26a-6d7138e45323",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "reset_started",
+    "payload": {
+      "session_id": "web-4df38245-0f0a-4f7d-a0e2-85aaaba797d7",
+      "mode": "looping",
+      "activation_bucket": "unreported",
+      "duration_bucket": 1,
+      "method_id": "inner-cinema"
+    },
+    "anonymousId": "26e64271-8860-4dcd-b26a-6d7138e45323",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "practice_started",
+    "payload": {
+      "session_id": "web-4df38245-0f0a-4f7d-a0e2-85aaaba797d7",
+      "method_id": "inner-cinema",
+      "duration_bucket": 1,
+      "source": "offline"
+    },
+    "anonymousId": "26e64271-8860-4dcd-b26a-6d7138e45323",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "practice_ended",
+    "payload": {
+      "session_id": "web-4df38245-0f0a-4f7d-a0e2-85aaaba797d7",
+      "method_id": "inner-cinema",
+      "status": "abandoned",
+      "elapsed_bucket": "under_half"
+    },
+    "anonymousId": "26e64271-8860-4dcd-b26a-6d7138e45323",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "after_check_saved",
+    "payload": {
+      "session_id": "web-6e53d7b0-766a-45bd-a130-1d1fd9cb35d6",
+      "method_id": "inner-cinema",
+      "result": "stopped",
+      "activation_change_bucket": "unreported",
+      "grounded_action_id": "",
+      "reuse_intent": "unreported"
+    },
+    "anonymousId": "10e30d62-0435-4749-afce-cc10914ce5cd",
+    "platform": "web"
+  }
+]

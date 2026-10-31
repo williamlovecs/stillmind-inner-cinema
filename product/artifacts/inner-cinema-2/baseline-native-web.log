@@ -1,0 +1,88 @@
+
+> stillmind-inner-cinema@0.1.0 build:mobile:web
+> cd mobile && npx expo export --platform web --output-dir ../.expo-ci/web --clear
+
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Expo Autolinking module resolution enabled
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Static rendering is enabled. Learn more: https://docs.expo.dev/router/web/static-rendering/
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:60280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Web Bundled 49438ms node_modules\expo-router\entry.js (1513 modules)
+λ Bundled 57310ms node_modules\expo\node_modules\@expo\cli\node_modules\@expo\router-server\node\render.js (1525 modules)
+
+› web bundles (3):
+_expo/static/js/web/entry-3f844c40ba04d61d7ac0574eae6be588.js (3MB)
+_expo/static/js/web/index-6925f2b9b52e3a3b6f06646543144755.js (62KB)
+_expo/static/js/web/worker-716127a8a9bc9530dd3e76daae17b109.js (139KB)
+
+› Static routes (12):
+/reset (23KB)
+/ (index) (23KB)
+/profile (23KB)
+/_sitemap (22KB)
+/practices (23KB)
+/+not-found (22KB)
+/reflection (23KB)
+/method/[id] (23KB)
+/(tabs) (23KB)
+/(tabs)/profile (23KB)
+/(tabs)/practices (23KB)
+/(tabs)/reflection (23KB)
+
+Exported: ../.expo-ci/web
+
+> stillmind-inner-cinema@0.1.0 smoke:native
+> node scripts/smoke-native-web.mjs
+
+PASS native direct entry waits for onboarding and allows skipping feedback
+PASS native missing scores, active clock, pause and eight-second stop are honest
+PASS native manual deep links cannot bypass method eligibility or breath preferences
+PASS native completion precedes feedback and discomfort never becomes success
+PASS native storage failure preserves the exit and reports unsaved data
+PASS native observer changes the same central object and restores the near composition
+PASS web builds show the crisis boundary inline when high-risk language is entered
+PASS web builds can actually delete all local data through a real confirmation
+PASS failed history hydration preserves acknowledged onboarding and saved breath opt-outs
+PASS library and detail preference persistence failures are visible without unhandled promises
+PASS partial deletion attempts independent cleanup and keeps the warning visible
+PASS 320px onboarding scrolls its content while keeping the entry control visible
+PASS native breathing has no fixed phase and only records optional taps
+PASS native long quoted input stays intact and small-screen stop remains physically reachable
+PASS native twelve methods start and stop; static observation, voluntary awareness and contact choice are truthful
+Native Expo Web regression PASS; physical iOS and signing are not tested.

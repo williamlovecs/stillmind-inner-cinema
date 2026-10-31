@@ -1,0 +1,145 @@
+
+> stillmind-inner-cinema@0.1.0 typecheck
+> npm run typecheck:web && npm run typecheck:domain && npm run typecheck:content && npm run typecheck:mobile
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:web
+> tsc --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:domain
+> tsc -p packages/domain/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:content
+> tsc -p packages/content/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:mobile
+> tsc -p mobile/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 lint
+> npm run lint:web && npm run lint:mobile
+
+
+> stillmind-inner-cinema@0.1.0 lint:web
+> eslint src packages test
+
+
+> stillmind-inner-cinema@0.1.0 lint:mobile
+> npm --workspace mobile run lint
+
+
+> mobile@1.0.0 lint
+> expo lint
+
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx
+   4:18  warning  'radii' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  26:20  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:26:20
+  24 |   onLensChange: (index: number) => void;
+  25 | }) {
+> 26 |   const position = useRef(new Animated.Value(lensIndex)).current;
+     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  27 |   const [reduceMotion, setReduceMotion] = useState(false);
+  28 |
+  29 |   useEffect(() => {                                                                                                                                                                         react-hooks/refs
+  26:20  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:26:20
+  24 |   onLensChange: (index: number) => void;
+  25 | }) {
+> 26 |   const position = useRef(new Animated.Value(lensIndex)).current;
+     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  27 |   const [reduceMotion, setReduceMotion] = useState(false);
+  28 |
+  29 |   useEffect(() => {                                                                                                                                                                         react-hooks/refs
+  53:23  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:53:23
+  51 |   }, [lensIndex, paused, position, reduceMotion]);
+  52 |
+> 53 |   const roomOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 0.72, 1] });
+     |                       ^^^^^^^^ Passing a ref to a function may read its value during render
+  54 |   const floorOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0.08, 0.42, 0.72] });
+  55 |   const screenTranslateY = position.interpolate({ inputRange: [0, 1, 2], outputRange: [14, 0, -12] });
+  56 |              react-hooks/refs
+  53:23  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:53:23
+  51 |   }, [lensIndex, paused, position, reduceMotion]);
+  52 |
+> 53 |   const roomOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 0.72, 1] });
+     |                       ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  54 |   const floorOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0.08, 0.42, 0.72] });
+  55 |   const screenTranslateY = position.interpolate({ inputRange: [0, 1, 2], outputRange: [14, 0, -12] });
+  56 |  react-hooks/refs
+  54:24  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:54:24
+  52 |
+  53 |   const roomOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 0.72, 1] });
+> 54 |   const floorOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0.08, 0.42, 0.72] });
+     |                        ^^^^^^^^ Passing a ref to a function may read its value during render
+  55 |   const screenTranslateY = position.interpolate({ inputRange: [0, 1, 2], outputRange: [14, 0, -12] });
+  56 |
+  57 |   return (                                                     react-hooks/refs
+  54:24  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:54:24
+  52 |
+  53 |   const roomOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 0.72, 1] });
+> 54 |   const floorOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0.08, 0.42, 0.72] });
+     |                        ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  55 |   const screenTranslateY = position.interpolate({ inputRange: [0, 1, 2], outputRange: [14, 0, -12] });
+  56 |
+  57 |   return (                                         react-hooks/refs
+  55:28  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:55:28
+  53 |   const roomOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 0.72, 1] });
+  54 |   const floorOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0.08, 0.42, 0.72] });
+> 55 |   const screenTranslateY = position.interpolate({ inputRange: [0, 1, 2], outputRange: [14, 0, -12] });
+     |                            ^^^^^^^^ Passing a ref to a function may read its value during render
+  56 |
+  57 |   return (
+  58 |     <View style={styles.wrapper}>               react-hooks/refs
+  55:28  error    Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile\src\components\stillmind\InnerCinemaScene.tsx:55:28
+  53 |   const roomOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0, 0.72, 1] });
+  54 |   const floorOpacity = position.interpolate({ inputRange: [0, 1, 2], outputRange: [0.08, 0.42, 0.72] });
+> 55 |   const screenTranslateY = position.interpolate({ inputRange: [0, 1, 2], outputRange: [14, 0, -12] });
+     |                            ^^^^^^^^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  56 |
+  57 |   return (
+  58 |     <View style={styles.wrapper}>   react-hooks/refs
+
+✖ 9 problems (8 errors, 1 warning)
+
+npm error Lifecycle script `lint` failed with error:
+npm error code 1
+npm error path C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile
+npm error workspace mobile@1.0.0
+npm error location C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\02-42-11-0872a2fc\stillmind-inner-cinema-2\mobile
+npm error command failed
+npm error command C:\WINDOWS\System32\cmd.exe /d /s /c expo lint

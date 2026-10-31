@@ -1,0 +1,42 @@
+
+> stillmind-inner-cinema@0.1.0 build
+> next build --webpack
+
+▲ Next.js 16.3.8 (webpack)
+✓ Running next.config.ts took 34ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1856ms
+  Running TypeScript ...
+  Finished TypeScript in 1766ms ...
+  Collecting page data using 14 workers ...
+  Generating static pages using 14 workers (0/24) ...
+  Generating static pages using 14 workers (6/24) 
+  Generating static pages using 14 workers (12/24) 
+  Generating static pages using 14 workers (18/24) 
+✓ Generating static pages using 14 workers (24/24) in 4.0s
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/cinema
+├ ƒ /api/events
+├ ○ /methods
+├   /methods/[id]
+│ ├ ● /methods/inner-cinema
+│ ├ ● /methods/paced-breath
+│ ├ ● /methods/thought-watching
+│ └ ● [+9 more paths]
+├ ○ /privacy
+├ ○ /reset
+├ ○ /support
+├ ○ /support/seed-test
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

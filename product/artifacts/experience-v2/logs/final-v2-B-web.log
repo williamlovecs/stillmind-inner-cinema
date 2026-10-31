@@ -1,0 +1,3 @@
+PASS web B: body-scan meaningful interaction, pause, stop and small viewport
+PASS web B: person-shift meaningful interaction, pause, stop and small viewport
+PASS web B: logout-pause meaningful interaction, pause, stop and small viewport

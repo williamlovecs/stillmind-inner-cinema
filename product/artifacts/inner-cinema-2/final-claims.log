@@ -1,0 +1,5 @@
+
+> stillmind-inner-cinema@0.1.0 check:claims
+> node scripts/check-public-claims.mjs
+
+Public-claim guard passed across src/app, src/components, mobile/src, packages/content/src, packages/domain/src, docs/app-store. This is a lexical check, not safety/rights certification.

@@ -1,0 +1,24 @@
+{
+  "complete": true,
+  "passed": [
+    "native direct entry waits for onboarding and allows skipping feedback",
+    "native missing scores, active clock, pause and eight-second stop are honest",
+    "native manual deep links cannot bypass method eligibility or breath preferences",
+    "native completion precedes feedback and discomfort never becomes success",
+    "native storage failure preserves the exit and reports unsaved data",
+    "native observer changes the same central object and restores the near composition",
+    "web builds show the crisis boundary inline when high-risk language is entered",
+    "web builds can actually delete all local data through a real confirmation",
+    "failed history hydration preserves acknowledged onboarding and saved breath opt-outs",
+    "library and detail preference persistence failures are visible without unhandled promises",
+    "partial deletion attempts independent cleanup and keeps the warning visible",
+    "320px onboarding scrolls its content while keeping the entry control visible",
+    "native breathing has no fixed phase and only records optional taps",
+    "native long quoted input stays intact and small-screen stop remains physically reachable",
+    "native twelve methods start and stop; static observation, voluntary awareness and contact choice are truthful"
+  ],
+  "failures": [],
+  "blockedExternalRequests": [],
+  "testedGitSha": "4a7826a94966dbf65a2f100884b5b7387231be13",
+  "scope": "Local Expo Web export automation; not a physical iOS validation"
+}

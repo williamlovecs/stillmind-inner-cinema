@@ -1,0 +1,255 @@
+
+> stillmind-inner-cinema@0.1.0 check:release-readiness
+> node scripts/check-release-readiness.mjs && npm run check:eas && npm run check:app-store && npm run check:gtm && npm run check:source-boundary
+
+OK root package.json exists
+OK verify:release script exists
+OK verify script runs public-claim guard
+OK EAS config guard npm script exists
+OK release readiness runs EAS config guard
+OK App Store metadata guard npm script exists
+OK release readiness runs App Store metadata guard
+OK GTM readiness guard npm script exists
+OK release readiness runs GTM readiness guard
+OK source-boundary guard npm script exists
+OK release readiness runs source-boundary guard
+OK launch status report npm script exists
+OK launch status report script exists
+OK launch status report supports live probes
+OK verify:release exports iOS bundle
+OK verify:release exports mobile web bundle
+OK GitHub CI runs verify:release
+OK CI pins Node 22.14.0
+OK support page route exists
+OK seed tester handoff route exists
+OK privacy page route exists
+OK terms page route exists
+OK support page links to issue template chooser
+OK support page warns GitHub issues are public
+OK support page links seed tester handoff
+OK SUPPORT.md exists
+OK blank GitHub issues are disabled
+OK bug issue template exists
+OK experience issue template exists
+OK safety issue template exists
+OK issue templates include privacy checkbox
+OK App Store submission package exists
+OK submission package includes review notes
+OK submission package includes privacy nutrition draft
+OK submission package includes screenshot story
+OK human gates document exists
+OK seed-user protocol exists
+OK seed-user result template exists
+OK seed-user analyzer exists
+OK seed-user analyzer npm script exists
+OK seed-user analyzer tests exist
+OK npm test runs seed-user analyzer tests
+OK payment interview protocol exists
+OK payment interview template exists
+OK payment interview analyzer exists
+OK payment interview analyzer npm script exists
+OK payment interview analyzer tests exist
+OK npm test runs payment interview analyzer tests
+OK real-device QA template exists
+OK real-device QA analyzer exists
+OK real-device QA analyzer npm script exists
+OK real-device QA analyzer tests exist
+OK npm test runs real-device QA analyzer tests
+OK GTM links seed-user protocol
+OK measurement plan links seed-user protocol
+OK source material boundary exists
+OK source material boundary excludes rankings and labels
+OK practice paths domain model exists
+OK practice paths are exported from domain
+OK practice path progress tests exist
+OK mobile method library renders practice paths
+OK practice path analytics event is allowlisted
+OK method system documents practice paths
+OK product spec includes practice paths
+OK Expo app config exists
+OK Expo app name is StillMind
+OK Expo bundle identifier is set
+OK Expo URL scheme is set
+OK Expo iOS tablet support is disabled
+OK Expo API base URL points at production web app
+OK Expo notification usage string is present
+OK Expo SQLite plugin is configured
+OK Expo sharing plugin is configured
+OK Expo notifications plugin is configured
+OK iOS app icon exists
+OK iOS app icon is 1024x1024 PNG
+OK mobile Profile uses configurable production Web base URL
+OK mobile Profile links support URL
+OK mobile Profile links seed tester handoff
+OK mobile Profile links privacy URL
+OK mobile Profile links terms URL
+OK mobile Profile exposes export
+OK mobile Profile exposes delete all
+OK Web API has high-risk boundary
+OK Web support boundary exists
+OK public claim guard exists
+
+Human/external gates still open:
+WARN EAS login is external: Run `npx eas-cli whoami` from mobile/ after Expo credentials are available.
+WARN Apple Developer is external: Confirm paid Apple Developer membership and App Store Connect app record manually.
+WARN Real-device QA is external: Install an EAS preview/TestFlight build on a real iPhone, fill a private copy of docs/app-store/real_device_qa_template.csv, then run `npm run analyze:device-qa -- path\to\real_device_qa_results.csv`.
+WARN Legal review is external: Have privacy, consumer, subscription, wellness, and optional-AI disclosures reviewed before broad launch.
+WARN Seed-user results are external: Run docs/research/SEED_USER_PROTOCOL.md with 15 users and summarize the go/no-go result.
+WARN Payment interviews are external: Before paid launch, run docs/research/PAYMENT_INTERVIEW_PROTOCOL.md and require `npm run analyze:payment-interviews` to return GO_TEST_PAID_OFFER.
+
+Release readiness engineering gates passed. External gates remain human-owned.
+
+> stillmind-inner-cinema@0.1.0 check:eas
+> node scripts/check-eas-config.mjs
+
+OK mobile/eas.json exists
+OK EAS CLI version floor is pinned
+OK EAS app version source is remote
+OK development profile exists
+OK development profile uses dev client
+OK development profile is internal
+OK development profile pins Node 22.14.0
+OK preview profile exists
+OK preview profile is internal distribution
+OK preview profile pins Node 22.14.0
+OK production profile exists
+OK production profile auto-increments
+OK production profile pins Node 22.14.0
+OK production profile is not an internal/dev-client build
+OK production submit profile exists
+OK Expo app name exists
+OK iOS bundle identifier is configured
+OK iOS URL scheme is configured
+OK mobile app is Expo Router based
+OK mobile project includes Expo dev client
+OK runbook documents local EAS config guard
+OK runbook documents EAS login/init/build/submit
+OK human gates track EAS login and signed build
+
+EAS distribution warnings:
+WARN EAS project not linked: Run `npx eas-cli project:init` after Expo login; this should add expo.extra.eas.projectId or link the project remotely.
+WARN submit profile has no Apple account details: Keep this empty until App Store Connect credentials are available; EAS will prompt or use credentials configured in the Expo account.
+
+EAS config guard passed. Login, signing, TestFlight, and App Store review remain external gates.
+
+> stillmind-inner-cinema@0.1.0 check:app-store
+> node scripts/check-app-store-metadata.mjs
+
+OK App Store metadata draft exists
+OK App Store submission package exists
+OK App Store runbook exists
+OK Expo app config exists
+OK metadata has app name
+OK metadata name fits App Store limit
+OK metadata subtitle is present and under 30 chars
+OK metadata promotional text is present and under 170 chars
+OK metadata description is substantive
+OK metadata keywords are present and under 100 chars
+OK metadata category hypothesis exists
+OK metadata screenshot story has at least 5 moments
+OK metadata what's-new text is present
+OK bundle identifier is documented
+OK support URL matches mobile production URL
+OK privacy URL matches mobile production URL
+OK terms URL is documented in runbook
+OK review notes mention no account/payment/microphone/AI dependency
+OK privacy nutrition draft exists
+OK screenshot set requires real shipping UI
+OK pre-submit checklist includes claim guard
+OK runbook includes EAS build and submit commands
+OK runbook lists real-device test matrix
+OK runbook links real-device QA analyzer
+OK real-device QA template exists
+OK iOS icon path is configured
+OK iOS icon is a 1024 PNG
+OK tablet support is disabled in app config
+OK notification usage string is present
+OK production API base URL is configured
+
+App Store metadata guard passed. Human App Store Connect and legal gates still remain.
+
+> stillmind-inner-cinema@0.1.0 check:gtm
+> node scripts/check-gtm-readiness.mjs
+
+OK seed-user protocol exists
+OK seed-user CSV template exists
+OK seed-user analyzer exists
+OK seed-user analyzer npm script exists
+OK seed-user analyzer tests are in npm test
+OK seed-user template has exact expected headers
+OK seed-user analyzer handles the blank template
+OK payment interview protocol exists
+OK payment interview CSV template exists
+OK payment interview analyzer exists
+OK payment interview analyzer npm script exists
+OK payment interview analyzer tests are in npm test
+OK payment interview template has exact expected headers
+OK payment interview analyzer handles the blank template
+OK seed protocol targets 15 first-time users
+OK seed protocol protects raw trigger privacy
+OK seed protocol defines live core task
+OK seed protocol defines score rubric
+OK seed protocol defines GO thresholds
+OK seed protocol defines pause triggers
+OK seed protocol includes 48-72 hour follow-up
+OK seed protocol links analyzer command
+OK seed tester handoff page exists
+OK seed tester handoff protects private stories
+OK seed tester handoff defines core tasks and questions
+OK support page links seed tester handoff
+OK mobile Profile links seed tester handoff
+OK payment protocol defines qualified sample
+OK payment protocol protects private and medical data
+OK payment protocol defines paid offer cards
+OK payment protocol defines go/no-go rules
+OK payment protocol links analyzer command
+OK GTM plan defines six-week validation loop
+OK GTM plan keeps first release free unless StoreKit is ready
+OK GTM plan includes channel order
+OK GTM plan includes moat development
+OK GTM plan references seed-user protocol
+OK GTM plan references payment interview protocol
+OK measurement plan defines useful resets North Star
+OK measurement plan defines initial funnel and safety targets
+OK measurement plan forbids raw/private analytics
+OK measurement plan includes privacy-safe event allowlist
+OK measurement plan links seed-user protocol
+OK human gates require 15 seed users before public App Store
+OK human gates require payment interviews before paid offers
+OK release readiness checks seed-user assets
+OK release readiness checks payment interview assets
+
+GTM validation warnings:
+WARN no real seed-user result file: Expected before broad TestFlight/App Store: copy seed_user_results_template.csv to a private results file and collect 15 anonymized rows.
+WARN no real payment interview result file: Expected before paid launch: copy payment_interview_results_template.csv to a private results file and collect at least 5 qualified interviews.
+
+GTM readiness guard passed. Real seed-user sessions, payment interviews, and market evidence remain human/external gates.
+
+> stillmind-inner-cinema@0.1.0 check:source-boundary
+> node scripts/check-source-boundary.mjs
+
+OK source material boundary document exists
+OK source boundary documents the local 906-page corpus
+OK source boundary separates source from evidence
+OK source boundary defines allowed product translation
+OK source boundary excludes consciousness ranking
+OK source boundary excludes fixed ego labels
+OK source boundary excludes diagnosis and treatment claims
+OK source boundary constrains future RAG core
+OK source boundary requires claim guard before shipping
+OK source corpus index exists
+OK source corpus index is internal metadata only
+OK source corpus index records the 906-page local corpus
+OK source corpus index blocks public quotation and ranking
+OK source corpus index keeps RAG as later gated work
+OK evidence brief labels source teaching separately
+OK evidence brief excludes numeric/metaphysical source claims
+OK evidence brief maps source ideas to product interpretations
+OK method system forbids spiritual ranking
+OK method system forbids ego-type recommendations
+OK product spec keeps legal/App Store disclosures aligned
+OK public claim guard blocks metaphysical ranking terms
+OK App Store package forbids awakening/consciousness claims
+OK human gates require App Store copy to avoid consciousness ranking
+
+Source-boundary guard passed. Future source-grounded RAG remains a later, rights-reviewed v2 gate.

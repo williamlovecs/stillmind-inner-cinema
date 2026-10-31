@@ -1,0 +1,66 @@
+[
+  {
+    "schemaVersion": 1,
+    "name": "reset_entry_submitted",
+    "payload": {
+      "session_id": "web-233bd51d-fc44-4f85-affe-e48bc9301f07",
+      "mode": "looping",
+      "activation_bucket": "unreported",
+      "input_method": "state-only",
+      "text_provided": false
+    },
+    "anonymousId": "7cf1b190-0d31-4b22-afe2-2eed52a3ad88",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "reset_started",
+    "payload": {
+      "session_id": "web-233bd51d-fc44-4f85-affe-e48bc9301f07",
+      "mode": "looping",
+      "activation_bucket": "unreported",
+      "duration_bucket": 1,
+      "method_id": "inner-cinema"
+    },
+    "anonymousId": "7cf1b190-0d31-4b22-afe2-2eed52a3ad88",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "practice_started",
+    "payload": {
+      "session_id": "web-233bd51d-fc44-4f85-affe-e48bc9301f07",
+      "method_id": "inner-cinema",
+      "duration_bucket": 1,
+      "source": "offline"
+    },
+    "anonymousId": "7cf1b190-0d31-4b22-afe2-2eed52a3ad88",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "practice_ended",
+    "payload": {
+      "session_id": "web-233bd51d-fc44-4f85-affe-e48bc9301f07",
+      "method_id": "inner-cinema",
+      "status": "abandoned",
+      "elapsed_bucket": "under_half"
+    },
+    "anonymousId": "7cf1b190-0d31-4b22-afe2-2eed52a3ad88",
+    "platform": "web"
+  },
+  {
+    "schemaVersion": 1,
+    "name": "after_check_saved",
+    "payload": {
+      "session_id": "web-c0a165ce-60a1-4554-ad79-6f42ffa72bac",
+      "method_id": "inner-cinema",
+      "result": "stopped",
+      "activation_change_bucket": "unreported",
+      "grounded_action_id": "",
+      "reuse_intent": "unreported"
+    },
+    "anonymousId": "54fc3be7-6412-49eb-b7fc-4d16e1bc5cd5",
+    "platform": "web"
+  }
+]

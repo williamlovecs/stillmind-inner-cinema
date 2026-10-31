@@ -1,0 +1,3 @@
+PASS native B: body-scan meaningful interaction, pause, stop and small viewport
+PASS native B: person-shift meaningful interaction, pause, stop and small viewport
+PASS native B: logout-pause meaningful interaction, pause, stop and small viewport

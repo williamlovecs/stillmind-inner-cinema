@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "productSha": "c32d423c4eaa5e3f263d1679bb78eee0fd181fbd",
+  "siteSha": "0b91f3fb0a9d67f16be097f824954b2e793e395e",
+  "productTests": 148,
+  "verifiedProductBrowserSummaries": 13,
+  "productBrowserFailures": 0,
+  "productExternalRequests": 0,
+  "expoDoctor": "21/21",
+  "productAudit": {
+    "info": 0,
+    "low": 5,
+    "moderate": 0,
+    "high": 6,
+    "critical": 0,
+    "total": 11
+  },
+  "siteBrowserGroups": 5,
+  "siteAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "scope": "Local production builds and headless Chrome with synthetic inputs; no physical-device, public-network, efficacy, signing or release approval"
+}

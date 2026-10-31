@@ -1,0 +1,4 @@
+PASS native A: representative pages captured with reduced motion
+PASS native A: paced-breath meaningful interaction, pause, stop and small viewport
+PASS native A: thought-watching meaningful interaction, pause, stop and small viewport
+PASS native A: wide-gaze meaningful interaction, pause, stop and small viewport

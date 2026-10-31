@@ -1,0 +1,16 @@
+
+> stillmind-inner-cinema@0.1.0 lint
+> npm run lint:web && npm run lint:mobile
+
+
+> stillmind-inner-cinema@0.1.0 lint:web
+> eslint src packages test
+
+
+> stillmind-inner-cinema@0.1.0 lint:mobile
+> npm --workspace mobile run lint
+
+
+> mobile@1.0.0 lint
+> expo lint
+

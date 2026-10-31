@@ -1,0 +1,46 @@
+{
+  "testedGitSha": "c32d423c4eaa5e3f263d1679bb78eee0fd181fbd",
+  "scope": "Synthetic local browser QA; baseline and after are separate runs; Expo Web is not physical-device evidence",
+  "files": [
+    {
+      "file": "batch-A-before-after.png",
+      "rows": [
+        "Paced breath",
+        "Thought watching",
+        "Wide gaze"
+      ]
+    },
+    {
+      "file": "batch-B-before-after.png",
+      "rows": [
+        "Body scan",
+        "Person shift",
+        "Logout pause"
+      ]
+    },
+    {
+      "file": "batch-C-before-after.png",
+      "rows": [
+        "Release",
+        "Open awareness",
+        "Grounded action"
+      ]
+    },
+    {
+      "file": "batch-D-before-after.png",
+      "rows": [
+        "Trigger journal",
+        "Anchors"
+      ]
+    },
+    {
+      "file": "product-paths-before-after.png",
+      "rows": [
+        "Home / real recent practice",
+        "Library / saved favorite and filters",
+        "Reflection / real local sessions",
+        "Settings / real local data controls"
+      ]
+    }
+  ]
+}

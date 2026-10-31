@@ -1,0 +1,24 @@
+{
+  "complete": true,
+  "platform": "web",
+  "passed": [
+    "favorite survives reload and combines with real duration/filter results",
+    "an actual timed practice appears in home shortcuts and local reflection",
+    "JSON export contains the real local session, not demo content",
+    "deletion failure stays honest and successful deletion clears reflection"
+  ],
+  "failures": [],
+  "externalRequests": [],
+  "performance": {
+    "scope": "Local production build in headless Chrome; not Lighthouse or public-network measurement",
+    "metrics": {
+      "domContentLoadedMs": 9,
+      "loadMs": 16.5,
+      "resourceCount": 22,
+      "transferBytes": 16401,
+      "decodedBytes": 718446
+    }
+  },
+  "testedGitSha": "c32d423c4eaa5e3f263d1679bb78eee0fd181fbd",
+  "scope": "Local Next production browser automation"
+}

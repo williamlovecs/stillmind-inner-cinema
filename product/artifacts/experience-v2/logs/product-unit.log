@@ -1,0 +1,98 @@
+
+> stillmind-inner-cinema@0.1.0 test:reset-routing
+> tsx --test test/reset-routing.test.ts test/reset-draft.test.ts test/web-library.test.ts
+
+TAP version 13
+# Subtest: input, score and optional consent are transferred atomically and consumed only once
+ok 1 - input, score and optional consent are transferred atomically and consumed only once
+  ---
+  duration_ms: 1.0574
+  type: 'test'
+  ...
+# Subtest: failed writes never let a fresh navigation consume stale private text or consent
+ok 2 - failed writes never let a fresh navigation consume stale private text or consent
+  ---
+  duration_ms: 0.1523
+  type: 'test'
+  ...
+# Subtest: unavailable storage or failed removal cannot replay a draft
+ok 3 - unavailable storage or failed removal cannot replay a draft
+  ---
+  duration_ms: 0.099
+  type: 'test'
+  ...
+# Subtest: malformed, oversized or unsupported drafts are discarded
+ok 4 - malformed, oversized or unsupported drafts are discarded
+  ---
+  duration_ms: 0.161
+  type: 'test'
+  ...
+# Subtest: invalid scores remain missing and anonymous consent requires an explicit boolean
+ok 5 - invalid scores remain missing and anonymous consent requires an explicit boolean
+  ---
+  duration_ms: 0.1543
+  type: 'test'
+  ...
+# Subtest: the shared five-point activation wins over legacy values
+ok 6 - the shared five-point activation wins over legacy values
+  ---
+  duration_ms: 1.0083
+  type: 'test'
+  ...
+# Subtest: legacy ten-point scores migrate only when no five-point value is present
+ok 7 - legacy ten-point scores migrate only when no five-point value is present
+  ---
+  duration_ms: 0.1712
+  type: 'test'
+  ...
+# Subtest: stored reset intensity wins and survives route hydration
+ok 8 - stored reset intensity wins and survives route hydration
+  ---
+  duration_ms: 0.1538
+  type: 'test'
+  ...
+# Subtest: query intensity preserves the entry score when session storage is unavailable
+ok 9 - query intensity preserves the entry score when session storage is unavailable
+  ---
+  duration_ms: 0.073
+  type: 'test'
+  ...
+# Subtest: invalid values use the recommendation fallback and valid values are clamped
+ok 10 - invalid values use the recommendation fallback and valid values are clamped
+  ---
+  duration_ms: 0.1147
+  type: 'test'
+  ...
+# Subtest: web library loads only valid sessions and known method favorites
+ok 11 - web library loads only valid sessions and known method favorites
+  ---
+  duration_ms: 1.1839
+  type: 'test'
+  ...
+# Subtest: web library favorites persist and a failed write is not reported as saved
+ok 12 - web library favorites persist and a failed write is not reported as saved
+  ---
+  duration_ms: 0.2405
+  type: 'test'
+  ...
+# Subtest: web library combines real family, duration and favorite filters
+ok 13 - web library combines real family, duration and favorite filters
+  ---
+  duration_ms: 0.177
+  type: 'test'
+  ...
+# Subtest: web deletion touches only explicit StillMind keys and reports every failure
+ok 14 - web deletion touches only explicit StillMind keys and reports every failure
+  ---
+  duration_ms: 0.2603
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 444.2194

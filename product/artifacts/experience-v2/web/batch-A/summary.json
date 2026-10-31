@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "platform": "web",
+  "batch": "A",
+  "passed": [
+    "representative pages captured with reduced motion",
+    "paced-breath meaningful interaction, pause, stop and small viewport",
+    "thought-watching meaningful interaction, pause, stop and small viewport",
+    "wide-gaze meaningful interaction, pause, stop and small viewport"
+  ],
+  "failures": [],
+  "externalRequests": [],
+  "testedGitSha": "c32d423c4eaa5e3f263d1679bb78eee0fd181fbd",
+  "scope": "Local Next production browser automation"
+}
