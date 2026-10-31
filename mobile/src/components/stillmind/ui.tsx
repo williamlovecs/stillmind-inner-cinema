@@ -3,16 +3,24 @@ import { Pressable, ScrollView, StyleSheet, Text, View, type PressableProps, typ
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, gradients, radii, spacing } from "@/constants/theme";
+import { useApp } from "@/state/AppProvider";
 
 export function Screen({ children, scroll = true, contentStyle }: PropsWithChildren<{ scroll?: boolean; contentStyle?: ViewStyle }>) {
+  const { storageNotice, clearStorageNotice } = useApp();
+  const notice = storageNotice ? <View accessibilityRole="alert" testID="native-storage-notice" style={styles.storageNotice}>
+    <Text style={[type.caption, styles.flex, { color: colors.textMuted }]}>{storageNotice}</Text>
+    <Pressable accessibilityRole="button" accessibilityLabel="关闭存储提示" onPress={clearStorageNotice} style={styles.noticeDismiss}>
+      <Text style={type.bodyStrong}>知道了</Text>
+    </Pressable>
+  </View> : null;
   const content = scroll ? (
-    <ScrollView contentContainerStyle={[styles.screenContent, contentStyle]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+    <ScrollView style={styles.flex} contentContainerStyle={[styles.screenContent, contentStyle]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
       {children}
     </ScrollView>
   ) : <View style={[styles.screenContent, styles.flex, contentStyle]}>{children}</View>;
   return (
     <LinearGradient colors={gradients.background} style={styles.flex}>
-      <SafeAreaView style={styles.flex} edges={["top", "left", "right"]}>{content}</SafeAreaView>
+      <SafeAreaView style={styles.flex} edges={["top", "left", "right"]}>{notice}{content}</SafeAreaView>
     </LinearGradient>
   );
 }
@@ -89,6 +97,8 @@ export const type = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+  storageNotice: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12, backgroundColor: colors.surfaceSoft },
+  noticeDismiss: { minHeight: 44, justifyContent: "center", paddingHorizontal: 8 },
   flex: { flex: 1 },
   screenContent: { paddingHorizontal: 20, paddingBottom: 120, gap: spacing.lg },
   header: { paddingTop: spacing.sm, gap: spacing.lg },
@@ -104,7 +114,7 @@ const styles = StyleSheet.create({
   surfaceWarm: { backgroundColor: "rgba(82, 56, 72, 0.62)", borderColor: "rgba(244, 182, 106, 0.22)" },
   buttonOuter: { alignSelf: "stretch", borderRadius: radii.medium, overflow: "hidden" },
   primaryButton: { minHeight: 54, paddingHorizontal: 20, borderRadius: radii.medium, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9 },
-  primaryButtonText: { color: colors.white, fontSize: 16, fontWeight: "800" },
+  primaryButtonText: { color: colors.accentInk, fontSize: 16, fontWeight: "800" },
   secondaryButton: { minHeight: 50, paddingHorizontal: 18, borderRadius: radii.medium, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.surfaceSoft, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
   secondaryButtonText: { color: colors.text, fontSize: 15, fontWeight: "700" },
   disabled: { opacity: 0.45 },

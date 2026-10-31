@@ -1,35 +1,11 @@
 import { isAnalyticsEnvelope } from "@stillmind/domain";
+import { readBoundedJson, requestAddress, WindowRateLimit } from "@/lib/server-limits";
+import { corsHeaders, preflight, requestPolicyError } from "@/lib/request-policy";
 
-const WINDOW_MS = 60_000;
-const MAX_EVENTS_PER_WINDOW = 30;
 const MAX_BODY_BYTES = 8_192;
-const rateLimits = new Map<string, { count: number; resetAt: number }>();
+const rateLimit = new WindowRateLimit(30);
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Cache-Control": "no-store",
-};
-
-function json(body: unknown, status = 200) {
-  return Response.json(body, { status, headers: CORS_HEADERS });
-}
-
-function clientAddress(request: Request): string {
-  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
-}
-
-function allowed(address: string, now = Date.now()): boolean {
-  const current = rateLimits.get(address);
-  if (!current || current.resetAt <= now) {
-    rateLimits.set(address, { count: 1, resetAt: now + WINDOW_MS });
-    return true;
-  }
-  if (current.count >= MAX_EVENTS_PER_WINDOW) return false;
-  current.count += 1;
-  return true;
-}
+const sinkBudget = new WindowRateLimit(120);
 
 function posthogEndpoint(): string | undefined {
   const token = process.env.POSTHOG_PROJECT_API_KEY?.trim();
@@ -44,30 +20,24 @@ function posthogEndpoint(): string | undefined {
   }
 }
 
-export function OPTIONS() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
-}
+export const OPTIONS = preflight;
 
 export async function POST(request: Request) {
-  if (!allowed(clientAddress(request))) return json({ accepted: false, reason: "rate-limited" }, 429);
+  const json = (body: unknown, status = 200) => Response.json(body, { status, headers: corsHeaders(request) });
+  const policyError = requestPolicyError(request);
+  if (policyError) return json({ accepted: false, reason: policyError.reason }, policyError.status);
+  if (!rateLimit.allow(requestAddress(request))) return json({ accepted: false, reason: "rate-limited" }, 429);
 
-  const declaredLength = Number(request.headers.get("content-length") || 0);
-  if (declaredLength > MAX_BODY_BYTES) return json({ accepted: false, reason: "payload-too-large" }, 413);
-
-  let body: unknown;
-  try {
-    const raw = await request.text();
-    if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) return json({ accepted: false, reason: "payload-too-large" }, 413);
-    body = JSON.parse(raw);
-  } catch {
-    return json({ accepted: false, reason: "invalid-json" }, 400);
-  }
+  const read = await readBoundedJson(request, MAX_BODY_BYTES);
+  if (!read.ok) return json({ accepted: false, reason: read.reason }, read.status);
+  const body = read.value;
 
   if (!isAnalyticsEnvelope(body)) return json({ accepted: false, reason: "invalid-event" }, 400);
 
   const endpoint = posthogEndpoint();
   const token = process.env.POSTHOG_PROJECT_API_KEY?.trim();
   if (!endpoint || !token) return json({ accepted: false, reason: "not-configured" }, 202);
+  if (!sinkBudget.allow("sink")) return json({ accepted: false, reason: "rate-limited" }, 429);
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3_500);

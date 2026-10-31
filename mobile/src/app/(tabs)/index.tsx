@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { router } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
   containsHighRiskLanguage,
@@ -9,14 +9,16 @@ import {
   recommendMethods,
   RESET_STATE_BY_MODE,
   RESET_STATE_PROFILES,
+  ratingText,
   type ActivationLevel,
   type StateMode,
 } from "@stillmind/domain";
 import { colors, radii, spacing } from "@/constants/theme";
-import { BrandHeader, Chip, PrimaryButton, Screen, Surface, type } from "@/components/stillmind/ui";
+import { BrandHeader, Chip, PrimaryButton, Screen, SecondaryButton, Surface, type } from "@/components/stillmind/ui";
 import { useApp, type ResetDraft } from "@/state/AppProvider";
 import { buildMethodHistory } from "@/lib/recommendation";
 import { track } from "@/lib/analytics";
+import { NativePracticeShortcuts } from "@/components/stillmind/NativePracticeShortcuts";
 
 const EXAMPLES = [
   "我被批评了，现在很想反击。",
@@ -26,19 +28,32 @@ const EXAMPLES = [
 
 export default function TodayScreen() {
   const [trigger, setTrigger] = useState("");
-  const [activation, setActivation] = useState<ActivationLevel>(3);
+  const [activation, setActivation] = useState<ActivationLevel | undefined>();
   const [manualMode, setManualMode] = useState<StateMode>();
   const [inputMethod, setInputMethod] = useState<ResetDraft["inputMethod"]>("typed");
   const [showStates, setShowStates] = useState(false);
+  const [showIntake, setShowIntake] = useState(false);
   const [starting, setStarting] = useState(false);
+  // Alert.alert is a silent no-op on react-native-web, so boundary notices render inline on every platform.
+  const [notice, setNotice] = useState<{ title: string; body: string }>();
   const { preferences, sessions, setPendingResetDraft } = useApp();
+  const startingTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const startedRef = useRef(false);
+  // A finished flow must not leave the previous sentence in the box: returning users
+  // could accidentally resubmit it (and, with AI enabled, send it to the server again).
+  useFocusEffect(useCallback(() => {
+    if (!startedRef.current) return;
+    startedRef.current = false;
+    setTrigger(""); setActivation(undefined); setManualMode(undefined); setInputMethod("typed");
+  }, []));
+  useEffect(() => () => clearTimeout(startingTimerRef.current), []);
 
   const detectedMode = detectStateModeFromText(trigger);
   const mode = manualMode ?? detectedMode;
   const profile = RESET_STATE_BY_MODE.get(mode) ?? RESET_STATE_PROFILES[1];
   const history = useMemo(() => buildMethodHistory(sessions, preferences.favoriteMethodIds), [sessions, preferences.favoriteMethodIds]);
   const recommendation = useMemo(() => recommendMethods({
-    activation,
+    activation: activation ?? profile.defaultActivation,
     mode,
     duration: 1,
     outcome: profile.outcome,
@@ -48,7 +63,7 @@ export default function TodayScreen() {
     breathChangeAllowed: preferences.breathChangeAllowed,
     hiddenMethodIds: preferences.hiddenMethodIds,
     history,
-  }), [activation, history, mode, preferences, profile.outcome]);
+  }), [activation, history, mode, preferences, profile.outcome, profile.defaultActivation]);
   const method = recommendation.kind === "practice" ? recommendation.primary : METHOD_BY_ID.get("grounded-action")!;
 
   function chooseExample(value: string) {
@@ -59,7 +74,7 @@ export default function TodayScreen() {
 
   function chooseMode(value: StateMode) {
     setManualMode(value);
-    setActivation(RESET_STATE_BY_MODE.get(value)?.defaultActivation ?? 3);
+    setActivation(undefined);
     if (!trigger.trim()) setInputMethod("state-only");
   }
 
@@ -68,46 +83,61 @@ export default function TodayScreen() {
     const text = trigger.trim();
     if (text && containsHighRiskLanguage(text)) {
       track("safety_boundary_shown", { reason_code: "high-risk-language" });
-      Alert.alert(
-        "先联系现实中的支持",
-        "StillMind 不处理危机或医疗紧急情况。如果你无法保证自己的安全，请立即联系当地紧急服务、前往急诊，或让可信任的人陪在身边。",
-        [{ text: "知道了" }],
-      );
+      setNotice({
+        title: "先联系现实中的支持",
+        body: "StillMind 不处理危机或医疗紧急情况。如果你无法保证自己的安全，请立即联系当地紧急服务、前往急诊，或让可信任的人陪在身边。",
+      });
       return;
     }
 
+    if (recommendation.kind !== "practice") {
+      setNotice({ title: "当前没有匹配的练习", body: recommendation.explanation });
+      return;
+    }
     setStarting(true);
     const resolvedInputMethod = text ? inputMethod : "state-only";
     setPendingResetDraft({ trigger: text, inputMethod: resolvedInputMethod });
-    track("reset_entry_submitted", {
-      mode,
-      activation_bucket: activation,
-      input_method: resolvedInputMethod,
-      text_provided: Boolean(text),
-    });
+    // The reset screen records the actual start once, with a joinable session id.
     router.push({
       pathname: "/reset",
       params: {
         mode,
         methodId: method.id,
-        activation: String(activation),
+        ...(activation === undefined ? {} : { activation: String(activation), ratingProvided: "1" }),
         duration: "1",
         outcome: profile.outcome,
         direct: "1",
       },
     });
-    setTimeout(() => setStarting(false), 700);
+    startedRef.current = true;
+    clearTimeout(startingTimerRef.current);
+    startingTimerRef.current = setTimeout(() => setStarting(false), 700);
   }
 
   return (
     <Screen contentStyle={styles.screen}>
       <BrandHeader />
       <View style={styles.heroCopy}>
-        <Text style={type.display}>现在发生了什么？</Text>
-        <Text style={type.body}>说一句，或者写一句。不用解释完整。</Text>
+        <Text style={type.display}>现在，先停一分钟。</Text>
+        <Text style={type.body}>不必先解释，跟着做就好。</Text>
       </View>
 
-      <Surface style={styles.intakeCard}>
+      <PrimaryButton
+        label={starting ? "正在准备…" : "开始 1 分钟 Reset"}
+        disabled={starting}
+        icon={<Ionicons name="play" size={18} color={colors.accentInk} />}
+        onPress={start}
+      />
+      <NativePracticeShortcuts />
+      {notice ? <Surface style={styles.noticeCard}>
+        <View accessibilityRole="alert" style={styles.noticeCopy}>
+          <Text style={type.bodyStrong}>{notice.title}</Text>
+          <Text style={type.body}>{notice.body}</Text>
+        </View>
+        <SecondaryButton label="知道了" onPress={() => setNotice(undefined)} />
+      </Surface> : null}
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: showIntake }} onPress={() => setShowIntake(!showIntake)} style={styles.secondaryLink}><Text style={styles.secondaryLinkText}>{showIntake ? "收起输入" : "想说一句，或记录此刻程度（可选）"}</Text></Pressable>
+      {showIntake ? <Surface style={styles.intakeCard}>
         <View style={styles.dictationHint}>
           <Ionicons name="mic-outline" size={17} color={colors.lavender} />
           <Text style={styles.dictationText}>可直接使用键盘上的语音输入</Text>
@@ -130,7 +160,7 @@ export default function TodayScreen() {
         />
         <View style={styles.examples}>
           {EXAMPLES.map((example) => (
-            <Pressable key={example} onPress={() => chooseExample(example)} style={({ pressed }) => [styles.example, pressed && styles.pressed]}>
+            <Pressable key={example} accessibilityRole="button" onPress={() => chooseExample(example)} style={({ pressed }) => [styles.example, pressed && styles.pressed]}>
               <Text numberOfLines={1} style={styles.exampleText}>{example.replace(/。$/, "")}</Text>
             </Pressable>
           ))}
@@ -138,10 +168,10 @@ export default function TodayScreen() {
 
         <View style={styles.scaleHeader}>
           <View>
-            <Text style={type.bodyStrong}>现在被带走的程度</Text>
+            <Text style={type.bodyStrong}>现在被带走的程度（可选）</Text>
             <Text style={type.caption}>1 = 还能停一下，5 = 很难停下来</Text>
           </View>
-          <Text style={styles.score}>{activation}/5</Text>
+          <Text style={styles.score}>{ratingText(activation)}</Text>
         </View>
         <View style={styles.scale}>
           {([1, 2, 3, 4, 5] as const).map((value) => (
@@ -149,7 +179,7 @@ export default function TodayScreen() {
               key={value}
               accessibilityRole="button"
               accessibilityState={{ selected: activation === value }}
-              onPress={() => setActivation(value)}
+              onPress={() => setActivation(activation === value ? undefined : value)}
               style={[styles.scaleButton, activation === value && styles.scaleButtonActive]}
             >
               <Text style={[styles.scaleText, activation === value && styles.scaleTextActive]}>{value}</Text>
@@ -157,16 +187,11 @@ export default function TodayScreen() {
           ))}
         </View>
 
-        <PrimaryButton
-          label={starting ? "正在准备…" : "开始 1 分钟 Reset"}
-          disabled={starting}
-          icon={<Ionicons name="play" size={18} color={colors.white} />}
-          onPress={start}
-        />
-        <Text style={styles.matchCopy}>将使用：{method.title}</Text>
-      </Surface>
 
-      <Pressable onPress={() => setShowStates((value) => !value)} style={styles.secondaryLink}>
+        <Text style={styles.matchCopy}>将使用：{method.title}</Text>
+      </Surface> : null}
+
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: showStates }} onPress={() => setShowStates((value) => !value)} style={styles.secondaryLink}>
         <Text style={styles.secondaryLinkText}>{showStates ? "收起状态选择" : "不想描述？直接选状态"}</Text>
         <Ionicons name={showStates ? "chevron-up" : "chevron-down"} size={16} color={colors.textMuted} />
       </Pressable>
@@ -188,6 +213,8 @@ export default function TodayScreen() {
 const styles = StyleSheet.create({
   screen: { gap: spacing.md },
   heroCopy: { gap: 7, paddingTop: spacing.md },
+  noticeCard: { gap: 12, padding: 16 },
+  noticeCopy: { gap: 7 },
   intakeCard: { gap: 16, padding: 16 },
   dictationHint: { flexDirection: "row", alignItems: "center", gap: 7 },
   dictationText: { color: colors.textMuted, fontSize: 12, fontWeight: "600" },

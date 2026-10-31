@@ -1,5 +1,7 @@
 # Progress Log
 
+> **Latest handoff (2026-09-07)**: see `CURRENT_STATE.md`. Runtime baseline is `0ba5edf` / CI33988224046; current additions are documentation only. A/B/C composition and UX backlog are now versioned. Below is the preserved chronological history, not proof that every product/content claim is validated.
+
 ## 2026-06-20
 
 - Created active goal for complete StillMind product and iOS distribution.

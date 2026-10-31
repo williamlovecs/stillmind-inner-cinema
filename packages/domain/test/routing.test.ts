@@ -83,8 +83,14 @@ test("medical emergency has highest safety priority", () => {
 
 test("high-risk language is detected before reflective exercises", () => {
   assert.equal(containsHighRiskLanguage("我现在无法保证自己安全"), true);
+  // The most natural phrasings carry 的 or colloquial verbs; the gate must not
+  // depend on a telegraphic wording to catch someone asking for help.
+  assert.equal(containsHighRiskLanguage("我现在无法保证自己的安全"), true);
+  assert.equal(containsHighRiskLanguage("没办法保证自己的安全了"), true);
+  assert.equal(containsHighRiskLanguage("我保证不了自己的安全"), true);
   assert.equal(containsHighRiskLanguage("I might hurt myself tonight"), true);
   assert.equal(containsHighRiskLanguage("我很生气，想先暂停回复"), false);
+  assert.equal(containsHighRiskLanguage("这个方法保证有效"), false);
 });
 
 test("comfort constraints exclude body and breath practices", () => {

@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { parseCsv, average, summarize } from "./lib/seed-user-analysis.mjs";
 
 const path = process.argv[2] ?? "docs/research/seed_user_results_template.csv";
 
@@ -7,7 +8,9 @@ if (!existsSync(path)) {
   process.exit(1);
 }
 
-const rows = parseCsv(readFileSync(path, "utf8")).filter((row) => row.session_id);
+let rows;
+try { rows = parseCsv(readFileSync(path, "utf8")); }
+catch { console.error("Decision: INVALID_DATA; check CSV format without posting private rows."); process.exit(1); }
 
 if (rows.length === 0) {
   console.log("Seed-user summary: no user rows yet.");
@@ -15,22 +18,8 @@ if (rows.length === 0) {
   process.exit(0);
 }
 
-const complete = count(rows, (row) => norm(row.completed_reset) === "yes");
-const moreChoice = count(rows, (row) => ["more_choice", "more choice"].includes(norm(row.after_check_result)));
-const severeSafety = count(rows, (row) => truthy(row.severe_safety_concern));
-const understandsBoundary = count(rows, (row) => truthy(row.understands_nonclinical));
-const foundPrivacy = count(rows, (row) => ["yes", "partly"].includes(norm(row.found_privacy_delete_export)));
-const textConfusionStops = count(rows, (row) => truthy(row.stopped_text_confusion));
-const clinicalMisread = count(rows, (row) => truthy(row.interpreted_as_diagnosis_advice_therapy));
-const reuseYesOrMaybe = count(rows, (row) => ["yes", "maybe"].includes(norm(row.would_use_again_week)));
-
-const worseByMethod = new Map();
-for (const row of rows) {
-  if (norm(row.after_check_result) === "worse") {
-    const method = row.method_id || "unknown";
-    worseByMethod.set(method, (worseByMethod.get(method) ?? 0) + 1);
-  }
-}
+const { decision, complete, moreChoice, severeSafety, understandsBoundary, foundPrivacy,
+  textConfusionStops, clinicalMisread, reuseYesOrMaybe, worstMethodSignals, missingSafety, duplicateIds } = summarize(rows);
 
 const averageScores = [
   "comprehension_score",
@@ -43,31 +32,13 @@ const averageScores = [
 
 const topConfusions = topValues(rows.map((row) => row.first_confusion_point).filter(Boolean));
 const topScenarios = topValues(rows.map((row) => row.scenario_category).filter(Boolean));
-const worstMethodSignals = [...worseByMethod.entries()].filter(([, value]) => value >= 2);
-
-const hasEnoughData = rows.length >= 15;
-const passGoThresholds =
-  complete >= 8 &&
-  moreChoice >= 5 &&
-  severeSafety === 0 &&
-  understandsBoundary >= 10 &&
-  foundPrivacy >= 8;
-const mustPause =
-  textConfusionStops >= 4 ||
-  clinicalMisread >= 3 ||
-  severeSafety > 0 ||
-  worstMethodSignals.length > 0;
-
-let decision = "INSUFFICIENT_DATA";
-if (hasEnoughData && mustPause) decision = "NO_GO_FIX_PRODUCT";
-else if (hasEnoughData && passGoThresholds) decision = "GO_BROADER_TESTFLIGHT";
-else if (hasEnoughData) decision = "NO_GO_MORE_ITERATION";
-
 console.log(`# StillMind Seed-User Summary`);
 console.log(``);
 console.log(`Input: ${path}`);
 console.log(`Rows: ${rows.length}`);
 console.log(`Decision: ${decision}`);
+console.log(`Rows missing explicit safety review: ${missingSafety}`);
+console.log(`Duplicate participant IDs: ${duplicateIds.length} (resolve before expanding)`);
 console.log(``);
 console.log(`## Go thresholds`);
 metric("Completed reset", complete, ">= 8");
@@ -97,57 +68,6 @@ console.log(`Reminder: do not store raw trigger text, medical details, contact i
 
 function metric(label, value, target) {
   console.log(`- ${label}: ${value} (${target})`);
-}
-
-function parseCsv(source) {
-  const lines = source.replace(/^\uFEFF/, "").trimEnd().split(/\r?\n/);
-  if (lines.length === 0 || !lines[0]) return [];
-  const headers = parseLine(lines[0]);
-  return lines.slice(1).map((line) => {
-    const values = parseLine(line);
-    return Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""]));
-  });
-}
-
-function parseLine(line) {
-  const cells = [];
-  let cell = "";
-  let quoted = false;
-  for (let index = 0; index < line.length; index += 1) {
-    const char = line[index];
-    const next = line[index + 1];
-    if (char === '"' && quoted && next === '"') {
-      cell += '"';
-      index += 1;
-    } else if (char === '"') {
-      quoted = !quoted;
-    } else if (char === "," && !quoted) {
-      cells.push(cell);
-      cell = "";
-    } else {
-      cell += char;
-    }
-  }
-  cells.push(cell);
-  return cells.map((value) => value.trim());
-}
-
-function norm(value) {
-  return String(value ?? "").trim().toLowerCase().replaceAll("-", "_");
-}
-
-function truthy(value) {
-  return ["yes", "true", "1", "y"].includes(norm(value));
-}
-
-function count(items, predicate) {
-  return items.filter(predicate).length;
-}
-
-function average(items, field) {
-  const values = items.map((item) => Number(item[field])).filter((value) => Number.isFinite(value));
-  if (values.length === 0) return null;
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
 function topValues(values) {

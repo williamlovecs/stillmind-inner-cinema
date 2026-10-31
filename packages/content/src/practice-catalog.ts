@@ -12,7 +12,7 @@ const v = (
 ): PracticeVariant => ({
   id: `${methodId}-${minutes}`,
   methodId,
-  contentVersion: "1.0.0",
+  contentVersion: "1.1.0",
   minutes,
   title,
   subtitle,
@@ -27,9 +27,9 @@ export const PRACTICE_VARIANTS: readonly PracticeVariant[] = [
     { id: "role", kind: "observe", title: "角色正在演", instruction: "看见身体、念头和冲动。", seconds: 20 },
     { id: "audience", kind: "observe", title: "坐回观众席", instruction: "不急着进入剧情。", seconds: 20, haptic: "soft" },
   ], "观电影法只是 StillMind 的一种方法；你看见角色，但不必完全成为角色。"),
-  v("paced-breath", 1, "呼吸法", "数呼气，不追念头", "如果数息让你不舒服，只保持自然呼吸并看着数字变化。", [
+  v("paced-breath", 1, "呼吸法", "数呼气，不追念头", "不改变呼吸。数息不舒服时，可以停下并看看周围。", [
     { id: "arrive", kind: "arrive", title: "先找到呼气", instruction: "不用改变呼吸，只注意下一次呼气自然出现。", seconds: 8, alternative: "保持眼睛睁开，看着屏幕中央。" },
-    { id: "count-1", kind: "breathe", title: "呼气，数 1", instruction: "呼气时在心里数 1，吸气时不用做任何事。", seconds: 18, haptic: "breath" },
+    { id: "count-1", kind: "breathe", title: "呼气，数 1", instruction: "每次自然呼气时，在心里接着数一个数字。", seconds: 18 },
     { id: "count-2", kind: "breathe", title: "继续数下去", instruction: "每次呼气只加一个数字。走神了，就从下一个数字继续。", seconds: 18, haptic: "breath" },
     { id: "release", kind: "close", title: "放开数字", instruction: "让呼吸回到自己的速度，看看周围。", seconds: 16, haptic: "soft" },
   ], "重点不是控制呼吸，而是让注意力停在数字上。"),
@@ -54,10 +54,10 @@ export const PRACTICE_VARIANTS: readonly PracticeVariant[] = [
     { id: "whole", kind: "observe", title: "观整体", instruction: "把身体当成一个同时变化的感觉场。", seconds: 55 },
     { id: "orient", kind: "close", title: "回到现场", instruction: "睁眼，找到门、光源和一个让你安心的物体。", seconds: 40, haptic: "soft" },
   ], "内观只负责看见，不负责解释你是谁。"),
-  v("person-shift", 1, "人称替代法", "把“我”换成名字", "准备一句正在困住你的“我……”或“我必须……”。", [
+  v("person-shift", 1, "人称替代法", "用名字读一遍", "准备一句此刻的想法，也可以只在心里练习。", [
     { id: "original", kind: "notice", title: "原句", instruction: "看见原句，不和它争辩。", seconds: 10 },
-    { id: "name", kind: "observe", title: "换成名字", instruction: "把“我很生气”改成“某某正在生气”。", seconds: 18 },
-    { id: "third", kind: "observe", title: "再退一步", instruction: "改成：一个人正在经历这段反应。", seconds: 18 },
+    { id: "name", kind: "observe", title: "换成名字", instruction: "可以用昵称说：某某注意到，脑中出现了这样一句话。", seconds: 18 },
+    { id: "third", kind: "observe", title: "再退一步", instruction: "原句保持不变，注意你也正在读它。", seconds: 18 },
     { id: "choice", kind: "choose", title: "角色之外", instruction: "这个人现在可以先做哪件小事？", seconds: 14, haptic: "soft" },
   ], "名字替代不是否认自己，而是让观察距离出现。"),
   v("logout-pause", 1, "登出法", "不参与，不解释", "适合意识流很吵、越解释越停不下来时。", [
@@ -76,9 +76,9 @@ export const PRACTICE_VARIANTS: readonly PracticeVariant[] = [
   v("open-awareness", 5, "合一法", "记住安静连接的感觉", "仅在你此刻相对稳定、愿意练习时使用。若变得不适，睁眼并退出。", [
     { id: "anchor", kind: "arrive", title: "找到锚点", instruction: "先用脚底、声音或自然呼吸稳定注意。", seconds: 50 },
     { id: "include", kind: "observe", title: "把经验放进来", instruction: "让声音、身体感觉和念头同时被看见，不选一个当中心。", seconds: 55 },
-    { id: "connection", kind: "observe", title: "连接感", instruction: "注意一种更宽、更安静的连接感。它不需要被解释。", seconds: 55 },
-    { id: "remember", kind: "observe", title: "记住频率", instruction: "记住这个感觉的质地，像保存一个下次可用的锚点。", seconds: 60 },
-    { id: "soften", kind: "observe", title: "不抓住", instruction: "不追求保持，只知道自己曾经触到过这种安静。", seconds: 50 },
+    { id: "connection", kind: "observe", title: "观察连接感", instruction: "看看此刻是否有更宽的空间感；没有也不需要制造。", seconds: 55 },
+    { id: "remember", kind: "observe", title: "留意质地", instruction: "若有舒服的感觉，可以记住它；若没有，继续看着周围。", seconds: 60 },
+    { id: "soften", kind: "observe", title: "不抓住", instruction: "不要求达到或保持某种状态，现在这样也可以结束。", seconds: 50 },
     { id: "close", kind: "close", title: "回到具体", instruction: "看见房间，动动手脚，回到一件具体的小事。", seconds: 30, haptic: "soft" },
   ], "合一法在产品里被表达为安静连接练习，不作为任何结果承诺。"),
   v("grounded-action", 1, "意识聚焦法", "缩小视角，进入细节", "选择一个眼前对象或感官细节，越具体越好。", [
@@ -88,9 +88,9 @@ export const PRACTICE_VARIANTS: readonly PracticeVariant[] = [
     { id: "close", kind: "close", title: "保持一小段", instruction: "再停留几秒，然后再决定下一步。", seconds: 10, haptic: "soft" },
   ], "意识聚焦不是缩小人生，而是把注意从大剧情带回一个清晰点。"),
   v("trigger-journal", 3, "稳定法", "让注意保持静止", "选择一个安全的视觉对象或简单图形。若视觉不适，改听稳定的声音。", [
-    { id: "choose", kind: "notice", title: "选定画面", instruction: "选一个容易晃动注意的图形、纹理或画面。", seconds: 45 },
+    { id: "choose", kind: "notice", title: "选定画面", instruction: "轻轻看着静止方框的一个边缘，也可以改看身边物品。", seconds: 45 },
     { id: "soft", kind: "observe", title: "放松观察", instruction: "不要用力压制，只观察它看起来动或不动的变化。", seconds: 35 },
-    { id: "steady", kind: "observe", title: "尝试稳定", instruction: "轻轻让画面、身体和念头都更稳定一点。", seconds: 35 },
+    { id: "steady", kind: "observe", title: "继续观察", instruction: "眨眼、放松视线。看起来有变化时，只注意，不需要让它停。", seconds: 35 },
     { id: "notice", kind: "observe", title: "看见波动", instruction: "稳定不了也没关系，记录注意如何被带走。", seconds: 35 },
     { id: "close", kind: "close", title: "回到普通视线", instruction: "眨眼，看看房间里一个静止物体。", seconds: 30, haptic: "soft" },
   ], "稳定法练的是注意的稳定性，不是强迫自己没有念头。"),
@@ -126,6 +126,7 @@ function scaleVariant(base: PracticeVariant, minutes: PracticeVariant["minutes"]
     id: `${base.methodId}-${minutes}`,
     minutes,
     title: `${minutes} 分钟 · ${methodTitle}`,
+    subtitle: `${base.subtitle}（同一引导，调整停留时长）`,
     steps,
   };
 }

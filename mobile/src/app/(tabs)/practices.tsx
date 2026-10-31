@@ -13,10 +13,18 @@ const FILTERS: { id: "all" | PracticeFamily; label: string }[] = [
   { id: "all", label: "全部" }, { id: "distance", label: "拉开距离" }, { id: "settle", label: "先安定" }, { id: "observe", label: "练习观察" }, { id: "release", label: "松开重播" }, { id: "return", label: "回到行动" }, { id: "reflect", label: "稳定 / 拉远" },
 ];
 
+const DURATIONS = ["all", 1, 3, 5, 10] as const;
+
 export default function PracticesScreen() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
+  const [duration, setDuration] = useState<(typeof DURATIONS)[number]>("all");
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const { preferences, sessions, toggleFavorite } = useApp();
-  const methods = useMemo(() => METHOD_CATALOG.filter((method) => filter === "all" || method.family === filter), [filter]);
+  const methods = useMemo(() => METHOD_CATALOG.filter((method) =>
+    (filter === "all" || method.family === filter) &&
+    (duration === "all" || method.durations.includes(duration)) &&
+    (!favoritesOnly || preferences.favoriteMethodIds.includes(method.id)),
+  ), [duration, favoritesOnly, filter, preferences.favoriteMethodIds]);
   const startPath = (path: PracticePathDefinition) => {
     const progress = buildPracticePathProgress(path, sessions, preferences.hiddenMethodIds);
     const stage = progress.nextStage ?? path.stages[0];
@@ -34,9 +42,12 @@ export default function PracticesScreen() {
         {PRACTICE_PATHS.map((path) => <PathCard key={path.id} path={path} progress={buildPracticePathProgress(path, sessions, preferences.hiddenMethodIds)} onPress={() => startPath(path)} />)}
       </View>
       <View style={styles.filters}>{FILTERS.map((item) => <Chip key={item.id} label={item.label} selected={filter === item.id} onPress={() => setFilter(item.id)} />)}</View>
+      <View style={styles.filters} accessibilityLabel="按时长筛选">{DURATIONS.map((item) => <Chip key={item} label={item === "all" ? "全部时长" : `${item} 分钟`} selected={duration === item} onPress={() => setDuration(item)} />)}</View>
+      <View style={styles.filters}><Chip label="只看收藏" selected={favoritesOnly} onPress={() => setFavoritesOnly((value) => !value)} /></View>
       <View style={styles.list}>
         <SectionHeading title={`${methods.length} 种方法`} caption="核心版本均可离线" />
-        {methods.map((method) => <MethodCard key={method.id} method={method} favorite={preferences.favoriteMethodIds.includes(method.id)} onFavorite={() => toggleFavorite(method.id)} onPress={() => router.push({ pathname: "/method/[id]", params: { id: method.id } })} />)}
+        {methods.map((method) => <MethodCard key={method.id} method={method} favorite={preferences.favoriteMethodIds.includes(method.id)} onFavorite={() => { void toggleFavorite(method.id).catch(() => undefined); }} onPress={() => router.push({ pathname: "/method/[id]", params: { id: method.id } })} />)}
+        {methods.length === 0 ? <Surface><Text style={type.bodyStrong}>暂时没有符合条件的方法</Text><Text style={type.body}>换一个方向或时长；收藏为空时，可以先关闭“只看收藏”。</Text><Chip label="清除筛选" onPress={() => { setFilter("all"); setDuration("all"); setFavoritesOnly(false); }} /></Surface> : null}
       </View>
     </Screen>
   );
