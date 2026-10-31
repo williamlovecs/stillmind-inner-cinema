@@ -1,0 +1,16 @@
+
+> stillmind-inner-cinema@0.1.0 lint:mobile
+> npm --workspace mobile run lint
+
+
+> mobile@1.0.0 lint
+> expo lint
+
+/c/Users/willi/OneDrive/Documents/kimi/tasks/2026-10-31/22-30-27-1531681d/closeout/d-stillmind/node_modules/.bin/expo: line 15: exec: node: not found
+npm error Lifecycle script `lint` failed with error:
+npm error code 127
+npm error path C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind\mobile
+npm error workspace mobile@1.0.0
+npm error location C:\Users\willi\OneDrive\Documents\kimi\tasks\2026-10-31\22-30-27-1531681d\closeout\d-stillmind\mobile
+npm error command failed
+npm error command C:\Program Files\Git\bin\bash.exe -c expo lint

@@ -1,0 +1,275 @@
+
+> stillmind-inner-cinema@0.1.0 verify
+> npm run test && npm run typecheck && npm run lint && npm run check:claims && npm run build
+
+
+> stillmind-inner-cinema@0.1.0 test
+> npm run test:domain && npm run test:content && npm run test:api && npm run test:api-events && npm run test:analytics && npm run test:timeline && npm run test:seed-users && npm run test:device-qa && npm run test:reset-routing && npm run test:payment-interviews
+
+
+> stillmind-inner-cinema@0.1.0 test:domain
+> tsx --test packages/domain/test/routing.test.ts
+
+✔ high activation and impulsive mode prefer an acute eyes-open method (1.0267ms)
+✔ the first-use reset route only recommends the focused core set (8.7697ms)
+✔ intake text maps the four golden moments without exposing raw text (0.4007ms)
+✔ legacy ten-point scores migrate deterministically to the shared five-point scale (0.5944ms)
+✔ safety gate always wins over favorites (0.1043ms)
+✔ medical emergency has highest safety priority (0.0867ms)
+✔ high-risk language is detected before reflective exercises (0.2355ms)
+✔ comfort constraints exclude body and breath practices (0.1069ms)
+✔ eyes-open preference and high activation exclude ineligible methods (0.111ms)
+✔ every supported mode and duration produces a known practice (0.3407ms)
+✔ a favorite cannot bypass explicit method hiding (0.2536ms)
+✔ practice paths are complete, routable, and non-labeling (0.319ms)
+✔ practice path progress advances only through completed non-worse stages (0.3192ms)
+✔ practice path progress respects methods hidden by the user (0.1749ms)
+✔ weekly review excludes sessions outside the interval and hides low-sample averages (3.3319ms)
+✔ weekly review ignores malformed dates and reports an average only with enough samples (0.205ms)
+✔ weekly review suggests the shortest pause when there is no data (0.0749ms)
+✔ weekly review lowers intensity after repeated worse or stopped signals (0.1127ms)
+✔ weekly review continues a method after repeated better outcomes (0.1539ms)
+✔ weekly review uses repeated mode as a next experiment without identity labels (0.1571ms)
+✔ stored-session validation drops malformed and unknown records (0.1485ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 653.8415
+
+> stillmind-inner-cinema@0.1.0 test:content
+> tsx --test packages/content/test/catalog.test.ts
+
+✔ every method has an original offline practice script (0.535ms)
+✔ every declared duration resolves to a complete exact-length variant (0.3436ms)
+✔ an unsupported duration falls back without pretending to match it (0.0965ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 465.753
+
+> stillmind-inner-cinema@0.1.0 test:api
+> tsx --test test/api-cinema.test.ts
+
+✔ cinema API rejects missing and oversized input (9.1563ms)
+✔ cinema API enforces its byte limit without a content-length header (2.1198ms)
+✔ cinema API routes high-risk language to the safety boundary (0.7931ms)
+✔ cinema API always returns a complete safe preset without a provider key (0.7615ms)
+✔ cinema API does not let abnormal content-length headers bypass the byte limit (1.4062ms)
+✔ cinema API accepts a valid body at exactly 4096 bytes (1.136ms)
+✔ cinema API rejects a valid body one byte above the limit (0.4988ms)
+✔ cinema API decodes multibyte UTF-8 split across single-byte chunks (1.2854ms)
+✔ cinema API safely handles stream read failure and releases the reader lock (1.1579ms)
+✔ cinema API contains cancel rejection and releases the lock after rejecting oversized input (0.5045ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 775.1764
+
+> stillmind-inner-cinema@0.1.0 test:api-events
+> tsx --test test/api-events.test.ts
+
+✔ events endpoint is CORS-ready and never caches (21.1167ms)
+✔ valid events are safely accepted when analytics is not configured (6.0584ms)
+✔ raw user text and unknown fields are rejected (0.7811ms)
+✔ malformed JSON is rejected without throwing (0.5742ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 536.0279
+
+> stillmind-inner-cinema@0.1.0 test:analytics
+> tsx --test test/analytics.test.ts
+
+✔ analytics is inert until a privacy-reviewed sink is configured (0.8423ms)
+✔ analytics emits only the typed sanitized envelope (0.5572ms)
+✔ the anonymous receiver contract rejects raw text and extra fields (2.0213ms)
+✔ analytics buckets avoid precise behavioral timestamps and counts (0.2162ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 351.3705
+
+> stillmind-inner-cinema@0.1.0 test:timeline
+> tsx --test test/timeline.test.ts
+
+✔ timeline resolves start and partial first step (0.8231ms)
+✔ timeline crosses steps using absolute elapsed time (0.0988ms)
+✔ timeline completes exactly at total duration (0.0705ms)
+✔ timeline handles negative elapsed and empty content safely (0.0873ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 288.0553
+
+> stillmind-inner-cinema@0.1.0 test:seed-users
+> tsx --test test/seed-users.test.ts
+
+✔ seed-user analyzer handles an empty template (78.4006ms)
+✔ seed-user analyzer returns GO when 15 users meet broader TestFlight thresholds (76.2361ms)
+✔ seed-user analyzer pauses launch when a severe safety concern appears (77.5271ms)
+✔ seed-user analyzer asks for iteration when go thresholds are not met (78.5274ms)
+✔ seed-user analyzer pauses when one method has two worse reports (78.0468ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 699.3055
+
+> stillmind-inner-cinema@0.1.0 test:device-qa
+> tsx --test test/device-qa.test.ts
+
+✔ device QA analyzer handles an empty template (74.7967ms)
+✔ device QA analyzer passes complete all-pass coverage (72.441ms)
+✔ device QA analyzer blocks critical failures (71.5234ms)
+✔ device QA analyzer reports insufficient coverage (72.7821ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 585.8899
+
+> stillmind-inner-cinema@0.1.0 test:reset-routing
+> tsx --test test/reset-routing.test.ts
+
+✔ the shared five-point activation wins over legacy values (0.9489ms)
+✔ legacy ten-point scores migrate only when no five-point value is present (0.1333ms)
+✔ stored reset intensity wins and survives route hydration (0.082ms)
+✔ query intensity preserves the entry score when session storage is unavailable (0.0588ms)
+✔ invalid values use the recommendation fallback and valid values are clamped (0.0861ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 315.0787
+
+> stillmind-inner-cinema@0.1.0 test:payment-interviews
+> tsx --test test/payment-interviews.test.ts
+
+✔ payment interview analyzer handles an empty template (78.1508ms)
+✔ payment interview analyzer returns GO for enough high-intent interviews (79.2429ms)
+✔ payment interview analyzer blocks therapy or trust-risk demand (81.6492ms)
+✔ payment interview analyzer asks for offer iteration when intent is weak (81.887ms)
+✔ payment interview analyzer ignores unqualified high-intent rows for paid signal (80.9932ms)
+✔ payment interview analyzer requires five qualified interviews (80.4505ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 768.9901
+
+> stillmind-inner-cinema@0.1.0 typecheck
+> npm run typecheck:web && npm run typecheck:domain && npm run typecheck:content && npm run typecheck:mobile
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:web
+> tsc --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:domain
+> tsc -p packages/domain/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:content
+> tsc -p packages/content/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:mobile
+> tsc -p mobile/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 lint
+> npm run lint:web && npm run lint:mobile
+
+
+> stillmind-inner-cinema@0.1.0 lint:web
+> eslint src packages test
+
+
+> stillmind-inner-cinema@0.1.0 lint:mobile
+> npm --workspace mobile run lint
+
+
+> mobile@1.0.0 lint
+> expo lint
+
+
+> stillmind-inner-cinema@0.1.0 check:claims
+> node scripts/check-public-claims.mjs
+
+Public-claim guard passed across src/app, src/components, mobile/src, docs/app-store.
+
+> stillmind-inner-cinema@0.1.0 build
+> next build
+
+▲ Next.js 16.2.12 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.6s
+  Running TypeScript ...
+  Finished TypeScript in 2.0s ...
+  Collecting page data using 14 workers ...
+  Generating static pages using 14 workers (0/24) ...
+  Generating static pages using 14 workers (6/24) 
+  Generating static pages using 14 workers (12/24) 
+  Generating static pages using 14 workers (18/24) 
+✓ Generating static pages using 14 workers (24/24) in 1059ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/cinema
+├ ƒ /api/events
+├ ○ /methods
+├ ● /methods/[id]
+│ ├ /methods/inner-cinema
+│ ├ /methods/paced-breath
+│ ├ /methods/thought-watching
+│ └ [+9 more paths]
+├ ○ /privacy
+├ ○ /reset
+├ ○ /support
+├ ○ /support/seed-test
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

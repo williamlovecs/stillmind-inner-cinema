@@ -1,0 +1,8 @@
+
+> stillmind-inner-cinema@0.1.0 lint:mobile
+> npm --workspace mobile run lint
+
+
+> mobile@1.0.0 lint
+> expo lint
+

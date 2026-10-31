@@ -1,0 +1,14 @@
+
+> stillmind-inner-cinema@0.1.0 verify
+> npm run test && npm run typecheck && npm run lint && npm run check:claims && npm run build
+
+
+> stillmind-inner-cinema@0.1.0 test
+> npm run test:domain && npm run test:content && npm run test:api && npm run test:api-events && npm run test:analytics && npm run test:timeline && npm run test:seed-users && npm run test:device-qa && npm run test:reset-routing && npm run test:payment-interviews
+
+
+> stillmind-inner-cinema@0.1.0 test:domain
+> tsx --test packages/domain/test/routing.test.ts
+
+'tsx' is not recognized as an internal or external command,
+operable program or batch file.

@@ -1,0 +1,16 @@
+
+> stillmind-inner-cinema@0.1.0 test:api
+> tsx --test test/api-cinema.test.ts
+
+✔ cinema API rejects missing and oversized input (8.5042ms)
+✔ cinema API enforces its byte limit without a content-length header (0.728ms)
+✔ cinema API routes high-risk language to the safety boundary (0.503ms)
+✔ cinema API always returns a complete safe preset without a provider key (0.6902ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 500.5023
