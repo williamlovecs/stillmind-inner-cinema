@@ -11,7 +11,7 @@ export function BodyObservation({ paused }: MethodInteractionProps) {
   const [environment, setEnvironment] = useState(false);
   const selected = bodyZones.find((zone) => zone.id === zoneId) ?? bodyZones[0];
   return <>
-    <ChoiceRow><Chip label="选择接触点" selected={!environment} onPress={() => setEnvironment(false)} /><Chip label="改看周围环境" selected={environment} onPress={() => setEnvironment(true)} /></ChoiceRow>
+    <ChoiceRow><Chip disabled={paused} label="选择接触点" selected={!environment} onPress={() => setEnvironment(false)} /><Chip disabled={paused} label="改看周围环境" selected={environment} onPress={() => setEnvironment(true)} /></ChoiceRow>
     {environment ? <Stage><Text style={type.label}>睁眼的替代方式</Text><OriginalText>找出周围三种颜色，或听一个普通的环境声音。</OriginalText><Note>这只是环境观察提示，不需要关注身体内部。</Note></Stage> : <>
       <Stage><Text style={type.label}>你选择的注意位置</Text><Text style={methodStyles.selectedTitle}>{selected.label}</Text><Note>{selected.prompt}</Note></Stage>
       <ChoiceRow>{bodyZones.map((zone) => <Chip key={zone.id} disabled={paused} accessibilityLabel={`标记${zone.label}`} label={zone.label} selected={zoneId === zone.id} onPress={() => setZoneId(zone.id)} />)}</ChoiceRow>
@@ -47,8 +47,8 @@ export function LogoutPause({ trigger, paused }: MethodInteractionProps) {
     <OriginalText testID="logout-subject">{hidden ? "先看看周围，不用继续读这句话。" : observationText(trigger)}</OriginalText>
     <Note>{hidden ? "暂时不接触这句话，也可以随时回来。" : "看见它，先不解释，也不急着回应。"}</Note>
     <SecondaryButton disabled={paused} accessibilityState={{ selected: hidden }} label={hidden ? "重新显示这句话" : "暂时收起这句话"} onPress={() => setHidden(!hidden)} />
-    <Text style={type.caption}>你想什么时候再决定是否回应？</Text><ChoiceRow>{returnTimes.map((item) => <Chip key={item} label={item} selected={returnTime === item} onPress={() => setReturnTime(item)} />)}</ChoiceRow>
-    <Text style={type.caption}>暂停期间，可以选的一个现实动作</Text><ChoiceRow>{realityActions.map((item) => <Chip key={item} label={item} selected={action === item} onPress={() => setAction(item)} />)}</ChoiceRow>
+    <Text style={type.caption}>你想什么时候再决定是否回应？</Text><ChoiceRow>{returnTimes.map((item) => <Chip key={item} disabled={paused} label={item} selected={returnTime === item} onPress={() => setReturnTime(item)} />)}</ChoiceRow>
+    <Text style={type.caption}>暂停期间，可以选的一个现实动作</Text><ChoiceRow>{realityActions.map((item) => <Chip key={item} disabled={paused} label={item} selected={action === item} onPress={() => setAction(item)} />)}</ChoiceRow>
     <View style={methodStyles.notice}><Text accessibilityLiveRegion="polite" style={methodStyles.noticeText}>你的选择：{returnTime}；{action}。这里只记录选择，不代表你已经做到或改变了现实行为。</Text></View>
   </>;
 }
