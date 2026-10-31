@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/stillmind-icon.png",
     "scheme": "stillmind",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/images/stillmind-icon.png",
       "bundleIdentifier": "com.stillmind.innercinema",
@@ -34,7 +34,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#050914",
+          "backgroundColor": "#F4F1E9",
           "image": "./assets/images/stillmind-icon.png",
           "imageWidth": 76,
           "android": {

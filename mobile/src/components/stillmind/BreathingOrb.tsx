@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { AccessibilityInfo, Animated, Easing, Platform, StyleSheet, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "@/constants/theme";
 
 export function BreathingOrb({ phase, seconds, compact = false, paused = false, elapsedSeconds }: { phase?: "吸气" | "呼气"; seconds?: number; compact?: boolean; paused?: boolean; elapsedSeconds?: number }) {
@@ -42,10 +41,10 @@ export function BreathingOrb({ phase, seconds, compact = false, paused = false, 
       <View style={[styles.halo, { width: size * 1.45, height: size * 1.45, borderRadius: size }]} />
       <View style={[styles.orbit, { width: size * 1.25, height: size * 1.25, borderRadius: size }]} />
       <Animated.View style={{ transform: [{ scale }] }}>
-        <LinearGradient colors={["#EAE4FF", "#9A79E5", "#22304C", "#0A0E1B"]} locations={[0, 0.22, 0.58, 1]} start={{ x: 0.28, y: 0.2 }} end={{ x: 0.85, y: 0.92 }} style={[styles.orb, { width: size, height: size, borderRadius: size / 2 }]}>
+        <View style={[styles.orb, { width: size, height: size, borderRadius: size / 2 }]}>
           {typeof seconds === "number" ? <Text style={[styles.seconds, compact && styles.secondsCompact]}>{seconds}</Text> : <View style={styles.core} />}
           {phase ? <Text style={styles.phase}>{phase.split("").join(" ")}</Text> : null}
-        </LinearGradient>
+        </View>
       </Animated.View>
     </View>
   );
@@ -53,11 +52,11 @@ export function BreathingOrb({ phase, seconds, compact = false, paused = false, 
 
 const styles = StyleSheet.create({
   stage: { alignItems: "center", justifyContent: "center" },
-  halo: { position: "absolute", backgroundColor: "rgba(124, 87, 216, 0.12)", shadowColor: colors.violet, shadowOpacity: 0.8, shadowRadius: 44 },
-  orbit: { position: "absolute", borderWidth: 1, borderColor: "rgba(216, 180, 254, 0.18)" },
-  orb: { alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(244, 182, 106, 0.35)", shadowColor: colors.lavender, shadowOpacity: 0.58, shadowRadius: 28 },
-  core: { width: 28, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.64)", shadowColor: colors.white, shadowOpacity: 0.9, shadowRadius: 18 },
-  seconds: { color: colors.white, fontSize: 56, lineHeight: 60, fontWeight: "800", textShadowColor: "rgba(0,0,0,0.35)", textShadowRadius: 8 },
+  halo: { position: "absolute", backgroundColor: colors.surfaceSoft },
+  orbit: { position: "absolute", borderWidth: 1, borderColor: colors.borderStrong },
+  orb: { alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.surfaceQuiet },
+  core: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.accent },
+  seconds: { color: colors.text, fontSize: 56, lineHeight: 60, fontWeight: "500", fontVariant: ["tabular-nums"] },
   secondsCompact: { fontSize: 42, lineHeight: 46 },
-  phase: { color: "#F0E9FF", fontSize: 15, fontWeight: "700", letterSpacing: 3, marginTop: 5, textShadowColor: "rgba(216,180,254,0.75)", textShadowRadius: 12 },
+  phase: { color: colors.textMuted, fontSize: 15, fontWeight: "500", letterSpacing: 3, marginTop: 5 },
 });

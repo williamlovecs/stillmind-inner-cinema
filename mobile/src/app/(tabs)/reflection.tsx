@@ -115,15 +115,15 @@ function confirmDeleteSession(remove: () => Promise<void>) {
 }
 
 const styles = StyleSheet.create({
-  metrics: { flexDirection: "row", gap: 12 }, metric: { flex: 1, minHeight: 112, justifyContent: "center" }, metricValue: { color: colors.text, fontSize: 36, fontWeight: "800" },
-  empty: { gap: 10, minHeight: 170, justifyContent: "center" }, summary: { gap: 14 }, change: { color: colors.amber, fontSize: 14, fontWeight: "700" },
+  metrics: { flexDirection: "row", gap: 12 }, metric: { flex: 1, minHeight: 112, justifyContent: "center", borderTopWidth: 1, borderTopColor: colors.border }, metricValue: { color: colors.text, fontSize: 36, fontWeight: "500" },
+  empty: { gap: 10, minHeight: 170, justifyContent: "center" }, summary: { gap: 14 }, change: { color: colors.accentStrong, fontSize: 14, fontWeight: "500" },
   nextStep: { gap: 14 },
   nextStepTop: { flexDirection: "row", alignItems: "center", gap: 12 },
-  nextStepIcon: { width: 38, height: 38, borderRadius: 19, backgroundColor: "rgba(124, 92, 255, 0.72)", alignItems: "center", justifyContent: "center" },
-  nextButton: { minHeight: 58, borderRadius: 18, borderWidth: 1, borderColor: "rgba(216, 180, 254, 0.34)", backgroundColor: "rgba(124, 92, 255, 0.22)", paddingHorizontal: 16, justifyContent: "center" },
-  nextButtonText: { color: colors.text, fontSize: 16, fontWeight: "800" },
-  nextButtonMeta: { color: colors.textFaint, fontSize: 12, fontWeight: "600", marginTop: 3 },
-  pressed: { opacity: 0.78, transform: [{ scale: 0.99 }] },
-  notice: { flexDirection: "row", alignItems: "center", gap: 12 }, noticeAction: { color: colors.lavender, fontSize: 14, fontWeight: "700" },
-  list: { gap: 11 }, row: { flexDirection: "row", alignItems: "center", gap: 12 }, flex: { flex: 1 }, result: { color: colors.textMuted, fontSize: 12, fontWeight: "700" }, better: { color: colors.mint }, worse: { color: colors.danger },
+  nextStepIcon: { width: 38, height: 38, borderRadius: 4, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center" },
+  nextButton: { minHeight: 58, borderRadius: 4, borderWidth: 1, borderColor: colors.accent, backgroundColor: "transparent", paddingHorizontal: 16, justifyContent: "center" },
+  nextButtonText: { color: colors.text, fontSize: 16, fontWeight: "500" },
+  nextButtonMeta: { color: colors.textFaint, fontSize: 12, fontWeight: "500", marginTop: 3 },
+  pressed: { opacity: 0.72 },
+  notice: { flexDirection: "row", alignItems: "center", gap: 12 }, noticeAction: { color: colors.accentStrong, fontSize: 14, fontWeight: "500" },
+  list: { gap: 11 }, row: { flexDirection: "row", alignItems: "center", gap: 12 }, flex: { flex: 1 }, result: { color: colors.textMuted, fontSize: 12, fontWeight: "500" }, better: { color: colors.accentStrong }, worse: { color: colors.danger },
 });

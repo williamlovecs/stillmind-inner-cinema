@@ -8,27 +8,24 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#090a0c] text-stone-100">
-      <div className="cinema-bg" />
-      <div className="noise-grain" />
-
-      <section className="relative z-10 mx-auto w-full max-w-2xl px-5 py-10 sm:py-16">
+    <main className="sm-page">
+      <section className="sm-container mx-auto max-w-2xl">
         <Link
           href="/"
-          className="text-xs uppercase tracking-[0.28em] text-stone-500 transition hover:text-stone-300"
+          className="inline-flex min-h-11 items-center text-sm text-[#596055] transition hover:text-[#8e4431]"
         >
           ← 返回
         </Link>
 
-        <p className="mt-8 text-xs uppercase tracking-[0.28em] text-amber-100/70">
+        <p className="sm-eyebrow mt-10">
           服务条款
         </p>
-        <h1 className="mt-3 text-3xl font-semibold leading-tight text-stone-50 sm:text-4xl">
+        <h1 className="sm-title mt-4">
           一份关于「它不是什么」的说明。
         </h1>
-        <p className="mt-3 text-sm text-stone-500">生效日期：2026 年 6 月 10 日</p>
+        <p className="mt-4 text-sm text-[#6b7165]">生效日期：2026 年 6 月 10 日</p>
 
-        <div className="prose-invert mt-10 max-w-none space-y-8 text-[0.95rem] leading-7 text-stone-300">
+        <div className="mt-10 max-w-none space-y-8 text-[0.95rem] leading-7 text-[#596055]">
           <Section title="1. StillMind 是什么">
             <p>
               一个内在电影工具：把你当下的情绪反应，投成一段第三人称的「分镜」，
@@ -39,7 +36,7 @@ export default function TermsPage() {
 
           <Section title="2. StillMind 不是什么">
             <p>
-              <strong className="text-stone-100">不是医疗服务。</strong>
+              <strong className="text-[#282e29]">不是医疗服务。</strong>
               不做心理诊断，不做治疗，不开药，不替代心理咨询、心理治疗、危机干预。
             </p>
             <p>
@@ -83,18 +80,18 @@ export default function TermsPage() {
           <Section title="7. 联系方式">
             <p>
               产品问题或条款请求：
-              <Link className="text-amber-100/90 underline underline-offset-2" href="/support">
+              <Link className="text-[#8e4431] underline underline-offset-2" href="/support">
                 支持与反馈
               </Link>
             </p>
           </Section>
         </div>
 
-        <div className="mt-12 border-t border-white/10 pt-6 text-xs text-stone-500">
-          <Link href="/privacy" className="mr-4 hover:text-stone-300">
+        <div className="mt-12 flex flex-wrap gap-5 border-t border-[#d4d2c5] pt-6 text-xs text-[#6b7165]">
+          <Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-[#282e29]">
             ← 隐私政策
           </Link>
-          <Link href="/support" className="hover:text-stone-300">
+          <Link href="/support" className="inline-flex min-h-11 items-center hover:text-[#282e29]">
             支持与反馈
           </Link>
         </div>
@@ -106,7 +103,7 @@ export default function TermsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-lg font-medium text-stone-100">{title}</h2>
+      <h2 className="text-lg font-medium text-[#282e29]">{title}</h2>
       <div className="mt-3 space-y-2">{children}</div>
     </section>
   );

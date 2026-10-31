@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     locale: "zh_CN",
   },
   other: {
-    "theme-color": "#050914",
+    "theme-color": "#F4F1E9",
   },
 };
 
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="h-full antialiased" style={{ colorScheme: "dark" }}>
+    <html lang="zh-CN" className="h-full antialiased" style={{ colorScheme: "light" }}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

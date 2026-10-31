@@ -1,19 +1,21 @@
-import { darkColors, designTokens, motion } from "@stillmind/design-tokens";
+import { designTokens, motion } from "@stillmind/design-tokens";
 
+const paper = designTokens.color.light;
 export const colors = {
-  ...darkColors,
-  violet: darkColors.accent,
-  lavender: darkColors.accentStrong,
-  amber: darkColors.warm,
-  white: "#FFFFFF",
-  black: "#03050B",
+  ...paper,
+  // Legacy aliases keep method modules type-safe while V3 uses one earthen accent.
+  violet: paper.accent,
+  lavender: paper.accentStrong,
+  amber: paper.warm,
+  white: "#FFF9F1",
+  black: "#282E29",
 } as const;
 
 export const gradients = {
-  primary: [darkColors.accent, darkColors.accentStrong] as const,
-  observer: [darkColors.accent, darkColors.blue, darkColors.warm] as const,
-  warm: [darkColors.surface, darkColors.backgroundRaised] as const,
-  background: [darkColors.background, darkColors.background] as const,
+  primary: [paper.accent, paper.accent] as const,
+  observer: [paper.accent, paper.mint, paper.warm] as const,
+  warm: [paper.surfaceSoft, paper.backgroundRaised] as const,
+  background: [paper.background, paper.background] as const,
 } as const;
 
 export const radii = designTokens.radius;

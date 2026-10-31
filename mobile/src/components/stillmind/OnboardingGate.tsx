@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import { colors, gradients, radii, spacing } from "@/constants/theme";
+import { colors, radii, spacing } from "@/constants/theme";
 import { PrimaryButton, SecondaryButton, type } from "./ui";
 import { BreathingOrb } from "./BreathingOrb";
 import { useApp } from "@/state/AppProvider";
@@ -30,18 +29,18 @@ export function OnboardingGate() {
 
   return (
     <Modal visible animationType="fade" statusBarTranslucent onRequestClose={() => { if (page > 0) setPage(page - 1); }}>
-      <LinearGradient colors={gradients.background} style={styles.modal}>
+      <View style={styles.modal}>
         <View style={styles.top}><Text style={styles.brand}>STILLMIND</Text><Text style={styles.step}>{page + 1} / {PAGES.length}</Text></View>
         <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-          {page === 0 ? <BreathingOrb compact /> : <View style={styles.iconWrap}><Ionicons name={item.icon} size={34} color={colors.lavender} /></View>}
-          <Text style={type.h1}>{item.title}</Text>
+          {page === 0 ? <BreathingOrb compact /> : <View style={styles.iconWrap}><Ionicons name={item.icon} size={34} color={colors.accent} /></View>}
+          <Text style={[type.h1, styles.center]}>{item.title}</Text>
           <Text style={[type.body, styles.center]}>{item.body}</Text>
           {page === 2 ? (
             <View style={styles.choices}>
               {[{ key: "eyesOpenPreferred", label: "优先睁眼练习" }, { key: "bodyFocusAllowed", label: "允许身体关注" }, { key: "breathChangeAllowed", label: "允许调整呼吸" }].map((choice) => {
                 const key = choice.key as "eyesOpenPreferred" | "bodyFocusAllowed" | "breathChangeAllowed";
                 const selected = preferences[key];
-                return <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => { void updatePreferences({ [key]: !selected }).catch(() => undefined); }} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.lavender : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
+                return <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => { void updatePreferences({ [key]: !selected }).catch(() => undefined); }} style={[styles.choice, selected && styles.choiceSelected]}><Ionicons name={selected ? "checkmark-circle" : "ellipse-outline"} size={22} color={selected ? colors.accent : colors.textFaint} /><Text style={styles.choiceText}>{choice.label}</Text></Pressable>;
               })}
             </View>
           ) : null}
@@ -51,26 +50,26 @@ export function OnboardingGate() {
           {page > 0 ? <SecondaryButton label="上一步" onPress={() => setPage((value) => value - 1)} style={styles.half} /> : null}
           <PrimaryButton label={page === PAGES.length - 1 ? "进入 StillMind" : "继续"} onPress={() => page === PAGES.length - 1 ? completeOnboarding() : setPage((value) => value + 1)} style={page > 0 ? styles.half : undefined} />
         </View>
-      </LinearGradient>
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   loading: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: colors.background, alignItems: "center", justifyContent: "center", gap: 14, zIndex: 100 },
-  loadingText: { color: colors.text, letterSpacing: 4, fontWeight: "800" },
-  modal: { flex: 1, paddingHorizontal: 24, paddingTop: 64, paddingBottom: 34 },
-  top: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  brand: { color: colors.text, fontSize: 14, fontWeight: "800", letterSpacing: 4 },
+  loadingText: { color: colors.text, letterSpacing: 4, fontWeight: "500" },
+  modal: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 24, paddingTop: 64, paddingBottom: 34 },
+  top: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: colors.border },
+  brand: { color: colors.text, fontSize: 14, fontWeight: "500", letterSpacing: 3 },
   step: { color: colors.textFaint, fontSize: 13 },
   scroll: { flex: 1 },
   content: { flexGrow: 1, justifyContent: "center", alignItems: "center", gap: spacing.lg, paddingVertical: 20 },
   center: { textAlign: "center", maxWidth: 330 },
-  iconWrap: { width: 76, height: 76, borderRadius: 38, backgroundColor: "rgba(116,87,216,0.2)", borderWidth: 1, borderColor: colors.borderStrong, alignItems: "center", justifyContent: "center" },
+  iconWrap: { width: 76, height: 76, borderRadius: radii.small, backgroundColor: colors.surfaceSoft, borderWidth: 1, borderColor: colors.borderStrong, alignItems: "center", justifyContent: "center" },
   choices: { alignSelf: "stretch", gap: 10, marginTop: 4 },
-  choice: { minHeight: 54, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, borderRadius: radii.medium, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", gap: 12 },
-  choiceSelected: { borderColor: colors.borderStrong, backgroundColor: "rgba(116,87,216,0.22)" },
-  choiceText: { color: colors.text, fontSize: 15, fontWeight: "600" },
+  choice: { minHeight: 54, borderWidth: 1, borderColor: colors.border, backgroundColor: "transparent", borderRadius: radii.small, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", gap: 12 },
+  choiceSelected: { borderColor: colors.accent, backgroundColor: colors.surfaceSoft },
+  choiceText: { color: colors.text, fontSize: 15, fontWeight: "500" },
   footer: { flexDirection: "row", gap: 12 },
   half: { flex: 1 },
 });
