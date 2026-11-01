@@ -55,9 +55,9 @@ export function SecondaryButton({ label, icon, style, ...props }: PressableProps
   );
 }
 
-export function Chip({ label, selected = false, ...props }: PressableProps & { label: string; selected?: boolean }) {
+export function Chip({ label, selected = false, disabled = false, ...props }: PressableProps & { label: string; selected?: boolean }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityState={{ selected }} style={({ pressed }) => [styles.chip, selected && styles.chipSelected, pressed && styles.pressed]} {...props}>
+    <Pressable accessibilityRole="button" accessibilityState={{ selected, disabled: !!disabled }} disabled={disabled} style={({ pressed }) => [styles.chip, selected && styles.chipSelected, disabled && styles.disabled, pressed && styles.pressed]} {...props}>
       <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{label}</Text>
     </Pressable>
   );

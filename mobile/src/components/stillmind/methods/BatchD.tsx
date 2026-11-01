@@ -13,7 +13,7 @@ export function SteadyObservation({ paused }: MethodInteractionProps) {
       {mode === "text" ? <OriginalText>看这一句普通的话。不需要持续点击，也没有稳定度分数。</OriginalText> : null}
       {mode === "external" ? <Note>看一件身边静止的物品，或听一个平稳的声音。</Note> : null}
     </Stage>
-    <ChoiceRow><SecondaryButton disabled={paused} accessibilityState={{ selected: mode === "external" }} label={mode === "external" ? "回到屏幕对象" : "改看身边的物品"} onPress={() => setMode(mode === "external" ? "visual" : "external")} /><Chip label={mode === "text" ? "回到低刺激视觉" : "使用纯文字"} selected={mode === "text"} onPress={() => setMode(mode === "text" ? "visual" : "text")} /></ChoiceRow>
+    <ChoiceRow><SecondaryButton disabled={paused} accessibilityState={{ selected: mode === "external" }} label={mode === "external" ? "回到屏幕对象" : "改看身边的物品"} onPress={() => setMode(mode === "external" ? "visual" : "external")} /><Chip disabled={paused} label={mode === "text" ? "回到低刺激视觉" : "使用纯文字"} selected={mode === "text"} onPress={() => setMode(mode === "text" ? "visual" : "text")} /></ChoiceRow>
     <Note>画面本来就是静止的，不评判你的注意力。可以随时停止。</Note>
   </>;
 }
