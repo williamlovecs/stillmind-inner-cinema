@@ -1,0 +1,23 @@
+{
+  "complete": true,
+  "platform": "native",
+  "passed": [
+    "favorite survives reload and combines with real duration/filter results",
+    "an actual timed practice appears in home shortcuts and local reflection",
+    "JSON export contains the real local session, not demo content"
+  ],
+  "failures": [],
+  "externalRequests": [],
+  "performance": {
+    "scope": "Local production build in headless Chrome; not Lighthouse or public-network measurement",
+    "metrics": {
+      "domContentLoadedMs": 52.599999994039536,
+      "loadMs": 53,
+      "resourceCount": 2,
+      "transferBytes": 3373062,
+      "decodedBytes": 3372462
+    }
+  },
+  "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6",
+  "scope": "Local Expo Web export; not a physical device"
+}

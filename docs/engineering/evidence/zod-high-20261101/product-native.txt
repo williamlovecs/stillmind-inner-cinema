@@ -1,0 +1,7 @@
+
+> stillmind-inner-cinema@0.1.0 smoke:product:native
+> node scripts/smoke-product-paths.mjs --native
+
+PASS native: favorite survives reload and combines with real duration/filter results
+PASS native: an actual timed practice appears in home shortcuts and local reflection
+PASS native: JSON export contains the real local session, not demo content

@@ -1,0 +1,102 @@
+[
+  {
+    "check": "verify-release",
+    "status": "pass",
+    "seconds": 99.4,
+    "arguments": [
+      "run",
+      "verify:release"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\verify-release.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "smoke-web",
+    "status": "pass",
+    "seconds": 130.9,
+    "arguments": [
+      "run",
+      "smoke:web"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\smoke-web.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "smoke-native",
+    "status": "pass",
+    "seconds": 108.9,
+    "arguments": [
+      "run",
+      "smoke:native"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\smoke-native.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "states-web",
+    "status": "pass",
+    "seconds": 60.3,
+    "arguments": [
+      "run",
+      "smoke:states:web"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\states-web.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "states-native",
+    "status": "pass",
+    "seconds": 60.5,
+    "arguments": [
+      "run",
+      "smoke:states:native"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\states-native.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "product-web",
+    "status": "pass",
+    "seconds": 23.3,
+    "arguments": [
+      "run",
+      "smoke:product:web"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\product-web.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "product-native",
+    "status": "pass",
+    "seconds": 21.0,
+    "arguments": [
+      "run",
+      "smoke:product:native"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\product-native.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "audit-all",
+    "status": "fail",
+    "seconds": 11.7,
+    "arguments": [
+      "audit",
+      "--json"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\audit-all.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  },
+  {
+    "check": "audit-high",
+    "status": "pass",
+    "seconds": 2.6,
+    "arguments": [
+      "audit",
+      "--audit-level=high",
+      "--json"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\security-high-followup\\audit-high.log",
+    "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6"
+  }
+]

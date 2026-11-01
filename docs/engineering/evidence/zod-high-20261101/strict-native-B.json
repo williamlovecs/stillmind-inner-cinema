@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "platform": "native",
+  "batch": "B",
+  "passed": [
+    "wide-gaze real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry",
+    "body-scan real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry",
+    "person-shift real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry"
+  ],
+  "failures": [],
+  "externalRequests": [],
+  "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6",
+  "scope": "Local Expo Web export; CSS bounds only, not physical touch or a screen reader"
+}

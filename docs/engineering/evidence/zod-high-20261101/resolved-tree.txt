@@ -1,0 +1,117 @@
+stillmind-inner-cinema@0.1.0 D:\AI-Validation\StillMind\post-audit-repair-20261101\v3
+├─┬ @expo/metro-runtime@57.0.17
+│ ├─┬ @expo/log-box@57.0.4
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├── expo@57.0.31 deduped
+│ └── react-native@0.86.3 deduped
+├─┬ eslint-config-next@16.4.3
+│ └─┬ eslint-plugin-react-hooks@7.1.1
+│   └── zod@4.6.7 overridden
+├─┬ expo-router@57.0.29
+│ ├─┬ @expo/ui@57.0.26
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ @react-native-masked-view/masked-view@0.3.2
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-constants@57.0.22
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-glass-effect@57.0.4
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-linking@57.0.13
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-symbols@57.0.3
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├── expo@57.0.31 deduped
+│ ├─┬ react-native-drawer-layout@4.2.12
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ react-native-gesture-handler@2.32.0
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ react-native-reanimated@4.5.1
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ react-native-safe-area-context@5.7.0
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ react-native-screens@4.26.2
+│ │ └── react-native@0.86.3 deduped
+│ └── react-native@0.86.3 deduped
+├─┬ expo@57.0.31
+│ ├─┬ @expo/cli@57.0.32
+│ │ ├── expo@57.0.31 deduped
+│ │ ├── react-native@0.86.3 deduped
+│ │ └── zod@4.6.7 deduped
+│ ├─┬ @expo/devtools@57.0.1
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ @expo/dom-webview@57.0.1
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ @expo/metro-config@57.0.13
+│ │ └── expo@57.0.31 deduped
+│ ├─┬ babel-preset-expo@57.0.16
+│ │ └── expo@57.0.31 deduped
+│ ├─┬ expo-asset@57.0.20
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-file-system@57.0.7
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-font@57.0.4
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-keep-awake@57.0.2
+│ │ └── expo@57.0.31 deduped
+│ ├─┬ expo-modules-core@57.0.24
+│ │ └── react-native@0.86.3 deduped
+│ └── react-native@0.86.3 deduped
+├─┬ mobile@1.0.0 -> .\mobile
+│ ├─┬ @expo/vector-icons@15.1.1
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ @react-native-async-storage/async-storage@2.2.0
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-dev-client@57.0.20
+│ │ ├─┬ expo-dev-launcher@57.0.21
+│ │ │ ├── expo@57.0.31 deduped
+│ │ │ └── react-native@0.86.3 deduped
+│ │ ├─┬ expo-dev-menu-interface@57.0.0
+│ │ │ └── expo@57.0.31 deduped
+│ │ ├─┬ expo-dev-menu@57.0.20
+│ │ │ ├── expo@57.0.31 deduped
+│ │ │ └── react-native@0.86.3 deduped
+│ │ ├─┬ expo-manifests@57.0.2
+│ │ │ └── expo@57.0.31 deduped
+│ │ ├─┬ expo-updates-interface@57.0.2
+│ │ │ └── expo@57.0.31 deduped
+│ │ └── expo@57.0.31 deduped
+│ ├─┬ expo-haptics@57.0.3
+│ │ └── expo@57.0.31 deduped
+│ ├─┬ expo-linear-gradient@57.0.2
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-notifications@57.0.24
+│ │ ├─┬ expo-application@57.0.3
+│ │ │ └── expo@57.0.31 deduped
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-sharing@57.0.24
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-splash-screen@57.0.10
+│ │ └── expo@57.0.31 deduped
+│ ├─┬ expo-sqlite@57.0.4
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-status-bar@57.0.1
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├─┬ expo-system-ui@57.0.4
+│ │ ├── expo@57.0.31 deduped
+│ │ └── react-native@0.86.3 deduped
+│ ├── expo@57.0.31 deduped
+│ ├─┬ react-native-worklets@0.10.1
+│ │ └── react-native@0.86.3 deduped
+│ └── react-native@0.86.3 deduped
+└─┬ react-native@0.86.3
+  └─┬ @react-native/virtualized-lists@0.86.3
+    └── react-native@0.86.3 deduped
