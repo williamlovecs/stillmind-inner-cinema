@@ -1,0 +1,18 @@
+npm warn deprecated eslint@9.39.4: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+> stillmind-inner-cinema@0.1.0 postinstall
+> node scripts/patch-query-string-cjs.mjs
+
+Applied reviewed decoder import bridge: node_modules/query-string/index.js
+
+added 881 packages, and audited 886 packages in 3m
+
+29 vulnerabilities (2 low, 27 moderate)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.

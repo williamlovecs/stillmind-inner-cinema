@@ -1,0 +1,13 @@
+{
+  "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6",
+  "changedPackages": [
+    {
+      "path": "node_modules/zod",
+      "before": "3.25.76",
+      "after": "4.6.7"
+    }
+  ],
+  "expo": "57.0.31",
+  "cli": "57.0.32",
+  "reactNative": "0.86.3"
+}

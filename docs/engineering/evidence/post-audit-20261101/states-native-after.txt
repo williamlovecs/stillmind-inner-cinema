@@ -1,0 +1,16 @@
+
+> stillmind-inner-cinema@0.1.0 smoke:states:native
+> node scripts/run-experience-states.mjs --native
+
+PASS native A: inner-cinema real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native A: paced-breath real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native A: thought-watching real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native B: wide-gaze real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native B: body-scan real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native B: person-shift real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native C: logout-pause real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native C: release real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native C: open-awareness real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native D: grounded-action real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native D: trigger-journal real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS native D: anchors real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry

@@ -1,0 +1,14 @@
+{
+  "complete": false,
+  "platform": "native",
+  "batch": "A",
+  "passed": [
+    "inner-cinema real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry"
+  ],
+  "failures": [
+    "AssertionError [ERR_ASSERTION]: paced-breath paused controls must not mutate content\n+ actual - expected\n\n  '呼吸法\\n' +\n    '8 秒 · 已暂停\\n' +\n    '01 / 04\\n' +\n    '先找到呼气\\n' +\n    '静态水面\\n' +\n    '纯文字\\n' +\n+   '按自己的节奏呼吸。呼气时，可以在心里数一次。\\n' +\n    '轻点 1\\n' +\n    '水面是静止的，不代表你的呼吸频率。可以轻点记数，也可以什么都不点。\\n' +\n    '重新数\\n' +\n    '不用改变呼吸，只注意下一次呼气自然出现。\\n' +\n    '保持眼睛睁开，看着屏幕中央。\\n' +\n"
+  ],
+  "externalRequests": [],
+  "testedGitSha": "704d85b2413dcf60ffdb48bb995d4d053d10d8de",
+  "scope": "Local Expo Web export; CSS bounds only, not physical touch or a screen reader"
+}

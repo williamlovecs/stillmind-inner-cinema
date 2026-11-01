@@ -1,0 +1,46 @@
+{
+  "baseline": "e30ec3c822c14f1cc6f855eba693f7acc471e34a",
+  "image": "node@sha256:1c18d9ab3af4585870b92e4dbc5cac5a0dc77dd13df1a5905cea89fc720eb05b",
+  "node": "v22.14.0",
+  "platform": "linux",
+  "checks": [
+    {
+      "check": "clean-install",
+      "exit_code": "0",
+      "sha": "e30ec3c822c14f1cc6f855eba693f7acc471e34a"
+    },
+    {
+      "check": "dependency-consumers",
+      "exit_code": "0",
+      "sha": "e30ec3c822c14f1cc6f855eba693f7acc471e34a"
+    },
+    {
+      "check": "dependency-tree",
+      "exit_code": "0",
+      "sha": "e30ec3c822c14f1cc6f855eba693f7acc471e34a"
+    },
+    {
+      "check": "verify-release",
+      "exit_code": "0",
+      "sha": "e30ec3c822c14f1cc6f855eba693f7acc471e34a"
+    },
+    {
+      "check": "audit-high",
+      "exit_code": "0",
+      "sha": "e30ec3c822c14f1cc6f855eba693f7acc471e34a"
+    }
+  ],
+  "unitTests": 158.0,
+  "doctor21of21": true,
+  "iosExport": true,
+  "webExport": true,
+  "audit": {
+    "info": 0,
+    "low": 2,
+    "moderate": 27,
+    "high": 0,
+    "critical": 0,
+    "total": 29
+  },
+  "scope": "Fresh source clone and npm ci on Linux, not physical-device or public-release acceptance"
+}

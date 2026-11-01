@@ -1,0 +1,26 @@
+
+> stillmind-inner-cinema@0.1.0 postinstall
+> node scripts/patch-query-string-cjs.mjs
+
+Applied reviewed decoder import bridge: node_modules\query-string\index.js
+
+> stillmind-inner-cinema@0.1.0 test:dependencies
+> node --test test/dependency-compat.test.mjs
+
+✔ Expo query-string resolves the reviewed decoder security patch (1.0464ms)
+✔ patched xcode UUID dependency retains project-id shape (42.7933ms)
+✔ patched decoder preserves Expo query-string UTF-8 and arrays (0.7407ms)
+✔ patched decoder tolerates malformed sequences without an unbounded split loop (1.2646ms)
+✔ Expo CLI resolves the reviewed Zod security release (1.0669ms)
+✔ CLI Zod rejects oversized constrained arrays before walking elements (114.9393ms)
+✔ real Expo plugin schema preserves parsing, readonly and error semantics (6.0824ms)
+✔ real Expo output schema accepts text/audio/image and rejects malformed results (1.3788ms)
+✔ real Expo MCP schema retains strict command and typed parameter checks (2.5018ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 345.9597

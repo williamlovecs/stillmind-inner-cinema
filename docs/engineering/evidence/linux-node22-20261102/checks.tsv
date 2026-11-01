@@ -1,0 +1,6 @@
+check	exit_code	sha
+clean-install	0	e30ec3c822c14f1cc6f855eba693f7acc471e34a
+dependency-consumers	0	e30ec3c822c14f1cc6f855eba693f7acc471e34a
+dependency-tree	0	e30ec3c822c14f1cc6f855eba693f7acc471e34a
+verify-release	0	e30ec3c822c14f1cc6f855eba693f7acc471e34a
+audit-high	0	e30ec3c822c14f1cc6f855eba693f7acc471e34a

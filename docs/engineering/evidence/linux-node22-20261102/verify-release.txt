@@ -1,0 +1,1454 @@
+
+> stillmind-inner-cinema@0.1.0 verify:release
+> npm run verify && npm run check:release-readiness && npm run doctor:mobile && npm run build:mobile:ios && npm run build:mobile:web
+
+
+> stillmind-inner-cinema@0.1.0 verify
+> npm run test && npm run typecheck && npm run lint && npm run check:claims && npm run build
+
+
+> stillmind-inner-cinema@0.1.0 test
+> npm run test:domain && npm run test:content && npm run test:api && npm run test:api-events && npm run test:analytics && npm run test:timeline && npm run test:seed-users && npm run test:device-qa && npm run test:reset-routing && npm run test:payment-interviews && npm run test:audit && npm run test:native && npm run test:dependencies && npm run test:round2
+
+
+> stillmind-inner-cinema@0.1.0 test:domain
+> tsx --test packages/domain/test/routing.test.ts
+
+TAP version 13
+# Subtest: high activation and impulsive mode prefer an acute eyes-open method
+ok 1 - high activation and impulsive mode prefer an acute eyes-open method
+  ---
+  duration_ms: 0.653437
+  ...
+# Subtest: the first-use reset route only recommends the focused core set
+ok 2 - the first-use reset route only recommends the focused core set
+  ---
+  duration_ms: 4.480329
+  ...
+# Subtest: intake text maps the four golden moments without exposing raw text
+ok 3 - intake text maps the four golden moments without exposing raw text
+  ---
+  duration_ms: 0.343288
+  ...
+# Subtest: legacy ten-point scores migrate deterministically to the shared five-point scale
+ok 4 - legacy ten-point scores migrate deterministically to the shared five-point scale
+  ---
+  duration_ms: 0.465213
+  ...
+# Subtest: safety gate always wins over favorites
+ok 5 - safety gate always wins over favorites
+  ---
+  duration_ms: 0.079198
+  ...
+# Subtest: medical emergency has highest safety priority
+ok 6 - medical emergency has highest safety priority
+  ---
+  duration_ms: 0.066428
+  ...
+# Subtest: high-risk language is detected before reflective exercises
+ok 7 - high-risk language is detected before reflective exercises
+  ---
+  duration_ms: 0.327719
+  ...
+# Subtest: comfort constraints exclude body and breath practices
+ok 8 - comfort constraints exclude body and breath practices
+  ---
+  duration_ms: 0.108026
+  ...
+# Subtest: eyes-open preference and high activation exclude ineligible methods
+ok 9 - eyes-open preference and high activation exclude ineligible methods
+  ---
+  duration_ms: 0.187244
+  ...
+# Subtest: every supported mode and duration produces a known practice
+ok 10 - every supported mode and duration produces a known practice
+  ---
+  duration_ms: 1.159437
+  ...
+# Subtest: a favorite cannot bypass explicit method hiding
+ok 11 - a favorite cannot bypass explicit method hiding
+  ---
+  duration_ms: 0.19517
+  ...
+# Subtest: practice paths are complete, routable, and non-labeling
+ok 12 - practice paths are complete, routable, and non-labeling
+  ---
+  duration_ms: 0.161146
+  ...
+# Subtest: practice path progress advances only through completed non-worse stages
+ok 13 - practice path progress advances only through completed non-worse stages
+  ---
+  duration_ms: 0.157118
+  ...
+# Subtest: practice path progress respects methods hidden by the user
+ok 14 - practice path progress respects methods hidden by the user
+  ---
+  duration_ms: 0.059477
+  ...
+# Subtest: weekly review excludes sessions outside the interval and hides low-sample averages
+ok 15 - weekly review excludes sessions outside the interval and hides low-sample averages
+  ---
+  duration_ms: 0.373022
+  ...
+# Subtest: weekly review ignores malformed dates and reports an average only with enough samples
+ok 16 - weekly review ignores malformed dates and reports an average only with enough samples
+  ---
+  duration_ms: 0.101297
+  ...
+# Subtest: weekly review suggests the shortest pause when there is no data
+ok 17 - weekly review suggests the shortest pause when there is no data
+  ---
+  duration_ms: 0.097986
+  ...
+# Subtest: weekly review lowers intensity after repeated worse or stopped signals
+ok 18 - weekly review lowers intensity after repeated worse or stopped signals
+  ---
+  duration_ms: 0.078786
+  ...
+# Subtest: weekly review continues a method after repeated better outcomes
+ok 19 - weekly review continues a method after repeated better outcomes
+  ---
+  duration_ms: 0.130027
+  ...
+# Subtest: weekly review uses repeated mode as a next experiment without identity labels
+ok 20 - weekly review uses repeated mode as a next experiment without identity labels
+  ---
+  duration_ms: 0.093021
+  ...
+# Subtest: stored-session validation drops malformed and unknown records
+ok 21 - stored-session validation drops malformed and unknown records
+  ---
+  duration_ms: 0.111868
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2646.102834
+
+> stillmind-inner-cinema@0.1.0 test:content
+> tsx --test packages/content/test/catalog.test.ts
+
+TAP version 13
+# Subtest: every method has an original offline practice script
+ok 1 - every method has an original offline practice script
+  ---
+  duration_ms: 0.458362
+  ...
+# Subtest: every declared duration resolves to a complete exact-length variant
+ok 2 - every declared duration resolves to a complete exact-length variant
+  ---
+  duration_ms: 0.398002
+  ...
+# Subtest: an unsupported duration falls back without pretending to match it
+ok 3 - an unsupported duration falls back without pretending to match it
+  ---
+  duration_ms: 0.106792
+  ...
+# Subtest: scaled durations disclose the same guidance and use the revised content version
+ok 4 - scaled durations disclose the same guidance and use the revised content version
+  ---
+  duration_ms: 0.14346
+  ...
+# Subtest: scaled variants keep the authored step order, ids, kinds and guidance text
+ok 5 - scaled variants keep the authored step order, ids, kinds and guidance text
+  ---
+  duration_ms: 0.795671
+  ...
+# Subtest: the method index matches the variant list and unknown ids resolve to undefined
+ok 6 - the method index matches the variant list and unknown ids resolve to undefined
+  ---
+  duration_ms: 0.100507
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2704.519095
+
+> stillmind-inner-cinema@0.1.0 test:api
+> tsx --test test/api-cinema.test.ts
+
+TAP version 13
+# Subtest: cinema API rejects missing and oversized input
+ok 1 - cinema API rejects missing and oversized input
+  ---
+  duration_ms: 24.303173
+  ...
+# Subtest: cinema API routes high-risk language to the safety boundary
+ok 2 - cinema API routes high-risk language to the safety boundary
+  ---
+  duration_ms: 1.061401
+  ...
+# Subtest: cinema API always returns a complete safe preset without a provider key
+ok 3 - cinema API always returns a complete safe preset without a provider key
+  ---
+  duration_ms: 1.096752
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2785.387511
+
+> stillmind-inner-cinema@0.1.0 test:api-events
+> tsx --test test/api-events.test.ts
+
+TAP version 13
+# Subtest: events endpoint is CORS-ready and never caches
+ok 1 - events endpoint is CORS-ready and never caches
+  ---
+  duration_ms: 11.313237
+  ...
+# Subtest: valid events are safely accepted when analytics is not configured
+ok 2 - valid events are safely accepted when analytics is not configured
+  ---
+  duration_ms: 5.976467
+  ...
+# Subtest: raw user text and unknown fields are rejected
+ok 3 - raw user text and unknown fields are rejected
+  ---
+  duration_ms: 0.628724
+  ...
+# Subtest: malformed JSON is rejected without throwing
+ok 4 - malformed JSON is rejected without throwing
+  ---
+  duration_ms: 0.439735
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2370.046156
+
+> stillmind-inner-cinema@0.1.0 test:analytics
+> tsx --test test/analytics.test.ts
+
+TAP version 13
+# Subtest: analytics is inert until a privacy-reviewed sink is configured
+ok 1 - analytics is inert until a privacy-reviewed sink is configured
+  ---
+  duration_ms: 0.483288
+  ...
+# Subtest: analytics emits only the typed sanitized envelope
+ok 2 - analytics emits only the typed sanitized envelope
+  ---
+  duration_ms: 0.476296
+  ...
+# Subtest: the anonymous receiver contract rejects raw text and extra fields
+ok 3 - the anonymous receiver contract rejects raw text and extra fields
+  ---
+  duration_ms: 0.461396
+  ...
+# Subtest: analytics buckets avoid precise behavioral timestamps and counts
+ok 4 - analytics buckets avoid precise behavioral timestamps and counts
+  ---
+  duration_ms: 0.107963
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2349.050428
+
+> stillmind-inner-cinema@0.1.0 test:timeline
+> tsx --test test/timeline.test.ts
+
+TAP version 13
+# Subtest: timeline resolves start and partial first step
+ok 1 - timeline resolves start and partial first step
+  ---
+  duration_ms: 0.873441
+  ...
+# Subtest: timeline crosses steps using absolute elapsed time
+ok 2 - timeline crosses steps using absolute elapsed time
+  ---
+  duration_ms: 0.162943
+  ...
+# Subtest: timeline completes exactly at total duration
+ok 3 - timeline completes exactly at total duration
+  ---
+  duration_ms: 0.078676
+  ...
+# Subtest: timeline handles negative elapsed and empty content safely
+ok 4 - timeline handles negative elapsed and empty content safely
+  ---
+  duration_ms: 0.110033
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2038.584161
+
+> stillmind-inner-cinema@0.1.0 test:seed-users
+> tsx --test test/seed-users.test.ts
+
+TAP version 13
+# Subtest: seed-user analyzer handles an empty template
+ok 1 - seed-user analyzer handles an empty template
+  ---
+  duration_ms: 106.779137
+  ...
+# Subtest: seed-user analyzer returns GO when 15 users meet broader TestFlight thresholds
+ok 2 - seed-user analyzer returns GO when 15 users meet broader TestFlight thresholds
+  ---
+  duration_ms: 65.157347
+  ...
+# Subtest: seed-user analyzer pauses launch when a severe safety concern appears
+ok 3 - seed-user analyzer pauses launch when a severe safety concern appears
+  ---
+  duration_ms: 64.604452
+  ...
+# Subtest: seed-user analyzer asks for iteration when go thresholds are not met
+ok 4 - seed-user analyzer asks for iteration when go thresholds are not met
+  ---
+  duration_ms: 57.657709
+  ...
+# Subtest: seed-user analyzer pauses when one method has two worse reports
+ok 5 - seed-user analyzer pauses when one method has two worse reports
+  ---
+  duration_ms: 53.15802
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2291.254937
+
+> stillmind-inner-cinema@0.1.0 test:device-qa
+> tsx --test test/device-qa.test.ts
+
+TAP version 13
+# Subtest: device QA analyzer handles an empty template
+ok 1 - device QA analyzer handles an empty template
+  ---
+  duration_ms: 59.999018
+  ...
+# Subtest: device QA analyzer passes complete all-pass coverage
+ok 2 - device QA analyzer passes complete all-pass coverage
+  ---
+  duration_ms: 49.60984
+  ...
+# Subtest: device QA analyzer blocks critical failures
+ok 3 - device QA analyzer blocks critical failures
+  ---
+  duration_ms: 46.084873
+  ...
+# Subtest: device QA analyzer reports insufficient coverage
+ok 4 - device QA analyzer reports insufficient coverage
+  ---
+  duration_ms: 42.16718
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2277.191207
+
+> stillmind-inner-cinema@0.1.0 test:reset-routing
+> tsx --test test/reset-routing.test.ts test/reset-draft.test.ts test/web-library.test.ts
+
+TAP version 13
+# Subtest: input, score and optional consent are transferred atomically and consumed only once
+ok 1 - input, score and optional consent are transferred atomically and consumed only once
+  ---
+  duration_ms: 1.030793
+  ...
+# Subtest: failed writes never let a fresh navigation consume stale private text or consent
+ok 2 - failed writes never let a fresh navigation consume stale private text or consent
+  ---
+  duration_ms: 0.140567
+  ...
+# Subtest: unavailable storage or failed removal cannot replay a draft
+ok 3 - unavailable storage or failed removal cannot replay a draft
+  ---
+  duration_ms: 0.130279
+  ...
+# Subtest: malformed, oversized or unsupported drafts are discarded
+ok 4 - malformed, oversized or unsupported drafts are discarded
+  ---
+  duration_ms: 0.138823
+  ...
+# Subtest: invalid scores remain missing and anonymous consent requires an explicit boolean
+ok 5 - invalid scores remain missing and anonymous consent requires an explicit boolean
+  ---
+  duration_ms: 0.092018
+  ...
+# Subtest: the shared five-point activation wins over legacy values
+ok 6 - the shared five-point activation wins over legacy values
+  ---
+  duration_ms: 1.2422
+  ...
+# Subtest: legacy ten-point scores migrate only when no five-point value is present
+ok 7 - legacy ten-point scores migrate only when no five-point value is present
+  ---
+  duration_ms: 0.356407
+  ...
+# Subtest: stored reset intensity wins and survives route hydration
+ok 8 - stored reset intensity wins and survives route hydration
+  ---
+  duration_ms: 0.253842
+  ...
+# Subtest: query intensity preserves the entry score when session storage is unavailable
+ok 9 - query intensity preserves the entry score when session storage is unavailable
+  ---
+  duration_ms: 0.114402
+  ...
+# Subtest: invalid values use the recommendation fallback and valid values are clamped
+ok 10 - invalid values use the recommendation fallback and valid values are clamped
+  ---
+  duration_ms: 0.110714
+  ...
+# Subtest: web library loads only valid sessions and known method favorites
+ok 11 - web library loads only valid sessions and known method favorites
+  ---
+  duration_ms: 1.126431
+  ...
+# Subtest: web library favorites persist and a failed write is not reported as saved
+ok 12 - web library favorites persist and a failed write is not reported as saved
+  ---
+  duration_ms: 0.221584
+  ...
+# Subtest: web library combines real family, duration and favorite filters
+ok 13 - web library combines real family, duration and favorite filters
+  ---
+  duration_ms: 0.214483
+  ...
+# Subtest: web deletion touches only explicit StillMind keys and reports every failure
+ok 14 - web deletion touches only explicit StillMind keys and reports every failure
+  ---
+  duration_ms: 0.226691
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1640.623736
+
+> stillmind-inner-cinema@0.1.0 test:payment-interviews
+> tsx --test test/payment-interviews.test.ts
+
+TAP version 13
+# Subtest: payment interview analyzer handles an empty template
+ok 1 - payment interview analyzer handles an empty template
+  ---
+  duration_ms: 72.928499
+  ...
+# Subtest: payment interview analyzer returns GO for enough high-intent interviews
+ok 2 - payment interview analyzer returns GO for enough high-intent interviews
+  ---
+  duration_ms: 57.324816
+  ...
+# Subtest: payment interview analyzer blocks therapy or trust-risk demand
+ok 3 - payment interview analyzer blocks therapy or trust-risk demand
+  ---
+  duration_ms: 67.214267
+  ...
+# Subtest: payment interview analyzer asks for offer iteration when intent is weak
+ok 4 - payment interview analyzer asks for offer iteration when intent is weak
+  ---
+  duration_ms: 63.42973
+  ...
+# Subtest: payment interview analyzer ignores unqualified high-intent rows for paid signal
+ok 5 - payment interview analyzer ignores unqualified high-intent rows for paid signal
+  ---
+  duration_ms: 54.935918
+  ...
+# Subtest: payment interview analyzer requires five qualified interviews
+ok 6 - payment interview analyzer requires five qualified interviews
+  ---
+  duration_ms: 51.815103
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2377.985996
+
+> stillmind-inner-cinema@0.1.0 test:audit
+> tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs
+
+TAP version 13
+# Subtest: provider structured JSON is normalized and honestly marked stepfun
+ok 1 - provider structured JSON is normalized and honestly marked stepfun
+  ---
+  duration_ms: 20.976552
+  ...
+# Subtest: provider fenced JSON is accepted without pretending prose is JSON
+ok 2 - provider fenced JSON is accepted without pretending prose is JSON
+  ---
+  duration_ms: 1.082676
+  ...
+# Subtest: truncated JSON and prose fallback never use a stepfun badge
+ok 3 - truncated JSON and prose fallback never use a stepfun badge
+  ---
+  duration_ms: 3.588463
+  ...
+# Subtest: invalid structures and prohibited identity claims are rejected
+ok 4 - invalid structures and prohibited identity claims are rejected
+  ---
+  duration_ms: 3.25521
+  ...
+# Subtest: provider failure and aborted requests retain a usable preset
+ok 5 - provider failure and aborted requests retain a usable preset
+  ---
+  duration_ms: 1.91731
+  ...
+# Subtest: clock counts active time, not paused time, with idempotent pause/resume
+ok 6 - clock counts active time, not paused time, with idempotent pause/resume
+  ---
+  duration_ms: 0.663559
+  ...
+# Subtest: delayed ticks resolve a pure absolute timeline without double increments
+ok 7 - delayed ticks resolve a pure absolute timeline without double increments
+  ---
+  duration_ms: 0.205835
+  ...
+# Subtest: unanswered scores remain missing, not same, and valid ratings remain 1-5
+ok 8 - unanswered scores remain missing, not same, and valid ratings remain 1-5
+  ---
+  duration_ms: 0.136631
+  ...
+# Subtest: worse/stopped/abandoned endings never claim an acquired observer position
+ok 9 - worse/stopped/abandoned endings never claim an acquired observer position
+  ---
+  duration_ms: 0.381414
+  ...
+# Subtest: an eight-second stop retains actual and planned durations separately
+ok 10 - an eight-second stop retains actual and planned durations separately
+  ---
+  duration_ms: 0.743719
+  ...
+# Subtest: completion is recorded before optional feedback and feedback updates the same id
+ok 11 - completion is recorded before optional feedback and feedback updates the same id
+  ---
+  duration_ms: 0.253866
+  ...
+# Subtest: actual start/abandon events are opt-in, joinable and idempotent
+ok 12 - actual start/abandon events are opt-in, joinable and idempotent
+  ---
+  duration_ms: 1.196107
+  ...
+# Subtest: late feedback consent does not invent start or completion funnel events
+ok 13 - late feedback consent does not invent start or completion funnel events
+  ---
+  duration_ms: 0.153259
+  ...
+# Subtest: anonymous event schema rejects raw text, unknown fields and malformed attempt ids
+ok 14 - anonymous event schema rejects raw text, unknown fields and malformed attempt ids
+  ---
+  duration_ms: 0.156167
+  ...
+# Subtest: storage exceptions never need a retry to end a practice
+ok 15 - storage exceptions never need a retry to end a practice
+  ---
+  duration_ms: 0.438031
+  ...
+# Subtest: manual and URL choices obey the same eligibility as recommendations
+ok 16 - manual and URL choices obey the same eligibility as recommendations
+  ---
+  duration_ms: 0.358878
+  ...
+# Subtest: navigation keeps opt-outs but URLs never opt in to analytics
+ok 17 - navigation keeps opt-outs but URLs never opt in to analytics
+  ---
+  duration_ms: 0.407484
+  ...
+# Subtest: 202 accepted:false, malformed responses and server errors are not stored events
+ok 18 - 202 accepted:false, malformed responses and server errors are not stored events
+  ---
+  duration_ms: 16.046913
+  ...
+# Subtest: legacy sessions still load; new duration metadata is validated
+ok 19 - legacy sessions still load; new duration metadata is validated
+  ---
+  duration_ms: 0.11086
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1765.877817
+TAP version 13
+# Subtest: a disclaimer cannot exempt a guaranteed claim in another sentence
+ok 1 - a disclaimer cannot exempt a guaranteed claim in another sentence
+  ---
+  duration_ms: 1.603817
+  ...
+# Subtest: neighboring JSX on one source line has independent claims
+ok 2 - neighboring JSX on one source line has independent claims
+  ---
+  duration_ms: 4.653256
+  ...
+# Subtest: content-package string literals are parsed as user-facing candidates
+ok 3 - content-package string literals are parsed as user-facing candidates
+  ---
+  duration_ms: 1.071011
+  ...
+# Subtest: local explicit prohibitions remain allowed
+ok 4 - local explicit prohibitions remain allowed
+  ---
+  duration_ms: 0.772311
+  ...
+# Subtest: ordinary instructions are not outcome evidence or prohibited claims
+ok 5 - ordinary instructions are not outcome evidence or prohibited claims
+  ---
+  duration_ms: 0.185168
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 792.637732
+
+> stillmind-inner-cinema@0.1.0 test:native
+> tsx --test test/native-session.test.ts test/native-database.test.ts test/native-storage-lifecycle.test.ts test/native-pause-contract.test.mjs
+
+TAP version 13
+# Subtest: a transient open failure is retried on the next call, not cached forever
+ok 1 - a transient open failure is retried on the next call, not cached forever
+  ---
+  duration_ms: 0.927302
+  ...
+# Subtest: concurrent callers share one successful open
+ok 2 - concurrent callers share one successful open
+  ---
+  duration_ms: 0.20484
+  ...
+# Subtest: native method batch A binds every Chip to the paused contract
+ok 3 - native method batch A binds every Chip to the paused contract
+  ---
+  duration_ms: 22.507919
+  ...
+# Subtest: native method batch B binds every Chip to the paused contract
+ok 4 - native method batch B binds every Chip to the paused contract
+  ---
+  duration_ms: 11.532284
+  ...
+# Subtest: native method batch C binds every Chip to the paused contract
+ok 5 - native method batch C binds every Chip to the paused contract
+  ---
+  duration_ms: 12.893008
+  ...
+# Subtest: native method batch D binds every Chip to the paused contract
+ok 6 - native method batch D binds every Chip to the paused contract
+  ---
+  duration_ms: 12.507009
+  ...
+# Subtest: native query hints are not ratings until explicitly confirmed
+ok 7 - native query hints are not ratings until explicitly confirmed
+  ---
+  duration_ms: 0.679118
+  ...
+# Subtest: native stop has actual active time and missing scores remain missing
+ok 8 - native stop has actual active time and missing scores remain missing
+  ---
+  duration_ms: 0.945138
+  ...
+# Subtest: native records completion before optional feedback
+ok 9 - native records completion before optional feedback
+  ---
+  duration_ms: 0.178153
+  ...
+# Subtest: native start, end and feedback writes are ordered even when the first write is slow
+ok 10 - native start, end and feedback writes are ordered even when the first write is slow
+  ---
+  duration_ms: 0.718686
+  ...
+# Subtest: native failed storage cannot block stop or poison later feedback saves
+ok 11 - native failed storage cannot block stop or poison later feedback saves
+  ---
+  duration_ms: 0.245377
+  ...
+# Subtest: native late consent sends only feedback and never manufactures a past start
+ok 12 - native late consent sends only feedback and never manufactures a past start
+  ---
+  duration_ms: 0.423788
+  ...
+# Subtest: native actual lifecycle is opt-in, joinable and abandonment idempotent
+ok 13 - native actual lifecycle is opt-in, joinable and abandonment idempotent
+  ---
+  duration_ms: 0.458473
+  ...
+# Subtest: subjective feedback is retained separately when numeric change disagrees
+ok 14 - subjective feedback is retained separately when numeric change disagrees
+  ---
+  duration_ms: 0.222579
+  ...
+# Subtest: native stop status cannot be turned into completion by a positive answer
+ok 15 - native stop status cannot be turned into completion by a positive answer
+  ---
+  duration_ms: 0.257054
+  ...
+# Subtest: a feeling can be recorded without inventing a numerical score
+ok 16 - a feeling can be recorded without inventing a numerical score
+  ---
+  duration_ms: 0.210149
+  ...
+# Subtest: leaving or replacing generation invalidates late responses
+ok 17 - leaving or replacing generation invalidates late responses
+  ---
+  duration_ms: 0.155936
+  ...
+# Subtest: serial storage queue preserves delete order and recovers after failure
+ok 18 - serial storage queue preserves delete order and recovers after failure
+  ---
+  duration_ms: 0.312344
+  ...
+# Subtest: generated native practice honors selected duration with two or three scenes
+ok 19 - generated native practice honors selected duration with two or three scenes
+  ---
+  duration_ms: 0.494027
+  ...
+# Subtest: malformed or oversized generated scene lists are rejected
+ok 20 - malformed or oversized generated scene lists are rejected
+  ---
+  duration_ms: 0.201225
+  ...
+# Subtest: a failed history read does not discard independently saved privacy or safety choices
+ok 21 - a failed history read does not discard independently saved privacy or safety choices
+  ---
+  duration_ms: 1.780695
+  ...
+# Subtest: a failed preferences read fails closed for persistence, analytics and optional experiences
+ok 22 - a failed preferences read fails closed for persistence, analytics and optional experiences
+  ---
+  duration_ms: 0.283752
+  ...
+# Subtest: malformed and structurally invalid saved preferences never enable history
+ok 23 - malformed and structurally invalid saved preferences never enable history
+  ---
+  duration_ms: 0.370259
+  ...
+# Subtest: a genuinely first launch preserves the intentional onboarding defaults
+ok 24 - a genuinely first launch preserves the intentional onboarding defaults
+  ---
+  duration_ms: 0.117998
+  ...
+# Subtest: deletion attempts reminders, sessions, settings and identity even if one resource fails
+ok 25 - deletion attempts reminders, sessions, settings and identity even if one resource fails
+  ---
+  duration_ms: 0.480628
+  ...
+# Subtest: deletion reports all failures, including synchronous adapter exceptions
+ok 26 - deletion reports all failures, including synchronous adapter exceptions
+  ---
+  duration_ms: 0.239187
+  ...
+# Subtest: a reminder lane drains a late OS response before deletion, including failed preference writes
+ok 27 - a reminder lane drains a late OS response before deletion, including failed preference writes
+  ---
+  duration_ms: 0.301165
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3552.340119
+
+> stillmind-inner-cinema@0.1.0 test:dependencies
+> node --test test/dependency-compat.test.mjs
+
+TAP version 13
+# Subtest: Expo query-string resolves the reviewed decoder security patch
+ok 1 - Expo query-string resolves the reviewed decoder security patch
+  ---
+  duration_ms: 12.287287
+  ...
+# Subtest: patched xcode UUID dependency retains project-id shape
+ok 2 - patched xcode UUID dependency retains project-id shape
+  ---
+  duration_ms: 2103.079538
+  ...
+# Subtest: patched decoder preserves Expo query-string UTF-8 and arrays
+ok 3 - patched decoder preserves Expo query-string UTF-8 and arrays
+  ---
+  duration_ms: 0.691519
+  ...
+# Subtest: patched decoder tolerates malformed sequences without an unbounded split loop
+ok 4 - patched decoder tolerates malformed sequences without an unbounded split loop
+  ---
+  duration_ms: 1.232731
+  ...
+# Subtest: Expo CLI resolves the reviewed Zod security release
+ok 5 - Expo CLI resolves the reviewed Zod security release
+  ---
+  duration_ms: 76.205431
+  ...
+# Subtest: CLI Zod rejects oversized constrained arrays before walking elements
+ok 6 - CLI Zod rejects oversized constrained arrays before walking elements
+  ---
+  duration_ms: 2456.877624
+  ...
+# Subtest: real Expo plugin schema preserves parsing, readonly and error semantics
+ok 7 - real Expo plugin schema preserves parsing, readonly and error semantics
+  ---
+  duration_ms: 177.592274
+  ...
+# Subtest: real Expo output schema accepts text/audio/image and rejects malformed results
+ok 8 - real Expo output schema accepts text/audio/image and rejects malformed results
+  ---
+  duration_ms: 1.353927
+  ...
+# Subtest: real Expo MCP schema retains strict command and typed parameter checks
+ok 9 - real Expo MCP schema retains strict command and typed parameter checks
+  ---
+  duration_ms: 183.24629
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5330.810218
+
+> stillmind-inner-cinema@0.1.0 test:round2
+> tsx --test test/round2-contracts.test.ts test/observation.test.ts test/request-policy.test.ts && node --test test/round2-seed.test.mjs
+
+TAP version 13
+# Subtest: empty intake has no attributed negative thought
+ok 1 - empty intake has no attributed negative thought
+  ---
+  duration_ms: 0.701967
+  ...
+# Subtest: observation keeps compounds, quoted speakers and facts intact
+ok 2 - observation keeps compounds, quoted speakers and facts intact
+  ---
+  duration_ms: 0.156744
+  ...
+# Subtest: optional name is never invented and original thought remains the viewing subject
+ok 3 - optional name is never invented and original thought remains the viewing subject
+  ---
+  duration_ms: 0.137
+  ...
+# Subtest: origins are exact; native clients need no Origin; hostile browsers cannot preflight
+ok 4 - origins are exact; native clients need no Origin; hostile browsers cannot preflight
+  ---
+  duration_ms: 13.422252
+  ...
+# Subtest: malformed, non-http and allowlisted origins follow the exact-match policy
+ok 5 - malformed, non-http and allowlisted origins follow the exact-match policy
+  ---
+  duration_ms: 0.563162
+  ...
+# Subtest: both APIs reject hostile origins and simple form bodies before any upstream I/O
+ok 6 - both APIs reject hostile origins and simple form bodies before any upstream I/O
+  ---
+  duration_ms: 0.908826
+  ...
+# Subtest: long input cannot truncate away the safety boundary or silently change the submitted event
+ok 7 - long input cannot truncate away the safety boundary or silently change the submitted event
+  ---
+  duration_ms: 4.954431
+  ...
+# Subtest: rotating forwarded addresses cannot bypass the per-instance provider budget
+ok 8 - rotating forwarded addresses cannot bypass the per-instance provider budget
+  ---
+  duration_ms: 14.25141
+  ...
+# Subtest: bounded JSON rejects actual UTF-8 bytes with absent or forged Content-Length
+ok 9 - bounded JSON rejects actual UTF-8 bytes with absent or forged Content-Length
+  ---
+  duration_ms: 15.463871
+  ...
+# Subtest: bounded JSON decodes UTF-8 split across arbitrary stream chunks
+ok 10 - bounded JSON decodes UTF-8 split across arbitrary stream chunks
+  ---
+  duration_ms: 1.279963
+  ...
+# Subtest: bounded JSON rejects invalid encoding, malformed JSON and an idle stream
+ok 11 - bounded JSON rejects invalid encoding, malformed JSON and an idle stream
+  ---
+  duration_ms: 11.246132
+  ...
+# Subtest: rate map rejects new identifiers at capacity without evicting active limits
+ok 12 - rate map rejects new identifiers at capacity without evicting active limits
+  ---
+  duration_ms: 0.267271
+  ...
+# Subtest: both API routes reject oversized requests before provider or sink calls
+ok 13 - both API routes reject oversized requests before provider or sink calls
+  ---
+  duration_ms: 1.592485
+  ...
+# Subtest: provider labels and blank essential views cannot bypass output validation
+ok 14 - provider labels and blank essential views cannot bypass output validation
+  ---
+  duration_ms: 3.84064
+  ...
+# Subtest: out-of-range current and migrated scores are not fabricated self-reports
+ok 15 - out-of-range current and migrated scores are not fabricated self-reports
+  ---
+  duration_ms: 0.378589
+  ...
+# Subtest: weekly positives are attributed to the method that actually received them
+ok 16 - weekly positives are attributed to the method that actually received them
+  ---
+  duration_ms: 0.555834
+  ...
+# Subtest: weekly recommendation never promises a duration absent from the method catalog
+ok 17 - weekly recommendation never promises a duration absent from the method catalog
+  ---
+  duration_ms: 0.231751
+  ...
+# Subtest: withdrawing native consent aborts queued event scopes and blocks subsequent dispatch
+ok 18 - withdrawing native consent aborts queued event scopes and blocks subsequent dispatch
+  ---
+  duration_ms: 0.323759
+  ...
+# Subtest: fresh consent does not revive events queued under an earlier consent scope
+ok 19 - fresh consent does not revive events queued under an earlier consent scope
+  ---
+  duration_ms: 0.114511
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2127.117897
+TAP version 13
+# Subtest: blank scores remain absent rather than numeric zero
+ok 1 - blank scores remain absent rather than numeric zero
+  ---
+  duration_ms: 0.466779
+  ...
+# Subtest: a severe concern pauses at participant one, not only after fifteen
+ok 2 - a severe concern pauses at participant one, not only after fifteen
+  ---
+  duration_ms: 0.253133
+  ...
+# Subtest: two worse reports pause the method without waiting for a full cohort
+ok 3 - two worse reports pause the method without waiting for a full cohort
+  ---
+  duration_ms: 0.132383
+  ...
+# Subtest: duplicate participant rows cannot manufacture a fifteen-person cohort
+ok 4 - duplicate participant rows cannot manufacture a fifteen-person cohort
+  ---
+  duration_ms: 0.681779
+  ...
+# Subtest: missing safety observations cannot be silently counted as zero incidents
+ok 5 - missing safety observations cannot be silently counted as zero incidents
+  ---
+  duration_ms: 0.254131
+  ...
+# Subtest: original go thresholds remain available for fifteen complete, distinct observations
+ok 6 - original go thresholds remain available for fifteen complete, distinct observations
+  ---
+  duration_ms: 0.112258
+  ...
+# Subtest: quoted newlines and commas remain inside one participant row
+ok 7 - quoted newlines and commas remain inside one participant row
+  ---
+  duration_ms: 0.758927
+  ...
+# Subtest: malformed quoting, duplicate headers and wrong field counts fail closed
+ok 8 - malformed quoting, duplicate headers and wrong field counts fail closed
+  ---
+  duration_ms: 0.198984
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 95.393237
+
+> stillmind-inner-cinema@0.1.0 typecheck
+> npm run typecheck:web && npm run typecheck:design && npm run typecheck:domain && npm run typecheck:content && npm run typecheck:mobile
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:web
+> tsc --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:design
+> tsc -p packages/design-tokens/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:domain
+> tsc -p packages/domain/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:content
+> tsc -p packages/content/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 typecheck:mobile
+> tsc -p mobile/tsconfig.json --noEmit
+
+
+> stillmind-inner-cinema@0.1.0 lint
+> npm run lint:web && npm run lint:mobile
+
+
+> stillmind-inner-cinema@0.1.0 lint:web
+> eslint src packages test
+
+
+> stillmind-inner-cinema@0.1.0 lint:mobile
+> npm --workspace mobile run lint
+
+
+> mobile@1.0.0 lint
+> expo lint
+
+
+> stillmind-inner-cinema@0.1.0 check:claims
+> node scripts/check-public-claims.mjs
+
+Public-claim guard passed across src/app, src/components, mobile/src, packages/content/src, packages/domain/src, docs/app-store. This is a lexical check, not safety/rights certification.
+
+> stillmind-inner-cinema@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 1301ms
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 16.6s
+  Running TypeScript ...
+  Finished TypeScript in 15.5s ...
+  Collecting page data using 16 workers ...
+  Generating static pages using 16 workers (0/26) ...
+  Generating static pages using 16 workers (6/26)
+  Generating static pages using 16 workers (12/26)
+  Generating static pages using 16 workers (19/26)
+✓ Generating static pages using 16 workers (26/26) in 21.7s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/cinema
+├ ƒ /api/events
+├ ○ /methods
+├   /methods/[id]
+│ ├ ● /methods/inner-cinema
+│ ├ ● /methods/paced-breath
+│ ├ ● /methods/thought-watching
+│ └ ● [+9 more paths]
+├ ○ /privacy
+├ ○ /reflection
+├ ○ /reset
+├ ○ /settings
+├ ○ /support
+├ ○ /support/seed-test
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> stillmind-inner-cinema@0.1.0 check:release-readiness
+> node scripts/check-release-readiness.mjs && npm run check:eas && npm run check:app-store && npm run check:gtm && npm run check:source-boundary
+
+OK root package.json exists
+OK verify:release script exists
+OK verify script runs public-claim guard
+OK EAS config guard npm script exists
+OK release readiness runs EAS config guard
+OK App Store metadata guard npm script exists
+OK release readiness runs App Store metadata guard
+OK GTM readiness guard npm script exists
+OK release readiness runs GTM readiness guard
+OK source-boundary guard npm script exists
+OK release readiness runs source-boundary guard
+OK launch status report npm script exists
+OK launch status report script exists
+OK launch status report supports live probes
+OK verify:release exports iOS bundle
+OK verify:release exports mobile web bundle
+OK GitHub CI runs verify:release
+OK CI pins Node 22.14.0
+OK support page route exists
+OK seed tester handoff route exists
+OK privacy page route exists
+OK terms page route exists
+OK support page links to issue template chooser
+OK support page warns GitHub issues are public
+OK support page links seed tester handoff
+OK SUPPORT.md exists
+OK blank GitHub issues are disabled
+OK bug issue template exists
+OK experience issue template exists
+OK safety issue template exists
+OK issue templates include privacy checkbox
+OK App Store submission package exists
+OK submission package includes review notes
+OK submission package includes privacy nutrition draft
+OK submission package includes screenshot story
+OK human gates document exists
+OK seed-user protocol exists
+OK seed-user result template exists
+OK seed-user analyzer exists
+OK seed-user analyzer npm script exists
+OK seed-user analyzer tests exist
+OK npm test runs seed-user analyzer tests
+OK payment interview protocol exists
+OK payment interview template exists
+OK payment interview analyzer exists
+OK payment interview analyzer npm script exists
+OK payment interview analyzer tests exist
+OK npm test runs payment interview analyzer tests
+OK real-device QA template exists
+OK real-device QA analyzer exists
+OK real-device QA analyzer npm script exists
+OK real-device QA analyzer tests exist
+OK npm test runs real-device QA analyzer tests
+OK GTM links seed-user protocol
+OK measurement plan links seed-user protocol
+OK source material boundary exists
+OK source material boundary excludes rankings and labels
+OK practice paths domain model exists
+OK practice paths are exported from domain
+OK practice path progress tests exist
+OK mobile method library renders practice paths
+OK practice path analytics event is allowlisted
+OK method system documents practice paths
+OK product spec includes practice paths
+OK Expo app config exists
+OK Expo app name is StillMind
+OK Expo bundle identifier is set
+OK Expo URL scheme is set
+OK Expo iOS tablet support is disabled
+OK Expo API base URL points at production web app
+OK Expo notification usage string is present
+OK Expo SQLite plugin is configured
+OK Expo sharing plugin is configured
+OK Expo notifications plugin is configured
+OK iOS app icon exists
+OK iOS app icon is 1024x1024 PNG
+OK mobile Profile uses configurable production Web base URL
+OK mobile Profile links support URL
+OK mobile Profile links seed tester handoff
+OK mobile Profile links privacy URL
+OK mobile Profile links terms URL
+OK mobile Profile exposes export
+OK mobile Profile exposes delete all
+OK Web API has high-risk boundary
+OK Web support boundary exists
+OK public claim guard exists
+
+Human/external gates still open:
+WARN EAS login is external: Run `npx eas-cli whoami` from mobile/ after Expo credentials are available.
+WARN Apple Developer is external: Confirm paid Apple Developer membership and App Store Connect app record manually.
+WARN Real-device QA is external: Install an EAS preview/TestFlight build on a real iPhone, fill a private copy of docs/app-store/real_device_qa_template.csv, then run `npm run analyze:device-qa -- path\to\real_device_qa_results.csv`.
+WARN Legal review is external: Have privacy, consumer, subscription, wellness, and optional-AI disclosures reviewed before broad launch.
+WARN Seed-user results are external: Run docs/research/SEED_USER_PROTOCOL.md with 15 users and summarize the go/no-go result.
+WARN Payment interviews are external: Before paid launch, run docs/research/PAYMENT_INTERVIEW_PROTOCOL.md and require `npm run analyze:payment-interviews` to return GO_TEST_PAID_OFFER.
+
+Release readiness engineering gates passed. External gates remain human-owned.
+
+> stillmind-inner-cinema@0.1.0 check:eas
+> node scripts/check-eas-config.mjs
+
+OK mobile/eas.json exists
+OK EAS CLI version floor is pinned
+OK EAS app version source is remote
+OK development profile exists
+OK development profile uses dev client
+OK development profile is internal
+OK development profile pins Node 22.14.0
+OK preview profile exists
+OK preview profile is internal distribution
+OK preview profile pins Node 22.14.0
+OK production profile exists
+OK production profile auto-increments
+OK production profile pins Node 22.14.0
+OK production profile is not an internal/dev-client build
+OK production submit profile exists
+OK Expo app name exists
+OK iOS bundle identifier is configured
+OK iOS URL scheme is configured
+OK mobile app is Expo Router based
+OK mobile project includes Expo dev client
+OK runbook documents local EAS config guard
+OK runbook documents EAS login/init/build/submit
+OK human gates track EAS login and signed build
+
+EAS distribution warnings:
+WARN EAS project not linked: Run `npx eas-cli project:init` after Expo login; this should add expo.extra.eas.projectId or link the project remotely.
+WARN submit profile has no Apple account details: Keep this empty until App Store Connect credentials are available; EAS will prompt or use credentials configured in the Expo account.
+
+EAS config guard passed. Login, signing, TestFlight, and App Store review remain external gates.
+
+> stillmind-inner-cinema@0.1.0 check:app-store
+> node scripts/check-app-store-metadata.mjs
+
+OK App Store metadata draft exists
+OK App Store submission package exists
+OK App Store runbook exists
+OK Expo app config exists
+OK metadata has app name
+OK metadata name fits App Store limit
+OK metadata subtitle is present and under 30 chars
+OK metadata promotional text is present and under 170 chars
+OK metadata description is substantive
+OK metadata keywords are present and under 100 chars
+OK metadata category hypothesis exists
+OK metadata screenshot story has at least 5 moments
+OK metadata what's-new text is present
+OK bundle identifier is documented
+OK support URL matches mobile production URL
+OK privacy URL matches mobile production URL
+OK terms URL is documented in runbook
+OK review notes mention no account/payment/microphone/AI dependency
+OK privacy nutrition draft exists
+OK screenshot set requires real shipping UI
+OK pre-submit checklist includes claim guard
+OK runbook includes EAS build and submit commands
+OK runbook lists real-device test matrix
+OK runbook links real-device QA analyzer
+OK real-device QA template exists
+OK iOS icon path is configured
+OK iOS icon is a 1024 PNG
+OK tablet support is disabled in app config
+OK notification usage string is present
+OK production API base URL is configured
+
+App Store metadata guard passed. Human App Store Connect and legal gates still remain.
+
+> stillmind-inner-cinema@0.1.0 check:gtm
+> node scripts/check-gtm-readiness.mjs
+
+OK seed-user protocol exists
+OK seed-user CSV template exists
+OK seed-user analyzer exists
+OK seed-user analyzer npm script exists
+OK seed-user analyzer tests are in npm test
+OK seed-user template has exact expected headers
+OK seed-user analyzer handles the blank template
+OK payment interview protocol exists
+OK payment interview CSV template exists
+OK payment interview analyzer exists
+OK payment interview analyzer npm script exists
+OK payment interview analyzer tests are in npm test
+OK payment interview template has exact expected headers
+OK payment interview analyzer handles the blank template
+OK seed protocol targets 15 first-time users
+OK seed protocol protects raw trigger privacy
+OK seed protocol defines live core task
+OK seed protocol defines score rubric
+OK seed protocol defines GO thresholds
+OK seed protocol defines pause triggers
+OK seed protocol includes 48-72 hour follow-up
+OK seed protocol links analyzer command
+OK seed tester handoff page exists
+OK seed tester handoff protects private stories
+OK seed tester handoff defines core tasks and questions
+OK support page links seed tester handoff
+OK mobile Profile links seed tester handoff
+OK payment protocol defines qualified sample
+OK payment protocol protects private and medical data
+OK payment protocol defines paid offer cards
+OK payment protocol defines go/no-go rules
+OK payment protocol links analyzer command
+OK GTM plan defines six-week validation loop
+OK GTM plan keeps first release free unless StoreKit is ready
+OK GTM plan includes channel order
+OK GTM plan includes moat development
+OK GTM plan references seed-user protocol
+OK GTM plan references payment interview protocol
+OK measurement plan defines useful resets North Star
+OK measurement plan defines initial funnel and safety targets
+OK measurement plan forbids raw/private analytics
+OK measurement plan includes privacy-safe event allowlist
+OK measurement plan links seed-user protocol
+OK human gates require 15 seed users before public App Store
+OK human gates require payment interviews before paid offers
+OK release readiness checks seed-user assets
+OK release readiness checks payment interview assets
+
+GTM validation warnings:
+WARN no real seed-user result file: Expected before broad TestFlight/App Store: copy seed_user_results_template.csv to a private results file and collect 15 anonymized rows.
+WARN no real payment interview result file: Expected before paid launch: copy payment_interview_results_template.csv to a private results file and collect at least 5 qualified interviews.
+
+GTM readiness guard passed. Real seed-user sessions, payment interviews, and market evidence remain human/external gates.
+
+> stillmind-inner-cinema@0.1.0 check:source-boundary
+> node scripts/check-source-boundary.mjs
+
+OK source material boundary document exists
+OK source boundary documents the local 906-page corpus
+OK source boundary separates source from evidence
+OK source boundary defines allowed product translation
+OK source boundary excludes consciousness ranking
+OK source boundary excludes fixed ego labels
+OK source boundary excludes diagnosis and treatment claims
+OK source boundary constrains future RAG core
+OK source boundary requires claim guard before shipping
+OK source corpus index exists
+OK source corpus index is internal metadata only
+OK source corpus index records the 906-page local corpus
+OK source corpus index blocks public quotation and ranking
+OK source corpus index keeps RAG as later gated work
+OK evidence brief labels source teaching separately
+OK evidence brief excludes numeric/metaphysical source claims
+OK evidence brief maps source ideas to product interpretations
+OK method system forbids spiritual ranking
+OK method system forbids ego-type recommendations
+OK product spec keeps legal/App Store disclosures aligned
+OK public claim guard blocks metaphysical ranking terms
+OK App Store package forbids awakening/consciousness claims
+OK human gates require App Store copy to avoid consciousness ranking
+
+Source-boundary guard passed. Future source-grounded RAG remains a later, rights-reviewed v2 gate.
+
+> stillmind-inner-cinema@0.1.0 doctor:mobile
+> npx expo-doctor@latest mobile
+
+Running 21 checks on your project...
+21/21 checks passed. No issues detected!
+
+> stillmind-inner-cinema@0.1.0 build:mobile:ios
+> cd mobile && npx expo export --platform ios --output-dir ../.expo-ci/ios --clear
+
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Expo Autolinking module resolution enabled
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+iOS Bundled 71479ms node_modules/expo-router/entry.js (1797 modules)
+
+› Assets (42):
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/AntDesign.ttf (130KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf (66KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/EvilIcons.ttf (13KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf (56KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf (166KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf (134KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf (34KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf (203KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf (209KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf (68KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf (424KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Fontisto.ttf (314KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Foundation.ttf (57KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf (390KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf (1.3MB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf (357KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Octicons.ttf (69KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf (54KB)
+../node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Zocial.ttf (26KB)
+../node_modules/expo-router/assets/arrow_down.png (9.5KB)
+../node_modules/expo-router/assets/error.png (469B)
+../node_modules/expo-router/assets/file.png (138B)
+../node_modules/expo-router/assets/forward.png (188B)
+../node_modules/expo-router/assets/pkg.png (364B)
+../node_modules/expo-router/assets/react-navigation/elements/back-icon-mask.png (653B)
+../node_modules/expo-router/assets/react-navigation/elements/back-icon.png (4 variations | 566B)
+../node_modules/expo-router/assets/react-navigation/elements/clear-icon.png (4 variations | 425B)
+../node_modules/expo-router/assets/react-navigation/elements/close-icon.png (4 variations | 235B)
+../node_modules/expo-router/assets/react-navigation/elements/search-icon.png (3 variations | 582B)
+../node_modules/expo-router/assets/sitemap.png (465B)
+../node_modules/expo-router/assets/unmatched.png (4.8KB)
+
+› ios bundles (1):
+_expo/static/js/ios/entry-9c00cdc124096033d677c35115cf2aa8.hbc (4.5MB)
+
+› Files (1):
+metadata.json (2.8KB)
+
+Exported: ../.expo-ci/ios
+
+> stillmind-inner-cinema@0.1.0 build:mobile:web
+> cd mobile && npx expo export --platform web --output-dir ../.expo-ci/web --clear
+
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Expo Autolinking module resolution enabled
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Static rendering is enabled. Learn more: https://docs.expo.dev/router/web/static-rendering/
+λ Bundled 79823ms node_modules/expo/node_modules/@expo/cli/node_modules/@expo/router-server/node/render.js (1530 modules)
+Web Bundled 86743ms node_modules/expo-router/entry.js (1519 modules)
+
+› web bundles (3):
+_expo/static/js/web/entry-f1fce2bf016fbd0af659534f35755dc0.js (3MB)
+_expo/static/js/web/index-5bfb48d69dbedb95581051d9445c9c98.js (62KB)
+_expo/static/js/web/worker-5d53e402a5046504e9640901ed354b70.js (133KB)
+
+› Static routes (12):
+/reset (22KB)
+/ (index) (22KB)
+/profile (22KB)
+/_sitemap (21KB)
+/practices (22KB)
+/+not-found (21KB)
+/reflection (22KB)
+/method/[id] (22KB)
+/(tabs) (22KB)
+/(tabs)/profile (22KB)
+/(tabs)/practices (22KB)
+/(tabs)/reflection (22KB)
+
+Exported: ../.expo-ci/web

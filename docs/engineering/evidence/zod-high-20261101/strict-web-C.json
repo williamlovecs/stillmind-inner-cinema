@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "platform": "web",
+  "batch": "C",
+  "passed": [
+    "logout-pause real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry",
+    "release real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry",
+    "open-awareness real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry"
+  ],
+  "failures": [],
+  "externalRequests": [],
+  "testedGitSha": "1bf8fc7ceb3919bbaedc2550f33f34030edc72b6",
+  "scope": "Local Next production browser automation"
+}

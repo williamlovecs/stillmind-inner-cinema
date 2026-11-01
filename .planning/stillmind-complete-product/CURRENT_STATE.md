@@ -1,4 +1,32 @@
-# 当前进度与下一批工作｜2026-10-03
+# 当前进度与下一批工作｜2026-11-02
+
+## 2026-11-02 双候选工程收尾
+
+先看 `docs/engineering/CANDIDATE_ACCEPTANCE_2026-11-02.md`，再看旧历史状态。独立干净 Linux/Node22.14 验收基线 `e30ec3c822c14f1cc6f855eba693f7acc471e34a`：标准npm ci、真实依赖消费者/树、完整默认verify:release、Doctor21/21、iOS与Expo Web导出、high审计均通过。基线158单测；加入部署隔离合同后的当前源为160，不能混算。
+
+候选修复分支的 Vercel Git自动部署已用官方 `git.deploymentEnabled` 精确关闭，main保持原行为；同步前已核验配置schema及实际项目根目录。最终同步/云端CI/无新增部署读回以 Draft PR#10 最新head和收尾记录为准，不能引用旧红灯或旧Preview冒充本轮结果。普通audit仍29条moderate/low，不是安全全清。
+
+V4保持独立仓库/路线，新增只测试不部署CI和便携浏览器配置，不合并产品。下一阶段使用 `docs/research/CONTROLLED_CANDIDATE_TEST_2026-11-02.md`；用户目前不能配合手机，真实手机及3–5名成年人测试均未执行。不得把工程验收写成真人或疗效证据。
+
+## 2026-11-01 V3 high 依赖跟进
+
+本节优先于下方上一轮 audit 状态。仅本地修复分支前进，未 push、未合并、未部署；GitHub Draft PR #10 仍在 `51c1d33`。运行代码 `1bf8fc7ceb3919bbaedc2550f33f34030edc72b6`；红测 `8698ef9`。
+
+- 两个 high 是 Zod 根问题和 @expo/cli 传递条目。定向覆盖 CLI 的 Zod 为4.6.7；锁文件仅 Zod 三项变化。Expo57.0.31、CLI57.0.32、RN0.86.3 保持不变，不做强制 SDK 降级。
+- 先复现版本/超长约束数组断言失败，再验证9项依赖兼容测试通过，包含真实 Expo plugin/output/MCP schema。范围外的依赖-major override 风险已在报告说明，不能伪称 Expo 官方已支持所有可选集成。
+- 默认完整 `npm run verify:release` exit0：158单测、类型/lint/声明与材料门禁、默认 Turbopack、Doctor21/21、iOS/Expo Web 导出。本轮 Web18+10组、Expo Web15组、两端各12法严格A-D状态、两端各4条数据路径全部通过，绑定同一修复代码SHA；关键截图已实际查看。
+- 最终high门禁exit0，0critical/0high；普通audit仍exit1，有29包条目（27moderate/2low），不是audit0。执行总脚本因此保留exit1，不隐藏剩余风险。未运行新云端CI，避免 push 触发已连接的 Vercel Preview。
+- 详情与本轮最终证据：`docs/engineering/ZOD_HIGH_REPAIR_2026-11-01.md`。真机、权限/授权、签名分发及真实用户验证仍未完成。
+
+## 2026-11-01 V3 定向回归恢复
+
+本节仅覆盖 V3 候选修复分支 `fix/v3-regression-recovery-20261101`，不是 main、V2 Final 或线上状态。基线 `790a591`；运行代码提交 `08c105dbb7f4950809d12db70a6b3834025e126f`。详情及红/绿证据见 `docs/engineering/POST_AUDIT_REPAIR_2026-11-01.md`。
+
+- 四批 Expo Web 暂停回归先在 `704d85b` 复现失败，再恢复所有 Chip 的暂停禁用、可访问性和既有淡化状态；保留 V3 视觉与页面结构。V2 Final 同一严格脚本在 Web、Expo Web 各 12 法通过，非真机证明。
+- 仅修复 decoder 0.5.0→0.5.1 及窄锁文件条目，实际 query-string 兼容测试通过；没有重复移植已有 API/SDK 修复。
+- 153 项测试、类型、lint、声明检查、Webpack 构建、材料门禁、Doctor 21/21、iOS/Expo Web 导出通过。Web 18+10 组、Expo Web 15 组、两端各 12 法严格状态和各 4 条产品路径通过。没有把分项检查冒充完整默认 `verify:release` 命令通过。
+- **audit 仍失败：30 个包条目，0 critical / 2 high / 26 moderate / 2 low**。保留原始告警及 CI 门禁，不称安全发布获准。
+- 本轮为独立修复分支和 Draft PR 交付；不自动合并、部署、改动 V1/V2 或 E 盘 canonical。签名上架、内容许可、真机/微信/Safari 与真人效果仍未完成。以下旧历史状态不得作为本轮或线上验收。
 
 先读本页，再看此目录的历史task_plan/progress/findings。旧complete/100%是当时工程或材料准备记录，不是用户验证、内容许可或三个模块都已完成的结论。
 

@@ -1,0 +1,16 @@
+
+> stillmind-inner-cinema@0.1.0 smoke:states:web
+> node scripts/run-experience-states.mjs
+
+PASS web A: inner-cinema real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web A: paced-breath real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web A: thought-watching real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web B: wide-gaze real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web B: body-scan real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web B: person-shift real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web C: logout-pause real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web C: release real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web C: open-awareness real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web D: grounded-action real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web D: trigger-journal real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+PASS web D: anchors real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry

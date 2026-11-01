@@ -1,0 +1,184 @@
+
+> stillmind-inner-cinema@0.1.0 smoke:states:native
+> node scripts/run-experience-states.mjs --native
+
+PASS native A: inner-cinema real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry
+AssertionError [ERR_ASSERTION]: paced-breath paused controls must not mutate content
++ actual - expected
+
+  '呼吸法\n' +
+    '8 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '先找到呼气\n' +
+    '静态水面\n' +
+    '纯文字\n' +
++   '按自己的节奏呼吸。呼气时，可以在心里数一次。\n' +
+    '轻点 1\n' +
+    '水面是静止的，不代表你的呼吸频率。可以轻点记数，也可以什么都不点。\n' +
+    '重新数\n' +
+    '不用改变呼吸，只注意下一次呼气自然出现。\n' +
+    '保持眼睛睁开，看着屏幕中央。\n' +
+
+    at file:///D:/AI-Validation/StillMind/post-audit-repair-20261101/v3/scripts/smoke-experience-v2-states.mjs:186:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '呼吸法\n' +
+    '8 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '先找到呼气\n' +
+    '静态水面\n' +
+    '纯文字\n' +
+    '按自己的节奏呼吸。呼气时，可以在心里数一次。\n' +
+    '轻点 1\n' +
+    '水面是静止的，不代表你的呼吸频率。可以轻点记数，也可以什么都不点。\n' +
+    '重新数\n' +
+    '...',
+  expected: '呼吸法\n' +
+    '8 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '先找到呼气\n' +
+    '静态水面\n' +
+    '纯文字\n' +
+    '轻点 1\n' +
+    '水面是静止的，不代表你的呼吸频率。可以轻点记数，也可以什么都不点。\n' +
+    '重新数\n' +
+    '不用改变呼吸，只注意下一次呼气自然出现。\n' +
+    '...',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+Strict native batch A failed 1
+AssertionError [ERR_ASSERTION]: wide-gaze paused controls must not mutate content
++ actual - expected
+
+  '凝视法\n' +
+    '18 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '选定对象\n' +
+    '烛光中心\n' +
+    '物体边缘\n' +
+    '周围空间\n' +
++   '让烛光留在视野里，同时注意它周围的空间。\n' +
+-   '把注意移到蜡烛的边缘与明暗交界。\n' +
+    '眼睛累了就眨眼或停止。点击只是回到中心，不是成绩。\n' +
+    '把视线轻轻放在一个固定点上，不用用力盯。\n' +
+    '不舒服就停止，不需要完成。\n' +
+    '\n' +
+    '继续\n' +
+
+    at file:///D:/AI-Validation/StillMind/post-audit-repair-20261101/v3/scripts/smoke-experience-v2-states.mjs:186:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '凝视法\n' +
+    '18 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '选定对象\n' +
+    '烛光中心\n' +
+    '物体边缘\n' +
+    '周围空间\n' +
+    '让烛光留在视野里，同时注意它周围的空间。\n' +
+    '眼睛累了就眨眼或停止。点击只是回到中心，不是成绩。\n' +
+    '把视线轻轻放在一个固定点上，不用用力盯。\n' +
+    '...',
+  expected: '凝视法\n' +
+    '18 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '选定对象\n' +
+    '烛光中心\n' +
+    '物体边缘\n' +
+    '周围空间\n' +
+    '把注意移到蜡烛的边缘与明暗交界。\n' +
+    '眼睛累了就眨眼或停止。点击只是回到中心，不是成绩。\n' +
+    '把视线轻轻放在一个固定点上，不用用力盯。\n' +
+    '...',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+Strict native batch B failed 1
+AssertionError [ERR_ASSERTION]: logout-pause paused controls must not mutate content
++ actual - expected
+... Skipped lines
+
+  '登出法\n' +
+    '12 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '看见互动冲动\n' +
+    '有一个念头\n' +
+...
+    '暂时不安排动作\n' +
++   '你的选择：稍后再看；喝一杯水。这里只记录选择，不代表你已经做到或改变了现实行为。\n' +
+-   '你的选择：走完一小段路后；喝一杯水。这里只记录选择，不代表你已经做到或改变了现实行为。\n' +
+    '注意你最想解释、回应、证明或追问的地方。\n' +
+    '不舒服就停止，不需要完成。\n' +
+    '\n' +
+    '继续\n' +
+    '停止'
+
+    at file:///D:/AI-Validation/StillMind/post-audit-repair-20261101/v3/scripts/smoke-experience-v2-states.mjs:186:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '登出法\n' +
+    '12 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '看见互动冲动\n' +
+    '有一个念头\n' +
+    '看见它，先不解释，也不急着回应。\n' +
+    '暂时收起这句话\n' +
+    '你想什么时候再决定是否回应？\n' +
+    '稍后再看\n' +
+    '走完一小段路后\n' +
+    '...',
+  expected: '登出法\n' +
+    '12 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '看见互动冲动\n' +
+    '有一个念头\n' +
+    '看见它，先不解释，也不急着回应。\n' +
+    '暂时收起这句话\n' +
+    '你想什么时候再决定是否回应？\n' +
+    '稍后再看\n' +
+    '走完一小段路后\n' +
+    '...',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+Strict native batch C failed 1
+AssertionError [ERR_ASSERTION]: grounded-action paused controls must not mutate content
++ actual - expected
+
+  '意识聚焦法\n' +
+    '18 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '选一个对象\n' +
+    '观察屏幕纸面\n' +
+    '观察现实物品\n' +
++   '整体\n' +
++   '对象\n' +
++   '细节\n' +
++   '先看纸面与周围的关系。\n' +
+-   '把屏幕放低，看一件普通的真实物品。不需要拍照或授权摄像头。\n' +
+    '例如杯沿、按钮、树叶、声音或手指触感。\n' +
+    '不舒服就停止，不需要完成。\n' +
+    '\n' +
+    '继续\n' +
+    '停止'
+
+    at file:///D:/AI-Validation/StillMind/post-audit-repair-20261101/v3/scripts/smoke-experience-v2-states.mjs:186:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '意识聚焦法\n18 秒 · 已暂停\n01 / 04\n选一个对象\n观察屏幕纸面\n观察现实物品\n整体\n对象\n细节\n先看纸面与周围的关系。\n...',
+  expected: '意识聚焦法\n' +
+    '18 秒 · 已暂停\n' +
+    '01 / 04\n' +
+    '选一个对象\n' +
+    '观察屏幕纸面\n' +
+    '观察现实物品\n' +
+    '把屏幕放低，看一件普通的真实物品。不需要拍照或授权摄像头。\n' +
+    '例如杯沿、按钮、树叶、声音或手指触感。\n' +
+    '不舒服就停止，不需要完成。\n' +
+    '\n' +
+    '...',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+Strict native batch D failed 1

@@ -1,0 +1,66 @@
+
+> stillmind-inner-cinema@0.1.0 test:dependencies
+> node --test test/dependency-compat.test.mjs
+
+✔ Expo query-string resolves the reviewed decoder security patch (1.0144ms)
+✔ patched xcode UUID dependency retains project-id shape (85.4361ms)
+✔ patched decoder preserves Expo query-string UTF-8 and arrays (0.6896ms)
+✔ patched decoder tolerates malformed sequences without an unbounded split loop (1.1848ms)
+✖ Expo CLI resolves the reviewed Zod security release (2.0061ms)
+✖ CLI Zod rejects oversized constrained arrays before walking elements (14.548ms)
+✔ real Expo plugin schema preserves parsing, readonly and error semantics (3.407ms)
+✔ real Expo output schema accepts text/audio/image and rejects malformed results (0.6636ms)
+✔ real Expo MCP schema retains strict command and typed parameter checks (2.0131ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 7
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 213.3785
+
+✖ failing tests:
+
+test at test\dependency-compat.test.mjs:32:1
+✖ Expo CLI resolves the reviewed Zod security release (2.0061ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  '3.25.76' !== '4.6.7'
+
+      at TestContext.<anonymous> (file:///D:/AI-Validation/StillMind/post-audit-repair-20261101/v3/test/dependency-compat.test.mjs:34:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '3.25.76',
+    expected: '4.6.7',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\dependency-compat.test.mjs:37:1
+✖ CLI Zod rejects oversized constrained arrays before walking elements (14.548ms)
+  AssertionError [ERR_ASSERTION]: an upper size bound must reject before per-element work
+
+  2000 !== 0
+
+      at TestContext.<anonymous> (file:///D:/AI-Validation/StillMind/post-audit-repair-20261101/v3/test/dependency-compat.test.mjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)
+      at Test.postRun (node:internal/test_runner/test:1465:19)
+      at Test.run (node:internal/test_runner/test:1390:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2000,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+Validation tool exit 1

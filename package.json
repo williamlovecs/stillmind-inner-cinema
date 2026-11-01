@@ -24,7 +24,10 @@
       "uuid": "11.1.1"
     },
     "query-string": {
-      "decode-uri-component": "0.5.0"
+      "decode-uri-component": "0.5.1"
+    },
+    "@expo/cli": {
+      "zod": "4.6.7"
     }
   },
   "scripts": {
@@ -69,11 +72,13 @@
     "test:audit": "tsx --test test/session-integrity.test.ts test/api-cinema-provider.test.ts && node --test test/claims-guard.test.mjs",
     "smoke:web": "node scripts/smoke-web.mjs && node scripts/smoke-adversarial.mjs",
     "postinstall": "node scripts/patch-query-string-cjs.mjs",
-    "test:native": "tsx --test test/native-session.test.ts test/native-database.test.ts test/native-storage-lifecycle.test.ts",
+    "test:native": "tsx --test test/native-session.test.ts test/native-database.test.ts test/native-storage-lifecycle.test.ts test/native-pause-contract.test.mjs",
     "smoke:native": "node scripts/smoke-native-web.mjs",
+    "smoke:states:web": "node scripts/run-experience-states.mjs",
+    "smoke:states:native": "node scripts/run-experience-states.mjs --native",
     "smoke:product:web": "node scripts/smoke-product-paths.mjs",
     "smoke:product:native": "node scripts/smoke-product-paths.mjs --native",
-    "test:dependencies": "node --test test/dependency-compat.test.mjs",
+    "test:dependencies": "node --test test/dependency-compat.test.mjs test/deployment-isolation.test.mjs",
     "test:round2": "tsx --test test/round2-contracts.test.ts test/observation.test.ts test/request-policy.test.ts && node --test test/round2-seed.test.mjs"
   },
   "dependencies": {

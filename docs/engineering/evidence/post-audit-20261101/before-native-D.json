@@ -1,0 +1,12 @@
+{
+  "complete": false,
+  "platform": "native",
+  "batch": "D",
+  "passed": [],
+  "failures": [
+    "AssertionError [ERR_ASSERTION]: grounded-action paused controls must not mutate content\n+ actual - expected\n\n  '意识聚焦法\\n' +\n    '18 秒 · 已暂停\\n' +\n    '01 / 04\\n' +\n    '选一个对象\\n' +\n    '观察屏幕纸面\\n' +\n    '观察现实物品\\n' +\n+   '整体\\n' +\n+   '对象\\n' +\n+   '细节\\n' +\n+   '先看纸面与周围的关系。\\n' +\n-   '把屏幕放低，看一件普通的真实物品。不需要拍照或授权摄像头。\\n' +\n    '例如杯沿、按钮、树叶、声音或手指触感。\\n' +\n    '不舒服就停止，不需要完成。\\n' +\n    '\\n' +\n    '继续\\n' +\n    '停止'\n"
+  ],
+  "externalRequests": [],
+  "testedGitSha": "704d85b2413dcf60ffdb48bb995d4d053d10d8de",
+  "scope": "Local Expo Web export; CSS bounds only, not physical touch or a screen reader"
+}
