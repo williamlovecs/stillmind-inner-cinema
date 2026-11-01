@@ -1,4 +1,12 @@
-# 当前进度与下一批工作｜2026-11-01
+# 当前进度与下一批工作｜2026-11-02
+
+## 2026-11-02 双候选工程收尾
+
+先看 `docs/engineering/CANDIDATE_ACCEPTANCE_2026-11-02.md`，再看旧历史状态。独立干净 Linux/Node22.14 验收基线 `e30ec3c822c14f1cc6f855eba693f7acc471e34a`：标准npm ci、真实依赖消费者/树、完整默认verify:release、Doctor21/21、iOS与Expo Web导出、high审计均通过。基线158单测；加入部署隔离合同后的当前源为160，不能混算。
+
+候选修复分支的 Vercel Git自动部署已用官方 `git.deploymentEnabled` 精确关闭，main保持原行为；同步前已核验配置schema及实际项目根目录。最终同步/云端CI/无新增部署读回以 Draft PR#10 最新head和收尾记录为准，不能引用旧红灯或旧Preview冒充本轮结果。普通audit仍29条moderate/low，不是安全全清。
+
+V4保持独立仓库/路线，新增只测试不部署CI和便携浏览器配置，不合并产品。下一阶段使用 `docs/research/CONTROLLED_CANDIDATE_TEST_2026-11-02.md`；用户目前不能配合手机，真实手机及3–5名成年人测试均未执行。不得把工程验收写成真人或疗效证据。
 
 ## 2026-11-01 V3 high 依赖跟进
 

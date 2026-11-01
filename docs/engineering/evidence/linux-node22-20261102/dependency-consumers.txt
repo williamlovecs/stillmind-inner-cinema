@@ -1,0 +1,59 @@
+
+> stillmind-inner-cinema@0.1.0 test:dependencies
+> node --test test/dependency-compat.test.mjs
+
+TAP version 13
+# Subtest: Expo query-string resolves the reviewed decoder security patch
+ok 1 - Expo query-string resolves the reviewed decoder security patch
+  ---
+  duration_ms: 13.460268
+  ...
+# Subtest: patched xcode UUID dependency retains project-id shape
+ok 2 - patched xcode UUID dependency retains project-id shape
+  ---
+  duration_ms: 2046.458379
+  ...
+# Subtest: patched decoder preserves Expo query-string UTF-8 and arrays
+ok 3 - patched decoder preserves Expo query-string UTF-8 and arrays
+  ---
+  duration_ms: 1.864205
+  ...
+# Subtest: patched decoder tolerates malformed sequences without an unbounded split loop
+ok 4 - patched decoder tolerates malformed sequences without an unbounded split loop
+  ---
+  duration_ms: 2.058909
+  ...
+# Subtest: Expo CLI resolves the reviewed Zod security release
+ok 5 - Expo CLI resolves the reviewed Zod security release
+  ---
+  duration_ms: 70.034706
+  ...
+# Subtest: CLI Zod rejects oversized constrained arrays before walking elements
+ok 6 - CLI Zod rejects oversized constrained arrays before walking elements
+  ---
+  duration_ms: 2125.907901
+  ...
+# Subtest: real Expo plugin schema preserves parsing, readonly and error semantics
+ok 7 - real Expo plugin schema preserves parsing, readonly and error semantics
+  ---
+  duration_ms: 225.693427
+  ...
+# Subtest: real Expo output schema accepts text/audio/image and rejects malformed results
+ok 8 - real Expo output schema accepts text/audio/image and rejects malformed results
+  ---
+  duration_ms: 1.179717
+  ...
+# Subtest: real Expo MCP schema retains strict command and typed parameter checks
+ok 9 - real Expo MCP schema retains strict command and typed parameter checks
+  ---
+  duration_ms: 152.865337
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6830.211093
