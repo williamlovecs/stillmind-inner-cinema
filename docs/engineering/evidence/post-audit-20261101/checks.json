@@ -1,0 +1,195 @@
+[
+  {
+    "version": "v3",
+    "check": "unit",
+    "status": "pass",
+    "seconds": 17.6,
+    "arguments": [
+      "test"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-unit-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "typecheck",
+    "status": "pass",
+    "seconds": 9.4,
+    "arguments": [
+      "run",
+      "typecheck"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-typecheck-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "lint",
+    "status": "pass",
+    "seconds": 17.2,
+    "arguments": [
+      "run",
+      "lint"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-lint-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "claims",
+    "status": "pass",
+    "seconds": 1.1,
+    "arguments": [
+      "run",
+      "check:claims"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-claims-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "build-webpack",
+    "status": "pass",
+    "seconds": 27.1,
+    "arguments": [
+      "run",
+      "build",
+      "--",
+      "--webpack"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-build-webpack-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "readiness",
+    "status": "pass",
+    "seconds": 3.3,
+    "arguments": [
+      "run",
+      "check:release-readiness"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-readiness-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "doctor",
+    "status": "pass",
+    "seconds": 9.8,
+    "arguments": [
+      "run",
+      "doctor:mobile"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-doctor-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "export-ios",
+    "status": "pass",
+    "seconds": 20.0,
+    "arguments": [
+      "run",
+      "build:mobile:ios"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-export-ios-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "export-web",
+    "status": "pass",
+    "seconds": 23.8,
+    "arguments": [
+      "run",
+      "build:mobile:web"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-export-web-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "smoke-web",
+    "status": "pass",
+    "seconds": 133.1,
+    "arguments": [
+      "run",
+      "smoke:web"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-smoke-web-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "smoke-native",
+    "status": "pass",
+    "seconds": 109.6,
+    "arguments": [
+      "run",
+      "smoke:native"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-smoke-native-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "states-web",
+    "status": "pass",
+    "seconds": 60.8,
+    "arguments": [
+      "run",
+      "smoke:states:web"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-states-web-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "states-native",
+    "status": "pass",
+    "seconds": 61.6,
+    "arguments": [
+      "run",
+      "smoke:states:native"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-states-native-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "product-web",
+    "status": "pass",
+    "seconds": 23.5,
+    "arguments": [
+      "run",
+      "smoke:product:web"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-product-web-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "product-native",
+    "status": "pass",
+    "seconds": 21.2,
+    "arguments": [
+      "run",
+      "smoke:product:native"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-product-native-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  },
+  {
+    "version": "v3",
+    "check": "audit",
+    "status": "fail",
+    "seconds": 12.4,
+    "arguments": [
+      "audit",
+      "--json"
+    ],
+    "log": "D:\\AI-Validation\\StillMind\\post-audit-repair-20261101\\v3-audit-after.log",
+    "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f"
+  }
+]

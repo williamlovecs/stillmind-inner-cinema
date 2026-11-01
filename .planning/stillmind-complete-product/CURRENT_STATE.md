@@ -1,4 +1,14 @@
-# 当前进度与下一批工作｜2026-10-03
+# 当前进度与下一批工作｜2026-11-01
+
+## 2026-11-01 V3 定向回归恢复
+
+本节仅覆盖 V3 候选修复分支 `fix/v3-regression-recovery-20261101`，不是 main、V2 Final 或线上状态。基线 `790a591`；运行代码提交 `08c105dbb7f4950809d12db70a6b3834025e126f`。详情及红/绿证据见 `docs/engineering/POST_AUDIT_REPAIR_2026-11-01.md`。
+
+- 四批 Expo Web 暂停回归先在 `704d85b` 复现失败，再恢复所有 Chip 的暂停禁用、可访问性和既有淡化状态；保留 V3 视觉与页面结构。V2 Final 同一严格脚本在 Web、Expo Web 各 12 法通过，非真机证明。
+- 仅修复 decoder 0.5.0→0.5.1 及窄锁文件条目，实际 query-string 兼容测试通过；没有重复移植已有 API/SDK 修复。
+- 153 项测试、类型、lint、声明检查、Webpack 构建、材料门禁、Doctor 21/21、iOS/Expo Web 导出通过。Web 18+10 组、Expo Web 15 组、两端各 12 法严格状态和各 4 条产品路径通过。没有把分项检查冒充完整默认 `verify:release` 命令通过。
+- **audit 仍失败：30 个包条目，0 critical / 2 high / 26 moderate / 2 low**。保留原始告警及 CI 门禁，不称安全发布获准。
+- 本轮为独立修复分支和 Draft PR 交付；不自动合并、部署、改动 V1/V2 或 E 盘 canonical。签名上架、内容许可、真机/微信/Safari 与真人效果仍未完成。以下旧历史状态不得作为本轮或线上验收。
 
 先读本页，再看此目录的历史task_plan/progress/findings。旧complete/100%是当时工程或材料准备记录，不是用户验证、内容许可或三个模块都已完成的结论。
 

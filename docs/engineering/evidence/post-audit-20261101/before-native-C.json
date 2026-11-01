@@ -1,0 +1,12 @@
+{
+  "complete": false,
+  "platform": "native",
+  "batch": "C",
+  "passed": [],
+  "failures": [
+    "AssertionError [ERR_ASSERTION]: logout-pause paused controls must not mutate content\n+ actual - expected\n... Skipped lines\n\n  '登出法\\n' +\n    '12 秒 · 已暂停\\n' +\n    '01 / 04\\n' +\n    '看见互动冲动\\n' +\n    '有一个念头\\n' +\n...\n    '暂时不安排动作\\n' +\n+   '你的选择：稍后再看；喝一杯水。这里只记录选择，不代表你已经做到或改变了现实行为。\\n' +\n-   '你的选择：走完一小段路后；喝一杯水。这里只记录选择，不代表你已经做到或改变了现实行为。\\n' +\n    '注意你最想解释、回应、证明或追问的地方。\\n' +\n    '不舒服就停止，不需要完成。\\n' +\n    '\\n' +\n    '继续\\n' +\n    '停止'\n"
+  ],
+  "externalRequests": [],
+  "testedGitSha": "704d85b2413dcf60ffdb48bb995d4d053d10d8de",
+  "scope": "Local Expo Web export; CSS bounds only, not physical touch or a screen reader"
+}

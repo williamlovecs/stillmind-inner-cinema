@@ -1,0 +1,12 @@
+{
+  "complete": false,
+  "platform": "native",
+  "batch": "B",
+  "passed": [],
+  "failures": [
+    "AssertionError [ERR_ASSERTION]: wide-gaze paused controls must not mutate content\n+ actual - expected\n\n  '凝视法\\n' +\n    '18 秒 · 已暂停\\n' +\n    '01 / 04\\n' +\n    '选定对象\\n' +\n    '烛光中心\\n' +\n    '物体边缘\\n' +\n    '周围空间\\n' +\n+   '让烛光留在视野里，同时注意它周围的空间。\\n' +\n-   '把注意移到蜡烛的边缘与明暗交界。\\n' +\n    '眼睛累了就眨眼或停止。点击只是回到中心，不是成绩。\\n' +\n    '把视线轻轻放在一个固定点上，不用用力盯。\\n' +\n    '不舒服就停止，不需要完成。\\n' +\n    '\\n' +\n    '继续\\n' +\n"
+  ],
+  "externalRequests": [],
+  "testedGitSha": "704d85b2413dcf60ffdb48bb995d4d053d10d8de",
+  "scope": "Local Expo Web export; CSS bounds only, not physical touch or a screen reader"
+}

@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "platform": "native",
+  "batch": "C",
+  "passed": [
+    "logout-pause real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry",
+    "release real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry",
+    "open-awareness real interaction, keyboard, frozen pause, locked controls, after-check and clean re-entry"
+  ],
+  "failures": [],
+  "externalRequests": [],
+  "testedGitSha": "08c105dbb7f4950809d12db70a6b3834025e126f",
+  "scope": "Local Expo Web export; CSS bounds only, not physical touch or a screen reader"
+}

@@ -1,0 +1,37 @@
+
+> stillmind-inner-cinema@0.1.0 test:dependencies
+> node --test test/dependency-compat.test.mjs
+
+✖ Expo query-string resolves the reviewed decoder security patch (1.8074ms)
+✔ patched xcode UUID dependency retains project-id shape (57.1222ms)
+✔ patched decoder preserves Expo query-string UTF-8 and arrays (0.7432ms)
+✔ patched decoder tolerates malformed sequences without an unbounded split loop (1.1293ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 162.4415
+
+✖ failing tests:
+
+test at test\dependency-compat.test.mjs:10:1
+✖ Expo query-string resolves the reviewed decoder security patch (1.8074ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  '0.5.0' !== '0.5.1'
+
+      at TestContext.<anonymous> (file:///D:/AI-Validation/StillMind/post-audit-repair-20261101/v3/test/dependency-compat.test.mjs:13:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1325:25)
+      at Test.start (node:internal/test_runner/test:1191:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '0.5.0',
+    expected: '0.5.1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
