@@ -71,6 +71,8 @@
     "postinstall": "node scripts/patch-query-string-cjs.mjs",
     "test:native": "tsx --test test/native-session.test.ts test/native-database.test.ts test/native-storage-lifecycle.test.ts",
     "smoke:native": "node scripts/smoke-native-web.mjs",
+    "smoke:states:web": "node scripts/run-experience-states.mjs",
+    "smoke:states:native": "node scripts/run-experience-states.mjs --native",
     "smoke:product:web": "node scripts/smoke-product-paths.mjs",
     "smoke:product:native": "node scripts/smoke-product-paths.mjs --native",
     "test:dependencies": "node --test test/dependency-compat.test.mjs",
