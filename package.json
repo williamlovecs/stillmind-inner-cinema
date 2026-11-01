@@ -78,7 +78,7 @@
     "smoke:states:native": "node scripts/run-experience-states.mjs --native",
     "smoke:product:web": "node scripts/smoke-product-paths.mjs",
     "smoke:product:native": "node scripts/smoke-product-paths.mjs --native",
-    "test:dependencies": "node --test test/dependency-compat.test.mjs",
+    "test:dependencies": "node --test test/dependency-compat.test.mjs test/deployment-isolation.test.mjs",
     "test:round2": "tsx --test test/round2-contracts.test.ts test/observation.test.ts test/request-policy.test.ts && node --test test/round2-seed.test.mjs"
   },
   "dependencies": {
